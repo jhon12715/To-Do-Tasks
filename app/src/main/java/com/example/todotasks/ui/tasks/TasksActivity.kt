@@ -19,8 +19,6 @@ class TasksActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityTasksBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        rvAdapter = TasksAdapter(lista)
         lista.add(
             TaskItem(
                 "panpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpanpan",
