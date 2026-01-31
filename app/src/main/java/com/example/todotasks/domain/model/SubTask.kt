@@ -1,4 +1,7 @@
 package com.example.todotasks.domain.model
 
-class SubTask {
-}
+data class SubTask(
+    val id: Long = 0,
+    val idTask: Int,
+    val title: String,
+    val completed: Boolean = false)
