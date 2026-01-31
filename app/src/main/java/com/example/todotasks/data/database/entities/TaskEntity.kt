@@ -5,9 +5,9 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(indices = [Index(value = ["task"], unique = true)])
+@Entity(tableName = "task", indices = [Index(value = ["task"], unique = true)])
 data class TaskEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo("id") val id: Int,
+    @ColumnInfo("id") val id: Long = 0,
     @ColumnInfo("task") val task: String
 )

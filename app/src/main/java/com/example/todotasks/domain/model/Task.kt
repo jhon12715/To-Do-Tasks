@@ -1,3 +1,3 @@
 package com.example.todotasks.domain.model
 
-data class Task(val id: Int? = null, val task: String)
+data class Task(val id: Long = 0, val task: String)

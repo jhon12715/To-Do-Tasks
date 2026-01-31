@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(
+@Entity(tableName = "subTask",
     foreignKeys = [ForeignKey(
         entity = TaskEntity::class,
         parentColumns = ["id"],
@@ -15,7 +15,7 @@ import androidx.room.PrimaryKey
 )
 data class SubTaskEntity(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo("id") val id: Int,
+    @ColumnInfo("id") val id: Long = 0,
     @ColumnInfo("id_task") val idTask: Int,
     @ColumnInfo("title") val title: String,
     @ColumnInfo("completed") val completed: Boolean = false
