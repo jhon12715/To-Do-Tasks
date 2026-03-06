@@ -1,0 +1,11 @@
+package com.example.todotasks.domain.usecase
+
+import com.example.todotasks.domain.model.Task
+import com.example.todotasks.domain.repository.TaskRepository
+import javax.inject.Inject
+
+class InsertTaskUseCase @Inject constructor(private val repository: TaskRepository) {
+
+    suspend operator fun invoke(task: Task): Long = repository.insertTask(task)
+
+}
