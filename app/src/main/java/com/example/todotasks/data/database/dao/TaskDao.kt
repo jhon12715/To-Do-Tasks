@@ -5,20 +5,21 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.example.todotasks.data.database.entities.TaskEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TaskDao {
 
     @Query("SELECT * FROM task")
-    fun getTasks(): List<TaskEntity>
+    fun getTasks(): Flow<List<TaskEntity>>
 
     @Insert
-    fun insertTask(task: TaskEntity)
+    suspend fun insertTask(task: TaskEntity): Long
 
     @Query("DELETE FROM task WHERE id = :id")
-    fun deleteTask(id: Long)
+    suspend fun deleteTask(id: Long)
 
     @Update
-    fun updateTask(task: TaskEntity)
+    suspend fun updateTask(task: TaskEntity)
 
 }

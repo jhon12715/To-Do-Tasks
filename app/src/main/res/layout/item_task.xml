@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/cvTaskItem"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
     app:cardBackgroundColor="#60EDE6"
-    app:cardCornerRadius="20dp"
-    >
+    app:cardCornerRadius="20dp">
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
@@ -16,22 +16,42 @@
 
         <TextView
             android:id="@+id/tvTaskName"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:paddingHorizontal="8dp"
-            android:layout_weight="1"
-            android:text="TextView"
-            android:textSize="24sp"
+            android:layout_weight="5"
             android:gravity="center_vertical"
-            android:textColor="@color/white" />
+            android:paddingHorizontal="8dp"
+            android:text="TextView"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tvTaskCompleted"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:gravity="center_vertical"
+            android:paddingHorizontal="8dp"
+            android:text="TextView"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+        <ImageView
+            android:id="@+id/ivEditTask"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            app:srcCompat="?attr/actionModePasteDrawable" />
 
         <CheckBox
             android:id="@+id/cbTask"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="match_parent"
-            android:layout_weight="9"
-            android:textColor="@color/white"
+            android:layout_gravity="center"
+            android:layout_weight="1"
 
-            android:layout_gravity="center"/>
+            android:textColor="@color/white" />
+
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 </androidx.cardview.widget.CardView>

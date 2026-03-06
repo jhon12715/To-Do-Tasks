@@ -11,6 +11,9 @@ fun TaskEntity.toDomain() = Task(
     task = task,
 )
 
+fun List<TaskEntity>.toDomain(): List<Task> =
+    map { it.toDomain() }
+
 fun Task.toEntity() = TaskEntity(
     id = id,
     task = task

@@ -9,19 +9,19 @@ import com.example.todotasks.domain.model.SubTask
 @Dao
 interface SubTaskDao {
 
-    @Query("SELECT * FROM subTask")
-    fun getSubTasks(): List<SubTaskEntity>
+    @Query("SELECT * FROM subTask WHERE id_task = :idTask")
+    suspend fun getSubTasks(idTask: Long): List<SubTaskEntity>
 
     @Insert
-    fun insertSubTask(subTask: SubTaskEntity)
+    suspend fun insertSubTask(subTask: SubTaskEntity): Long
 
     @Query("DELETE FROM subTask WHERE id = :id")
-    fun deleteSubTask(id: Long)
+    suspend fun deleteSubTask(id: Long)
 
     @Query("UPDATE subTask SET title = :title WHERE id = :id")
-    fun updateTitleSubTask(id: Long, title: String)
+    suspend fun updateTitleSubTask(id: Long, title: String)
 
     @Query("UPDATE subTask SET completed = :completed WHERE id = :id")
-    fun updateCompletedSubTask(id: Long, completed: Boolean)
+    suspend fun updateCompletedSubTask(id: Long, completed: Boolean)
 
 }

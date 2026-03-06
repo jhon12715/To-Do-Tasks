@@ -7,9 +7,9 @@ import com.example.todotasks.data.database.dao.TaskDao
 import com.example.todotasks.data.database.entities.SubTaskEntity
 import com.example.todotasks.data.database.entities.TaskEntity
 
-@Database(entities = [TaskEntity::class, SubTaskEntity::class], version = 1)
+@Database(entities = [TaskEntity::class, SubTaskEntity::class], version = 2, exportSchema = false)
 abstract class AppDataBase : RoomDatabase() {
     abstract fun taskDao(): TaskDao
-    abstract fun SubTaskDao(): SubTaskDao
+    abstract fun subTaskDao(): SubTaskDao
 }
 
