@@ -37,7 +37,6 @@ class DialogDeleteSubtask(
         binding.btnCancel.setOnClickListener { dismiss() }
         binding.btnAccept.setOnClickListener {
             viewModel.deleteSubtask(idTask)
-
             dismiss()
         }
     }

@@ -5,12 +5,13 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.example.todotasks.data.database.entities.SubTaskEntity
 import com.example.todotasks.domain.model.SubTask
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SubTaskDao {
 
-    @Query("SELECT * FROM subTask WHERE id_task = :idTask")
-    suspend fun getSubTasks(idTask: Long): List<SubTaskEntity>
+    @Query("SELECT * FROM subTask WHERE idTask = :idTask ORDER BY id ASC")
+    fun getSubTasks(idTask: Long): Flow<List<SubTask>>
 
     @Insert
     suspend fun insertSubTask(subTask: SubTaskEntity): Long

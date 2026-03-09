@@ -9,5 +9,6 @@ import androidx.room.PrimaryKey
 data class TaskEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo("id") val id: Long = 0,
-    @ColumnInfo("task", collate = ColumnInfo.NOCASE) val task: String
+    @ColumnInfo("task", collate = ColumnInfo.NOCASE) val task: String,
+    @ColumnInfo("isCompleted") val isCompleted: Boolean
 )

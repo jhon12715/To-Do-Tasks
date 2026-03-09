@@ -11,14 +11,14 @@ import androidx.room.PrimaryKey
     foreignKeys = [ForeignKey(
         entity = TaskEntity::class,
         parentColumns = ["id"],
-        childColumns = ["id_task"],
+        childColumns = ["idTask"],
         onDelete = ForeignKey.CASCADE
-    )], indices = [Index(value = ["id_task", "title"], unique = true)]
+    )], indices = [Index(value = ["idTask", "title"], unique = true)]
 )
 data class SubTaskEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo("id") val id: Long = 0,
-    @ColumnInfo("id_task") val idTask: Long,
+    @ColumnInfo("idTask") val idTask: Long,
     @ColumnInfo("title", collate = ColumnInfo.NOCASE) val title: String,
     @ColumnInfo("completed") val completed: Boolean = false
 )

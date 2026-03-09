@@ -16,7 +16,8 @@ fun List<TaskEntity>.toDomain(): List<Task> =
 
 fun Task.toEntity() = TaskEntity(
     id = id,
-    task = task
+    task = task,
+    isCompleted = isCompleted
 )
 
 //SubTask

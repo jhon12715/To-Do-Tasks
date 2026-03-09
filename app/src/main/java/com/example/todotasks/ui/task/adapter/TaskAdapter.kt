@@ -5,12 +5,14 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
 import com.example.todotasks.domain.model.Task
+import com.example.todotasks.ui.task.model.TaskUI
 
 class TaskAdapter(
-    var lista: List<Task> = listOf(),
-    private val editTask: (Task) -> Unit,
-    private val openSubTaskActivity: (Task) -> Unit,
-    private val deleteTask: (Task) -> Unit
+    private val lista: List<TaskUI> = listOf(),
+    private val editTask: (Long, String) -> Unit,
+    private val openSubTaskActivity: (Long, String) -> Unit,
+    private val deleteTask: (Long, String) -> Unit,
+    private val updateCompletedTask: (Long, Boolean) -> Unit
 ) : RecyclerView.Adapter<TaskViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
@@ -24,7 +26,7 @@ class TaskAdapter(
     override fun onBindViewHolder(
         holder: TaskViewHolder, position: Int
     ) {
-        holder.render(lista[position], editTask, openSubTaskActivity, deleteTask)
+        holder.render(lista[position], editTask, openSubTaskActivity, deleteTask, updateCompletedTask)
     }
 
 }

@@ -15,9 +15,10 @@ import com.example.todotasks.domain.model.Task
 import com.example.todotasks.ui.subTask.SubTaskActivity
 import com.example.todotasks.ui.subTask.SubTaskActivity.Companion.EXTRA_TASK_ID
 import com.example.todotasks.ui.subTask.SubTaskActivity.Companion.EXTRA_TASK_NAME
-import com.example.todotasks.ui.task.adapter.TaskAdapter
-import com.example.todotasks.ui.task.diialog.DialogDeleteTask
-import com.example.todotasks.ui.task.diialog.DialogTask
+import com.example.todotasks.ui.task.adapter.TaskListAdapter
+import com.example.todotasks.ui.task.Dialog.DialogDeleteTask
+import com.example.todotasks.ui.task.Dialog.DialogTask
+import com.example.todotasks.ui.task.model.TaskUI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -25,8 +26,7 @@ import kotlinx.coroutines.launch
 class TaskActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityTaskBinding
-    private var lista: MutableList<Task> = mutableListOf()
-    private lateinit var rvAdapter: TaskAdapter
+    private lateinit var rvAdapter: TaskListAdapter
     private val tasksViewModel: TaskViewModel by viewModels()
     private var toast: Toast? = null
 
@@ -37,7 +37,6 @@ class TaskActivity : AppCompatActivity() {
         setListeners()
         setRvAdapter()
         setFlows()
-        getAllTasks()
 
     }
 
@@ -83,49 +82,47 @@ class TaskActivity : AppCompatActivity() {
         toast?.show()
     }
 
-    private fun getAllTasks() {
-        tasksViewModel.getAllTasks()
-    }
-
     private fun newTaskDialog() {
         DialogTask().show(supportFragmentManager, "")
     }
 
-    private fun editTaskDialog(task: Task) {
-        val id = task.id
-        val taskName = task.task
-        DialogTask(id, taskName).show(supportFragmentManager, "")
+    private fun editTaskDialog(id: Long, task: String) {
+        DialogTask(id, task).show(supportFragmentManager, "")
     }
 
-    private fun updateTasks(tasks: List<Task>) {
-        rvAdapter.lista = tasks
-        rvAdapter.notifyDataSetChanged()
+    private fun updateTasks(tasks: List<TaskUI>) {
+        rvAdapter.submitList(tasks)
     }
 
-    private fun openSubTaskById(task: Task) {
+    private fun openSubTaskById(id: Long, task: String) {
 
         val intent = Intent(this, SubTaskActivity::class.java)
-        intent.putExtra(EXTRA_TASK_ID, task.id)
-        intent.putExtra(EXTRA_TASK_NAME, task.task)
+        intent.putExtra(EXTRA_TASK_ID, id)
+        intent.putExtra(EXTRA_TASK_NAME, task)
         this.startActivity(intent)
+    }
+
+    private fun openDialogDeleteTask(id: Long, task: String) {
+        DialogDeleteTask(id, task).show(supportFragmentManager, "")
+    }
+
+    private fun updateCompletedTask(id: Long, isCompleted: Boolean){
+        tasksViewModel.updateCompletedTask(id, isCompleted)
     }
 
     private fun setRvAdapter() {
 
-        rvAdapter = TaskAdapter(
+        rvAdapter = TaskListAdapter(
             editTask = ::editTaskDialog,
             openSubTaskActivity = ::openSubTaskById,
-            deleteTask = ::openDialogDeleteTask
+            deleteTask = ::openDialogDeleteTask,
+            updateCompletedTask = ::updateCompletedTask
         )
         binding.rvTasks.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = rvAdapter
         }
 
-    }
-
-    private fun openDialogDeleteTask(task: Task) {
-        DialogDeleteTask(task).show(supportFragmentManager, "")
     }
 
 }

@@ -7,6 +7,7 @@ import com.example.todotasks.data.mapper.toEntity
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.repository.TaskRepository
+import com.example.todotasks.ui.task.model.TaskUI
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -16,8 +17,8 @@ class TaskRepositoryImpl @Inject constructor(
 ) : TaskRepository {
 
     //TaskDao
-    override fun getTasks(): Flow<List<Task>> =
-        taskDao.getTasks().map { entities -> entities.toDomain() }
+    override fun getTasks(): Flow<List<TaskUI>> =
+        taskDao.getTasks()
 
     override suspend fun insertTask(task: Task): Long {
         val entity = task.toEntity()
@@ -33,10 +34,14 @@ class TaskRepositoryImpl @Inject constructor(
         taskDao.updateTask(entity)
     }
 
+    override suspend fun updateCompletedTask(id: Long, completed: Boolean) {
+        taskDao.updateCompletedTask(id, completed)
+    }
+
     //SubTaskDao
 
-    override suspend fun getSubTasks(idTask: Long): List<SubTask> =
-        subTaskDao.getSubTasks(idTask).map { it.toDomain() }
+    override fun getSubTasks(idTask: Long): Flow<List<SubTask>> =
+        subTaskDao.getSubTasks(idTask)
 
     override suspend fun insertSubTask(subTask: SubTask) {
         val entity = subTask.toEntity()

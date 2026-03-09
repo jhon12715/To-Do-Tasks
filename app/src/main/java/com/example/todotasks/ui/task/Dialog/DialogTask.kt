@@ -1,4 +1,4 @@
-package com.example.todotasks.ui.task.diialog
+package com.example.todotasks.ui.task.Dialog
 
 import android.app.Dialog
 import android.os.Bundle
@@ -24,10 +24,7 @@ class DialogTask(val id: Long = 0, val taskName: String = "") : DialogFragment()
         val builder = AlertDialog.Builder(requireContext())
         builder.setView(binding.root)
 
-        println("id: $id")
-
         titulo()
-
         setListeners()
         setFlows()
 

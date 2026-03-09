@@ -9,9 +9,16 @@ import com.example.todotasks.domain.usecase.InsertSubTaskUseCase
 import com.example.todotasks.domain.usecase.GetAllSubTasksUseCase
 import com.example.todotasks.domain.usecase.UpdateSubTaskCompletedUseCase
 import com.example.todotasks.domain.usecase.UpdateSubTaskNameUseCase
+import com.example.todotasks.ui.task.UiState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -25,28 +32,34 @@ class SubTaskViewModel @Inject constructor(
     private val updateSubTaskNameUseCase: UpdateSubTaskNameUseCase
 ) :
     ViewModel() {
-    private val _listaSubTasks: MutableStateFlow<List<SubTask>> = MutableStateFlow(listOf())
-    val listaSubTasks: StateFlow<List<SubTask>> = _listaSubTasks
+    private val _taskId = MutableStateFlow<Long?>(null)
 
-    fun getSubTasks(idTask: Long) {
-        viewModelScope.launch {
-            val subTasks = getAllSubTasksUseCase(idTask)
-            _listaSubTasks.update { subTasks }
+    val listaSubTasks: StateFlow<List<SubTask>> = _taskId
+        .filterNotNull() // solo cuando la id existe
+        .flatMapLatest { taskId ->
+            getAllSubTasksUseCase(taskId)
         }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
 
+    private val _subTaskState: MutableSharedFlow<UiState> =
+        MutableSharedFlow(replay = 0)
+    val subTaskState: SharedFlow<UiState> = _subTaskState
+
+    fun setTaskId(taskId: Long){
+        _taskId.value = taskId
     }
 
-    fun addSubTask(idTask: Long, subTaskName: String): Boolean {
+    fun addSubTask(idTask: Long, subTaskName: String){
         val subTaskTrimed = subTaskName.trim()
         if (subTaskTrimed.isNotEmpty()) {
             viewModelScope.launch {
                 val newSubTask = SubTask(idTask = idTask, title = subTaskName)
                 insertSubTaskUseCase(newSubTask)
-                _listaSubTasks.update { subTasks -> subTasks + newSubTask }
             }
-            return true
-        } else {
-            return false
         }
 
     }
@@ -58,42 +71,20 @@ class SubTaskViewModel @Inject constructor(
         return "$subTasksCompleted/$allSubTasks"
     }
 
-    fun updateSubTaskCompleted(idSubTask: Long, isChecked: Boolean): Boolean {
+    fun updateSubTaskCompleted(idSubTask: Long, isChecked: Boolean){
         viewModelScope.launch {
             updateSubTaskCompletedUseCase(idSubTask, isChecked)
-
-            val newList: List<SubTask> = _listaSubTasks.value.map { subTask ->
-                if (subTask.id == idSubTask) {
-                    subTask.copy(completed = isChecked)
-                } else subTask
-            }
-
-            _listaSubTasks.update { newList }
         }
-        return true
     }
 
-    fun updateSubTaskName(idSubTask: Long, subTaskName: String): Boolean {
+    fun updateSubTaskName(idSubTask: Long, subTaskName: String){
         viewModelScope.launch {
             updateSubTaskNameUseCase(idSubTask, subTaskName)
-
-            val newList: List<SubTask> = _listaSubTasks.value.map { subTask ->
-                if (subTask.id == idSubTask) {
-                    subTask.copy(title = subTaskName)
-                } else subTask
-            }
-
-            _listaSubTasks.update { newList }
-
         }
-        return true
     }
 
     fun deleteSubtask(id: Long) {
         viewModelScope.launch { deleteSubtaskUseCase(id) }
-        val newList = _listaSubTasks.value.filter { task -> task.id != id }
-        _listaSubTasks.update { newList }
-
     }
 
 
