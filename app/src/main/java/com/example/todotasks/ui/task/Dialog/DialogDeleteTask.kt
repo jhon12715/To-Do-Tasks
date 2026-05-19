@@ -6,11 +6,11 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import com.example.todotasks.databinding.DialogDeleteTaskBinding
+import com.example.todotasks.domain.model.Task
 import com.example.todotasks.ui.task.TaskViewModel
 
 class DialogDeleteTask(
-    private val id: Long,
-    private val task: String
+    private val task: Task
 ) : DialogFragment() {
 
     private lateinit var binding: DialogDeleteTaskBinding
@@ -28,7 +28,7 @@ class DialogDeleteTask(
 
     private fun startUI() {
         binding.tvTittle.text = "Eliminar Tarea"
-        binding.tvMessage.text = "seguro que desea borrar la tarea $task"
+        binding.tvMessage.text = "seguro que desea borrar la tarea ${task.task}"
 
 
     }
@@ -36,7 +36,7 @@ class DialogDeleteTask(
     private fun setListeners() {
         binding.btnCancel.setOnClickListener { dismiss() }
         binding.btnAccept.setOnClickListener {
-            viewModel.deleteTask(id)
+            viewModel.deleteTask(task)
             dismiss()
         }
     }

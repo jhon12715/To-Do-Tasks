@@ -3,6 +3,8 @@ package com.example.todotasks.di
 import android.app.Application
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.todotasks.data.database.AppDataBase
 import com.example.todotasks.data.database.dao.SubTaskDao
 import com.example.todotasks.data.database.dao.TaskDao
@@ -33,14 +35,56 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDataBase {
+
+
         return Room.databaseBuilder(context, AppDataBase::class.java, "AppDataBase")
             .fallbackToDestructiveMigration()
+            .addMigrations(MIGRATION_1_10)
+            .addMigrations(MIGRATION_10_11)
             .build()
     }
 
-    @Provides
-    fun provideMyDao(db: AppDataBase): TaskDao = db.taskDao()
+    val MIGRATION_1_10 = object : Migration(1, 2) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+
+            db.execSQL(
+                "ALTER TABLE task ADD COLUMN dueDate INTEGER"
+            )
+        }
+    }
+
+    val MIGRATION_10_11 = object : Migration(10, 11) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+
+            // Crear nueva tabla con la columna "date"
+            db.execSQL("""
+            CREATE TABLE task_new (
+                id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                priority INTEGER NOT NULL,
+                task TEXT NOT NULL,
+                isCompleted INTEGER NOT NULL,
+                date INTEGER
+            )
+        """)
+
+            // Copiar datos de la tabla antigua
+            db.execSQL("""
+            INSERT INTO task_new (id, priority, task, isCompleted, date)
+            SELECT id, priority, task, isCompleted, dueDate
+            FROM task
+        """)
+
+            // Borrar tabla antigua
+            db.execSQL("DROP TABLE task")
+
+            // Renombrar nueva tabla
+            db.execSQL("ALTER TABLE task_new RENAME TO task")
+        }
+    }
 
     @Provides
-    fun provideMyDaoo(db: AppDataBase): SubTaskDao = db.subTaskDao()
+    fun provideTaskDao(db: AppDataBase): TaskDao = db.taskDao()
+
+    @Provides
+    fun provideSubTaskDao(db: AppDataBase): SubTaskDao = db.subTaskDao()
 }

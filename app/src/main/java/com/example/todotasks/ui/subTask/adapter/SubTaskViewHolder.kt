@@ -8,6 +8,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
 import com.example.todotasks.databinding.ItemTaskBinding
 import com.example.todotasks.domain.model.SubTask
+import com.example.todotasks.domain.model.TaskPriority
+import com.example.todotasks.ui.subTask.SubtaskItemCallbacks
 
 class SubTaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -15,24 +17,22 @@ class SubTaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun render(
         item: SubTask,
-        updateSubTaskCompleted: (Long, Boolean) -> Unit,
-        updateSubTaskName: (Long, String) -> Unit,
-        deleteSubtask: (Long, String) -> Unit
+        callbacks: SubtaskItemCallbacks
     ) = with(binding) {
         tvTaskName.text = item.title
-        cbTask.isChecked = item.completed
         ivEditTask.visibility = View.GONE
         tvTaskCompleted.visibility = View.GONE
+        tvDate.visibility = View.GONE
 
-        setupCheckbox(item, updateSubTaskCompleted)
-        setupClicks(item, updateSubTaskName, deleteSubtask)
+        setupCheckbox(item, callbacks.updateSubTaskCompleted)
+        setupClicks(item, callbacks.updateSubTaskName, callbacks.deleteSubtask)
         applyState(item)
 
     }
 
-    private fun setupClicks(item: SubTask, updateSubTaskName: (Long, String) -> Unit,
+    private fun setupClicks(item: SubTask, updateSubTaskName: (Long, String, TaskPriority) -> Unit,
                             deleteSubtask: (Long, String) -> Unit) {
-        binding.cvTaskItem.setOnClickListener { updateSubTaskName(item.id, item.title) }
+        binding.cvTaskItem.setOnClickListener { updateSubTaskName(item.id, item.title, item.priority) }
         binding.cvTaskItem.setOnLongClickListener {
             deleteSubtask(item.id, item.title)
             true
@@ -67,9 +67,17 @@ class SubTaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             tvTaskName.paintFlags =
                 tvTaskName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
 
+            val color = getPriorityColor(item.priority)
             cvTaskItem.setCardBackgroundColor(
-                ContextCompat.getColor(context, R.color.itemDefault)
+                ContextCompat.getColor(context, color)
             )
         }
     }
+
+    private fun getPriorityColor(priority: TaskPriority): Int =
+        when (priority) {
+            TaskPriority.ALTA -> R.color.highPriority
+            TaskPriority.NORMAL -> R.color.normalPriority
+            TaskPriority.BAJA -> R.color.lowPriority
+        }
 }

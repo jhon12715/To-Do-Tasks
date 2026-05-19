@@ -42,12 +42,19 @@ android {
     }
 
     compileOptions {
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+
+    dependencies {
+        coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    }
+
     kotlinOptions {
        jvmTarget = "17"
     }
+
     buildFeatures {
         viewBinding = true
     }
@@ -68,6 +75,14 @@ dependencies {
     kapt("com.google.dagger:hilt-compiler:$hiltVersion")
     //ksp
     //ksp("com.google.devtools.ksp:symbol-processing-api:1.9.0-1.0.13")
+
+    // WorkManager (Kotlin + coroutines)
+    val workVersion = "2.9.1"
+    //implementation("androidx.work:work-runtime:$workVersion")
+    implementation("androidx.work:work-runtime-ktx:$workVersion")
+
+    // ThreeTenABP
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.appcompat:appcompat:1.7.1")

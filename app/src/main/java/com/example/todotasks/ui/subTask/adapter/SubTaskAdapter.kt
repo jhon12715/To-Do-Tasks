@@ -6,12 +6,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.Task
+import com.example.todotasks.ui.subTask.SubtaskItemCallbacks
 
 class SubTaskAdapter(
     var lista: List<SubTask> = mutableListOf(),
-    private val updateSubTaskCompleted: (Long, Boolean) -> Unit,
-    private val updateSubTaskName: (Long, String) -> Unit,
-    private val deleteSubtask: (Long, String) -> Unit
+    private val callbacks: SubtaskItemCallbacks
 ) : RecyclerView.Adapter<SubTaskViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubTaskViewHolder {
         val view = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
@@ -23,7 +22,7 @@ class SubTaskAdapter(
     }
 
     override fun onBindViewHolder(holder: SubTaskViewHolder, position: Int) {
-        holder.render(lista[position], updateSubTaskCompleted, updateSubTaskName, deleteSubtask)
+        holder.render(lista[position], callbacks)
     }
 
 }

@@ -1,6 +1,5 @@
 package com.example.todotasks.ui.task.adapter
 
-import android.content.Context
 import android.graphics.Paint
 import android.view.View
 import androidx.core.content.ContextCompat
@@ -8,7 +7,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
 import com.example.todotasks.databinding.ItemTaskBinding
 import com.example.todotasks.domain.model.Task
+import com.example.todotasks.ui.task.TaskItemCallbacks
+import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.ui.task.model.TaskUI
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
@@ -16,19 +20,48 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     fun render(
         item: TaskUI,
-        editTask: (Long, String) -> Unit,
-        openSubTaskActivity: (Long, String) -> Unit,
-        deleteTask: (Long, String) -> Unit,
-        updateCompletedTask: (Long, Boolean) -> Unit
+        callbacks: TaskItemCallbacks
     ) = with(binding) {
 
         tvTaskName.text = item.task
         tvTaskCompleted.text = item.subTaskCompleted
 
-        setupCheckbox(item, updateCompletedTask)
-        setupClicks(item, editTask, openSubTaskActivity, deleteTask)
+        if (item.date != null) {
+            setDate(item.date)
+        } else {
+            tvDate.visibility = View.GONE
+        }
+
+        setUpCount(item.totalSubTask)
+        setupCheckbox(item, callbacks.updateCompletedTask)
+        setupClicks(item, callbacks.editTask, callbacks.openSubTaskActivity, callbacks.deleteTask)
 
         applyState(item)
+    }
+
+    private fun setDate(day: LocalDate) = with(binding) {
+        val today = LocalDate.now()
+        val dayRest: Long = ChronoUnit.DAYS.between(today, day)
+        val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+        tvDate.text = when {
+            dayRest < 0 -> "Vencida (${day.format(formatter)})"
+            dayRest == 0L -> "Hoy"
+            dayRest == 1L -> "Mañana"
+            dayRest <= 7L -> "Quedan $dayRest días (${day.format(formatter)})"
+            else -> {
+                day.format(formatter)
+            }
+        }
+    }
+
+    private fun setUpCount(subtasks: Int) = with(binding) {
+        if (subtasks == 0) {
+            tvTaskCompleted.visibility = View.GONE
+        } else {
+            tvTaskCompleted.visibility = View.VISIBLE
+        }
+
     }
 
     private fun setupCheckbox(
@@ -46,13 +79,13 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private fun setupClicks(
         item: TaskUI,
-        editTask: (Long, String) -> Unit,
+        editTask: (Long, String, TaskPriority, LocalDate?) -> Unit,
         openSubTaskActivity: (Long, String) -> Unit,
-        deleteTask: (Long, String) -> Unit
+        deleteTask: (Task) -> Unit
     ) = with(binding) {
 
         ivEditTask.setOnClickListener {
-            editTask(item.id, item.task)
+            editTask(item.id, item.task, item.priority, item.date)
         }
 
         cvTaskItem.setOnClickListener {
@@ -60,7 +93,8 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
 
         cvTaskItem.setOnLongClickListener {
-            deleteTask(item.id, item.task)
+            val task = Task(item.id, item.task, item.priority, item.isCompleted, item.date)
+            deleteTask(task)
             true
         }
     }
@@ -74,6 +108,9 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             tvTaskName.paintFlags =
                 tvTaskName.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
 
+            tvTaskCompleted.visibility = View.GONE
+            tvDate.visibility = View.GONE
+
             cvTaskItem.setCardBackgroundColor(
                 ContextCompat.getColor(context, R.color.itemCompleted)
             )
@@ -83,9 +120,21 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
             tvTaskName.paintFlags =
                 tvTaskName.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
 
+            setUpCount(item.totalSubTask)
+
+            val color = getPriorityColor(item.priority)
+
             cvTaskItem.setCardBackgroundColor(
-                ContextCompat.getColor(context, R.color.itemDefault)
+                ContextCompat.getColor(context, color)
             )
         }
     }
+
+    private fun getPriorityColor(priority: TaskPriority): Int =
+        when (priority) {
+            TaskPriority.ALTA -> R.color.highPriority
+            TaskPriority.NORMAL -> R.color.normalPriority
+            TaskPriority.BAJA -> R.color.lowPriority
+        }
+
 }

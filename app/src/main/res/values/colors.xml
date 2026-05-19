@@ -10,4 +10,7 @@
     <color name="baseColor">#467ED3</color>
     <color name="itemCompleted">#6E6E6E</color>
     <color name="itemDefault">#60EDE6</color>
+    <color name="highPriority">#FA3434</color>
+    <color name="normalPriority">#F8CF54</color>
+    <color name="lowPriority">#80F45F</color>
 </resources>

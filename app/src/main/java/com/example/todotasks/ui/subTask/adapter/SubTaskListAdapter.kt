@@ -5,15 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.example.todotasks.R
 import com.example.todotasks.domain.model.SubTask
+import com.example.todotasks.ui.subTask.SubtaskItemCallbacks
 import com.example.todotasks.ui.task.adapter.TaskDiffCallback
 import com.example.todotasks.ui.task.adapter.TaskViewHolder
 import com.example.todotasks.ui.task.model.TaskUI
 
 class SubTaskListAdapter(
-    var lista: List<SubTask> = mutableListOf(),
-    private val updateSubTaskCompleted: (Long, Boolean) -> Unit,
-    private val updateSubTaskName: (Long, String) -> Unit,
-    private val deleteSubtask: (Long, String) -> Unit
+    private val callbacks: SubtaskItemCallbacks
 ) : ListAdapter<SubTask, SubTaskViewHolder>(SubTaskDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SubTaskViewHolder {
@@ -22,6 +20,6 @@ class SubTaskListAdapter(
     }
 
     override fun onBindViewHolder(holder: SubTaskViewHolder, position: Int) {
-        holder.render(getItem(position), updateSubTaskCompleted, updateSubTaskName, deleteSubtask)
+        holder.render(getItem(position), callbacks)
     }
 }

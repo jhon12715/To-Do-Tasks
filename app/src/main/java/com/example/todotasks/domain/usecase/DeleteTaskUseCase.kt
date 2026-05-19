@@ -1,11 +1,14 @@
 package com.example.todotasks.domain.usecase
 
+import com.example.todotasks.domain.model.Task
+import com.example.todotasks.domain.notification.TaskNotificationAlarmManager
 import com.example.todotasks.domain.repository.TaskRepository
 import javax.inject.Inject
 
-class DeleteTaskUseCase @Inject constructor(private val repository: TaskRepository){
+class DeleteTaskUseCase @Inject constructor(private val repository: TaskRepository, private val scheduler: TaskNotificationAlarmManager){
 
-    suspend operator fun invoke(id: Long){
-        repository.deleteTask(id)
+    suspend operator fun invoke(task: Task){
+        repository.deleteTask(task.id)
+        scheduler.cancel(task)
     }
 }

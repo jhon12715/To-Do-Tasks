@@ -2,14 +2,14 @@ package com.example.todotasks.data.repository
 
 import com.example.todotasks.data.database.dao.SubTaskDao
 import com.example.todotasks.data.database.dao.TaskDao
-import com.example.todotasks.data.mapper.toDomain
 import com.example.todotasks.data.mapper.toEntity
+import com.example.todotasks.domain.model.TaskFilter
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.Task
+import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.domain.repository.TaskRepository
 import com.example.todotasks.ui.task.model.TaskUI
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
@@ -17,12 +17,11 @@ class TaskRepositoryImpl @Inject constructor(
 ) : TaskRepository {
 
     //TaskDao
-    override fun getTasks(): Flow<List<TaskUI>> =
-        taskDao.getTasks()
+    override fun getTasks(): Flow<List<TaskUI>> = taskDao.getAllTasks()
 
-    override suspend fun insertTask(task: Task): Long {
-        val entity = task.toEntity()
-        return taskDao.insertTask(entity)
+    override suspend fun insertTask(task: Task): Task {
+        val id = taskDao.insertTask(task.toEntity())
+        return task.copy(id = id)
     }
 
     override suspend fun deleteTask(id: Long) {
@@ -30,18 +29,19 @@ class TaskRepositoryImpl @Inject constructor(
     }
 
     override suspend fun updateTask(task: Task) {
-        val entity = task.toEntity()
-        taskDao.updateTask(entity)
+
+        taskDao.updateTask(task.id, task.task, task.priority, task.date)
     }
 
     override suspend fun updateCompletedTask(id: Long, completed: Boolean) {
         taskDao.updateCompletedTask(id, completed)
     }
 
-    //SubTaskDao
+//SubTaskDao
 
-    override fun getSubTasks(idTask: Long): Flow<List<SubTask>> =
-        subTaskDao.getSubTasks(idTask)
+    override fun getAllSubTasks(idTask: Long): Flow<List<SubTask>> =
+        subTaskDao.getAllSubTasks(idTask)
+
 
     override suspend fun insertSubTask(subTask: SubTask) {
         val entity = subTask.toEntity()
@@ -53,8 +53,8 @@ class TaskRepositoryImpl @Inject constructor(
         subTaskDao.deleteSubTask(id)
     }
 
-    override suspend fun updateTitleSubTask(id: Long, title: String) {
-        subTaskDao.updateTitleSubTask(id, title)
+    override suspend fun updateSubTask(id: Long, title: String, priority: TaskPriority) {
+        subTaskDao.updateSubTask(id, title, priority)
     }
 
     override suspend fun updateCompletedSubTask(id: Long, completed: Boolean) {

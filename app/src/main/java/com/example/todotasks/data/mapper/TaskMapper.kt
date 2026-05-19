@@ -9,6 +9,8 @@ import com.example.todotasks.domain.model.Task
 fun TaskEntity.toDomain() = Task(
     id = id,
     task = task,
+    priority = priority,
+    date = date
 )
 
 fun List<TaskEntity>.toDomain(): List<Task> =
@@ -17,7 +19,9 @@ fun List<TaskEntity>.toDomain(): List<Task> =
 fun Task.toEntity() = TaskEntity(
     id = id,
     task = task,
-    isCompleted = isCompleted
+    isCompleted = isCompleted,
+    priority = priority,
+    date = date
 )
 
 //SubTask
@@ -25,12 +29,14 @@ fun SubTaskEntity.toDomain() = SubTask(
     id = id,
     idTask = idTask,
     title = title,
-    completed = completed
+    completed = completed,
+    priority = priority
 )
 
 fun SubTask.toEntity() = SubTaskEntity(
     id = id,
     idTask = idTask,
     title = title,
-    completed = completed
+    completed = completed,
+    priority = priority
 )
