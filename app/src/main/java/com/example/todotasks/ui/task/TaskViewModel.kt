@@ -13,6 +13,7 @@ import com.example.todotasks.domain.usecase.UpdateTaskCompletedUseCase
 import com.example.todotasks.domain.usecase.UpdateTaskUseCase
 import com.example.todotasks.ui.task.model.TaskUI
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -90,10 +91,10 @@ class TaskViewModel @Inject constructor(
 
     }
 
-    fun deleteTask(task: Task) {
-        viewModelScope.launch {
+    fun deleteTask(id: Long) {
+        viewModelScope.launch(Dispatchers.IO) {
             _taskState.emit(UiState.Loading)
-            deleteTaskUseCase(task)
+            deleteTaskUseCase(id)
             _taskState.emit(UiState.Success("La tarea se ha borrado correctamente"))
         }
 

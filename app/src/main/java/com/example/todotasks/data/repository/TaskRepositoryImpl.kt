@@ -18,6 +18,7 @@ class TaskRepositoryImpl @Inject constructor(
 
     //TaskDao
     override fun getTasks(): Flow<List<TaskUI>> = taskDao.getAllTasks()
+    override fun getTask(id: Long): Task = taskDao.getTask(id)
 
     override suspend fun insertTask(task: Task): Task {
         val id = taskDao.insertTask(task.toEntity())

@@ -20,4 +20,13 @@ class TaskListAdapter(
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
         holder.render(getItem(position), callbacks)
     }
+
+    override fun getItemId(position: Int): Long {
+        return super.getItem(position).id
+    }
+
+    init {
+        setHasStableIds(true)
+    }
+
 }

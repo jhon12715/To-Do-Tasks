@@ -11,6 +11,7 @@ interface TaskRepository {
 
     //TaskDao
     fun getTasks(): Flow<List<TaskUI>>
+    fun getTask(id: Long): Task
     suspend fun insertTask(task: Task): Task
     suspend fun deleteTask(id: Long)
     suspend fun updateTask(task: Task)

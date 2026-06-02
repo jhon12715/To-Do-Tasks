@@ -7,8 +7,9 @@ import javax.inject.Inject
 
 class DeleteTaskUseCase @Inject constructor(private val repository: TaskRepository, private val scheduler: TaskNotificationAlarmManager){
 
-    suspend operator fun invoke(task: Task){
-        repository.deleteTask(task.id)
+    suspend operator fun invoke(id: Long){
+        val task = repository.getTask(id)
         scheduler.cancel(task)
+        repository.deleteTask(id)
     }
 }

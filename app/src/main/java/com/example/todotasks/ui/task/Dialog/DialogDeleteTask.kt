@@ -36,7 +36,7 @@ class DialogDeleteTask(
     private fun setListeners() {
         binding.btnCancel.setOnClickListener { dismiss() }
         binding.btnAccept.setOnClickListener {
-            viewModel.deleteTask(task)
+             //viewModel.deleteTask(task)
             dismiss()
         }
     }

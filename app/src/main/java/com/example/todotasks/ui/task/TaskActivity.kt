@@ -173,11 +173,15 @@ class TaskActivity : AppCompatActivity() {
             viewHolder: RecyclerView.ViewHolder,
             target: RecyclerView.ViewHolder
         ): Boolean {
+            println("1111")
             return false // No necesitamos drag & drop
         }
 
         override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
             val position = viewHolder.adapterPosition
+            println("2222")
+            val id = viewHolder.itemId
+            tasksViewModel.deleteTask(id)
             // Llama a tu adaptador para eliminar el item
             // adapter.notifyItemRemoved(position)
         }
@@ -191,6 +195,7 @@ class TaskActivity : AppCompatActivity() {
             actionState: Int,
             isCurrentlyActive: Boolean
         ) {
+            println("3333")
             // Aplica la animación nativa de Material Design al deslizar
             super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
         }

@@ -16,6 +16,9 @@ interface TaskDao {
     @Query("SELECT t.id, t.task, (SELECT COUNT(*) FROM subtask s WHERE s.idTask = t.id AND s.completed = 1) as completedSubtask, (SELECT COUNT(*) FROM subtask s WHERE s.idTask = t.id) as totalSubTask, isCompleted, priority, date FROM task t")
     fun getAllTasks(): Flow<List<TaskUI>>
 
+    @Query("SELECT * FROM task WHERE id = :id")
+    fun getTask(id: Long): Task
+
     @Insert
     suspend fun insertTask(task: TaskEntity): Long
 
