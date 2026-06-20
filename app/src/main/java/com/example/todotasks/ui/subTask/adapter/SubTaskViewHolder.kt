@@ -25,14 +25,14 @@ class SubTaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         tvDate.visibility = View.GONE
 
         setupCheckbox(item, callbacks.updateSubTaskCompleted)
-        setupClicks(item, callbacks.updateSubTaskName, callbacks.deleteSubtask)
+        setupClicks(item, callbacks.editSubTaskForm, callbacks.deleteSubtask)
         applyState(item)
 
     }
 
-    private fun setupClicks(item: SubTask, updateSubTaskName: (Long, String, TaskPriority) -> Unit,
+    private fun setupClicks(item: SubTask, editSubTaskForm: (SubTask) -> Unit,
                             deleteSubtask: (Long, String) -> Unit) {
-        binding.cvTaskItem.setOnClickListener { updateSubTaskName(item.id, item.title, item.priority) }
+        binding.cvTaskItem.setOnClickListener { editSubTaskForm(item) }
         binding.cvTaskItem.setOnLongClickListener {
             deleteSubtask(item.id, item.title)
             true

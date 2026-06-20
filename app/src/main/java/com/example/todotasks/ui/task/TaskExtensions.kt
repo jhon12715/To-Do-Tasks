@@ -2,11 +2,20 @@ package com.example.todotasks.ui.task
 
 import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.model.TaskFilter
-import com.example.todotasks.ui.task.model.TaskUI
+import com.example.todotasks.ui.model.TaskUI
 import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
-fun List<TaskUI>.applyFilterAndSort(filter: TaskFilter): List<TaskUI> {
+fun List<TaskUI>.filterTaskByCategory(category: Long): List<TaskUI> {
+
+    return if (category == -1L) {
+        this
+    } else {
+        filter { task -> (task.categoryId ?: -1L) == category }
+    }
+}
+
+fun List<TaskUI>.applyTaskFilterAndSort(filter: TaskFilter): List<TaskUI> {
 
     val today = LocalDate.now()
 
@@ -29,7 +38,7 @@ fun List<TaskUI>.applyFilterAndSort(filter: TaskFilter): List<TaskUI> {
                 ChronoUnit.DAYS.between(today, task.date)
         }
     }
-    
+
     return when (filter) {
 
         TaskFilter.ALL ->

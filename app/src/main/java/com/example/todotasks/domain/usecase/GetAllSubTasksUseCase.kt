@@ -9,5 +9,12 @@ import javax.inject.Inject
 
 class GetAllSubTasksUseCase @Inject constructor(private val repository: TaskRepository) {
 
-    operator fun invoke(idTask: Long): Flow<List<SubTask>> = repository.getAllSubTasks(idTask)
+    operator fun invoke(taskId: Long): Flow<List<SubTask>> {
+
+        println("idParent: $taskId")
+
+        return repository.getAllSubTasks(taskId)
+    }
+
+
 }

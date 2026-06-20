@@ -1,16 +1,28 @@
 package com.example.todotasks.data.mapper
 
+import com.example.todotasks.data.database.entities.CategoryEntity
 import com.example.todotasks.data.database.entities.SubTaskEntity
 import com.example.todotasks.data.database.entities.TaskEntity
+import com.example.todotasks.data.projection.TaskWithStatsProjection
+import com.example.todotasks.domain.model.Category
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.Task
+import com.example.todotasks.domain.model.TaskListItem
 
 //Task
+fun TaskWithStatsProjection.toDomain() = TaskListItem(
+    task = task.toDomain(),
+    completedSubtask = completedSubtask,
+    totalSubTask = totalSubTask
+)
+
 fun TaskEntity.toDomain() = Task(
     id = id,
     task = task,
     priority = priority,
-    date = date
+    isCompleted = isCompleted,
+    date = date,
+    categoryId = category
 )
 
 fun List<TaskEntity>.toDomain(): List<Task> =
@@ -21,7 +33,8 @@ fun Task.toEntity() = TaskEntity(
     task = task,
     isCompleted = isCompleted,
     priority = priority,
-    date = date
+    date = date,
+    category = categoryId
 )
 
 //SubTask
@@ -39,4 +52,16 @@ fun SubTask.toEntity() = SubTaskEntity(
     title = title,
     completed = completed,
     priority = priority
+)
+
+//Category
+
+fun CategoryEntity.toDomain() = Category(
+    id = id,
+    name = name
+)
+
+fun Category.toEntity() = CategoryEntity(
+    id = id,
+    name = name
 )

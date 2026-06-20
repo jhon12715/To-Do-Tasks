@@ -1,37 +1,45 @@
 package com.example.todotasks.data.repository
 
+import android.app.TaskInfo
+import com.example.todotasks.data.database.dao.CategoryDao
 import com.example.todotasks.data.database.dao.SubTaskDao
 import com.example.todotasks.data.database.dao.TaskDao
+import com.example.todotasks.data.mapper.toDomain
 import com.example.todotasks.data.mapper.toEntity
-import com.example.todotasks.domain.model.TaskFilter
+import com.example.todotasks.domain.model.Category
+import com.example.todotasks.domain.model.ParentTaskInfo
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.Task
+import com.example.todotasks.domain.model.TaskListItem
 import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.domain.repository.TaskRepository
-import com.example.todotasks.ui.task.model.TaskUI
+import com.example.todotasks.ui.model.TaskUI
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
-    private val taskDao: TaskDao, private val subTaskDao: SubTaskDao
+    private val taskDao: TaskDao,
+    private val subTaskDao: SubTaskDao,
+    private val categoryDao: CategoryDao
 ) : TaskRepository {
 
     //TaskDao
-    override fun getTasks(): Flow<List<TaskUI>> = taskDao.getAllTasks()
-    override fun getTask(id: Long): Task = taskDao.getTask(id)
+    override fun getTasks(): Flow<List<TaskListItem>> = taskDao.getAllTasks()
+        .map { list ->
+        list.map { item -> item.toDomain() }
+    }
 
-    override suspend fun insertTask(task: Task): Task {
-        val id = taskDao.insertTask(task.toEntity())
-        return task.copy(id = id)
+    override suspend fun getTask(id: Long): Task = taskDao.getTask(id)
+
+    override suspend fun getParentTaskInfo(id: Long): ParentTaskInfo = taskDao.getParentTaskInfo(id)
+
+    override suspend fun upsertTask(task: Task): Long {
+        return taskDao.upsertTask(task.toEntity())
     }
 
     override suspend fun deleteTask(id: Long) {
         taskDao.deleteTask(id)
-    }
-
-    override suspend fun updateTask(task: Task) {
-
-        taskDao.updateTask(task.id, task.task, task.priority, task.date)
     }
 
     override suspend fun updateCompletedTask(id: Long, completed: Boolean) {
@@ -44,9 +52,9 @@ class TaskRepositoryImpl @Inject constructor(
         subTaskDao.getAllSubTasks(idTask)
 
 
-    override suspend fun insertSubTask(subTask: SubTask) {
+    override suspend fun upsertSubTask(subTask: SubTask) {
         val entity = subTask.toEntity()
-        subTaskDao.insertSubTask(entity)
+        subTaskDao.upsertSubTask(entity)
     }
 
 
@@ -54,12 +62,15 @@ class TaskRepositoryImpl @Inject constructor(
         subTaskDao.deleteSubTask(id)
     }
 
-    override suspend fun updateSubTask(id: Long, title: String, priority: TaskPriority) {
-        subTaskDao.updateSubTask(id, title, priority)
-    }
-
     override suspend fun updateCompletedSubTask(id: Long, completed: Boolean) {
         subTaskDao.updateCompletedSubTask(id, completed)
+    }
+
+//CategoriesDao
+
+    override fun getAllCategories(): Flow<List<Category>> = categoryDao.getAllCategories()
+    override suspend fun insertCategory(category: Category) {
+        categoryDao.insertCategory(category.toEntity())
     }
 
 }

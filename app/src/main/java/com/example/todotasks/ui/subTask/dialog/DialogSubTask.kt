@@ -4,34 +4,36 @@ import android.R
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
-import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.todotasks.databinding.DialogTasksBinding
+import com.example.todotasks.databinding.DialogFormTaskBinding
 import com.example.todotasks.domain.model.TaskPriority
+import com.example.todotasks.ui.core.ResultEvent
+import com.example.todotasks.ui.subTask.SubTaskUiEvent
 import com.example.todotasks.ui.subTask.SubTaskViewModel
-import com.example.todotasks.ui.task.UiState
-import kotlinx.coroutines.flow.collect
+import com.example.todotasks.ui.task.TaskUiEvent
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
-class DialogSubTask(
-    private val idSubTask: Long = 0,
-    private val idTask: Long = 0,
-    private val subTaskName: String = "",
-    private val priority: TaskPriority = TaskPriority.NORMAL
-) :
+class DialogSubTask() :
     DialogFragment() {
 
-    private lateinit var binding: DialogTasksBinding
+    private var _binding: DialogFormTaskBinding? = null
+    private val binding get() = _binding!!
     private val viewModel: SubTaskViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogTasksBinding.inflate(layoutInflater)
+        _binding = DialogFormTaskBinding.inflate(layoutInflater)
 
         val builder = AlertDialog.Builder(requireContext())
         builder.setView(binding.root)
@@ -45,21 +47,29 @@ class DialogSubTask(
     }
 
     private fun startUI() {
-        if (idSubTask == 0L) {
+        val subTaskForm = viewModel.subTaskFormState.value
+        if (subTaskForm.subTaskId == 0L) {
             binding.tvTittle.text = "Añadir Subtarea"
         } else {
-            viewModel.updateSubtaskPriority(priority)
+            viewModel.onEvent(SubTaskUiEvent.ChangeSubTaskPriorityForm(subTaskForm.priorityForm))
             binding.tvTittle.text = "Editar Subtarea"
-            binding.etTask.setText(subTaskName)
+            binding.etTask.setText(subTaskForm.subTasknameForm)
         }
+
+        binding.tvDateTittle.visibility = View.GONE
+        binding.tvDate.visibility = View.GONE
+        binding.ivDate.visibility = View.GONE
+        binding.tvTaskCategory.visibility = View.GONE
+        binding.tilCategory.visibility = View.GONE
+
     }
 
     private fun setFlows() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.subTaskState.collect { state ->
-                    when (state) {
-                        is UiState.Success -> {
+                viewModel.subTaskEventResult.collect { eventResult ->
+                    when (eventResult) {
+                        is ResultEvent.Success -> {
                             dismiss()
                         }
 
@@ -68,52 +78,99 @@ class DialogSubTask(
                 }
             }
         }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.subTaskFormState.map { it.isValid }
+                    .debounce { 50 }
+                    .distinctUntilChanged()
+                    .collect { isValid ->
+
+                        binding.btnFinish.isClickable = isValid
+
+
+                        if (isValid) {
+
+                            binding.btnFinish.text = "Valido"
+                            binding.btnFinish.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    requireContext(),
+                                    com.example.todotasks.R.color.formValid
+                                )
+                            )
+
+                        } else {
+
+                            binding.btnFinish.text = "No Valido"
+                            binding.btnFinish.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    requireContext(),
+                                    com.example.todotasks.R.color.formNotValid
+                                )
+                            )
+                        }
+
+                    }
+            }
+        }
+
+
     }
 
     private fun setListeners() {
         binding.btnFinish.setOnClickListener {
-            val newSubTaskName = binding.etTask.text.toString()
-            val newPriority = viewModel.priority.value
+            viewModel.onEvent(SubTaskUiEvent.UpsertSubTask)
+        }
 
-                if (idSubTask == 0L) {
-                    viewModel.insertSubTask(idTask, newSubTaskName, priority)
+        binding.etTask.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable) {
+                viewModel.onEvent(
+                    SubTaskUiEvent.ChangeSubTaskNameForm(s.toString())
+                )
+            }
 
-                } else {
-                    viewModel.updateSubTask(idSubTask, newSubTaskName, subTaskName, newPriority, priority)
-                }
+            override fun beforeTextChanged(
+                s: CharSequence, start: Int,
+                count: Int, after: Int
+            ) {
+            }
+
+            override fun onTextChanged(
+                s: CharSequence, start: Int,
+                before: Int, count: Int
+            ) {
+            }
+
+        }
+
+        )
+
+    }
+
+    private fun initSpinner() {
+
+        val priorities = TaskPriority.values()
+
+        println("priorities: $priorities")
+
+        val arrayAdapter =
+            ArrayAdapter(requireContext(), R.layout.simple_spinner_dropdown_item, priorities)
+
+        binding.autoCompletePriorityTasktv.apply {
+            setAdapter(arrayAdapter)
+            setOnItemClickListener { _, _, position, _ ->
+                viewModel.onEvent(SubTaskUiEvent.ChangeSubTaskPriorityForm(priorities[position]))
+            }
+            val priorityName = viewModel.subTaskFormState.value.priorityForm.name
+            setText(priorityName, false)
 
         }
     }
 
-    private fun initSpinner() {
-        val spinner = binding.spinnerPriorityTask
-        val priority = TaskPriority.values()
-
-        val adapter = ArrayAdapter(
-            requireContext(),
-            R.layout.simple_spinner_item,
-            priority
-        ) // o displayName si lo tienes
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        spinner.adapter = adapter
-
-        val currentFilter = viewModel.priority.value
-        spinner.setSelection(priority.indexOf(currentFilter))
-
-        spinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-
-                val selectedPriority = priority[position]          // enum real
-                viewModel.updateSubtaskPriority(selectedPriority)         // actualizar StateFlow
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>) {}
-        }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        viewModel.onEvent(SubTaskUiEvent.CloseForm)
+        _binding = null
     }
 
 }

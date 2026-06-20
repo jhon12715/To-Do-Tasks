@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
 import com.example.todotasks.domain.model.Task
 import com.example.todotasks.ui.task.TaskItemCallbacks
-import com.example.todotasks.ui.task.model.TaskUI
+import com.example.todotasks.ui.model.TaskUI
 
 class TaskAdapter(
     private val lista: List<TaskUI> = listOf(),

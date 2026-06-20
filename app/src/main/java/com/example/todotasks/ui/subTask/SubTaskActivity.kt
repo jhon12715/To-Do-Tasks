@@ -11,16 +11,15 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.todotasks.R
 import com.example.todotasks.databinding.ActivitySubtaskBinding
-import com.example.todotasks.databinding.ActivityTaskBinding
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.TaskFilter
 import com.example.todotasks.domain.model.TaskPriority
-import com.example.todotasks.ui.subTask.adapter.SubTaskAdapter
 import com.example.todotasks.ui.subTask.adapter.SubTaskListAdapter
 import com.example.todotasks.ui.subTask.dialog.DialogDeleteSubtask
 import com.example.todotasks.ui.subTask.dialog.DialogSubTask
-import com.example.todotasks.ui.task.UiState
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -40,7 +39,7 @@ class SubTaskActivity : AppCompatActivity() {
     private val callbacks: SubtaskItemCallbacks by lazy {
         SubtaskItemCallbacks(
             updateSubTaskCompleted = { id, isCompleted -> updateSubTaskCompleted(id, isCompleted) },
-            updateSubTaskName = { id, name, priority -> updateSubtaskDialog(id, name, priority) },
+            editSubTaskForm = { subTask -> editSubtaskForm(subTask) },
             deleteSubtask = { id, name -> deleteSubtaskDialog(id, name) }
         )
     }
@@ -52,9 +51,12 @@ class SubTaskActivity : AppCompatActivity() {
 
         val taskName: String = intent.getStringExtra(EXTRA_TASK_NAME) ?: ""
         val idTask: Long = intent.getLongExtra(EXTRA_TASK_ID, -1L)
-        viewModel.setTaskId(idTask)
+
+
+
+        viewModel.init(idTask, taskName)
         startUI(taskName)
-        setListeners(idTask)
+        setListeners()
         setFlows()
         setAdapter()
     }
@@ -63,9 +65,9 @@ class SubTaskActivity : AppCompatActivity() {
         binding.tvTaskName.text = taskName
     }
 
-    private fun setListeners(idTask: Long) {
+    private fun setListeners() {
         binding.fabTask.setOnClickListener {
-            newSubTaskDialog(idTask)
+            newSubtaskForm()
         }
 
         binding.rgTaskFilter.setOnCheckedChangeListener { _, checkedId ->
@@ -75,16 +77,20 @@ class SubTaskActivity : AppCompatActivity() {
                 R.id.rbNotCompletedTasks -> TaskFilter.NOT_COMPLETED
                 else -> TaskFilter.ALL
             }
-            viewModel.setTaskSubFilter  (filter)
+            viewModel.onEvent(SubTaskUiEvent.UpdateFilterSubTaskCompleted(filter))
         }
     }
 
-    private fun newSubTaskDialog(idTask: Long) {
-        DialogSubTask(idTask = idTask).show(supportFragmentManager, "")
+    private fun editSubtaskForm(subTask: SubTask){
+        viewModel.onEvent(SubTaskUiEvent.EditSubTaskForm(subTask))
     }
 
-    private fun updateSubtaskDialog(idSubTask: Long, text: String, priority: TaskPriority) {
-        DialogSubTask(idSubTask = idSubTask, subTaskName = text, priority = priority).show(supportFragmentManager, "")
+    private fun newSubtaskForm(){
+        viewModel.onEvent(SubTaskUiEvent.CreateNewSubTaskForm)
+    }
+
+    private fun openSubTaskDialog() {
+        DialogSubTask().show(supportFragmentManager, "")
     }
 
     private fun deleteSubtaskDialog(idTask: Long, text: String) {
@@ -95,29 +101,53 @@ class SubTaskActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.listaSubTasks.collect { subTasks ->
-                    rvAdapter.submitList(subTasks.list)
-                    binding.tvSubTasksCompleted.text = "${subTasks.completed}/${subTasks.total}"
+                viewModel.subTaskUi
+                    .collect { subTaskUi ->
+                        binding.tvSubTasksCompleted.text = subTaskUi.textSubTasksCompleted
+                    }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.subTaskUiState.map { it.listSubtasks }
+                    .distinctUntilChanged()
+                    .collect { subTaskList ->
+                        rvAdapter.submitList(subTaskList)
+                    }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.subTaskUiState.map { it.isFormVisible }
+                    .distinctUntilChanged()
+                    .collect { isFormVisible ->
+                        if (isFormVisible){
+                            openSubTaskDialog()
+                        }
+                    /*when (subTaskState) {
+                        ResultEvent.Loading -> binding.pbLoading.visibility = View.VISIBLE
+                        is com.example.todotasks.ui.task.UiState.Result.Success -> {
+                            showToast(subTaskState.message)
+                            binding.pbLoading.visibility = View.GONE
+                        }
+
+                        is com.example.todotasks.ui.task.UiState.Result.Error -> {
+                            showToast(subTaskState.message)
+                            binding.pbLoading.visibility = View.GONE
+                        }
+                    }*/
                 }
             }
         }
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.subTaskState.collect { subTaskState ->
-                    when (subTaskState) {
-                        UiState.Loading -> binding.pbLoading.visibility = View.VISIBLE
-                        is UiState.Success -> {
-                            showToast(subTaskState.message)
-                            binding.pbLoading.visibility = View.GONE
-                        }
-
-                        is UiState.Error -> {
-                            showToast(subTaskState.message)
-                            binding.pbLoading.visibility = View.GONE
-                        }
+                viewModel.subTaskEventResult
+                    .collect { eventResult ->
+                        showToast(eventResult.message)
                     }
-                }
             }
         }
 
@@ -131,7 +161,7 @@ class SubTaskActivity : AppCompatActivity() {
     }
 
     private fun updateSubTaskCompleted(id: Long, isChecked: Boolean) {
-        viewModel.updateSubTaskCompleted(id, isChecked)
+        viewModel.onEvent(SubTaskUiEvent.UpdateSubTaskCompleted(id, isChecked))
     }
 
     private fun setAdapter() {

@@ -1,28 +1,32 @@
 package com.example.todotasks.domain.repository
 
-import com.example.todotasks.domain.model.TaskFilter
+import android.app.TaskInfo
+import com.example.todotasks.domain.model.Category
+import com.example.todotasks.domain.model.ParentTaskInfo
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.Task
+import com.example.todotasks.domain.model.TaskListItem
 import com.example.todotasks.domain.model.TaskPriority
-import com.example.todotasks.ui.task.model.TaskUI
+import com.example.todotasks.ui.model.TaskUI
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
 
     //TaskDao
-    fun getTasks(): Flow<List<TaskUI>>
-    fun getTask(id: Long): Task
-    suspend fun insertTask(task: Task): Task
+    fun getTasks(): Flow<List<TaskListItem>>
+    suspend fun getTask(id: Long): Task
+    suspend fun getParentTaskInfo(id: Long): ParentTaskInfo
+    suspend fun upsertTask(task: Task): Long
     suspend fun deleteTask(id: Long)
-    suspend fun updateTask(task: Task)
     suspend fun updateCompletedTask(id: Long, completed: Boolean)
 
     //SubTaskDao
     fun getAllSubTasks(idTask: Long): Flow<List<SubTask>>
-    suspend fun insertSubTask(subTask: SubTask)
+    suspend fun upsertSubTask(subTask: SubTask)
     suspend fun deleteSubTask(id: Long)
-    suspend fun updateSubTask(id: Long, title: String, priority: TaskPriority)
     suspend fun updateCompletedSubTask(id: Long, completed: Boolean)
-
+    //CategoriesDao
+    fun getAllCategories(): Flow<List<Category>>
+    suspend fun insertCategory(category: Category)
 
 }

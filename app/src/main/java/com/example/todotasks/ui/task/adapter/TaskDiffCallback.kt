@@ -2,7 +2,7 @@ package com.example.todotasks.ui.task.adapter
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.todotasks.domain.model.Task
-import com.example.todotasks.ui.task.model.TaskUI
+import com.example.todotasks.ui.model.TaskUI
 
 class TaskDiffCallback: DiffUtil.ItemCallback<TaskUI>(){
     override fun areItemsTheSame(oldItem: TaskUI, newItem: TaskUI): Boolean = oldItem.id == newItem.id

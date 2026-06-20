@@ -43,58 +43,48 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/cardView"
+        android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvCompleted">
 
         <RadioButton
             android:id="@+id/rbAll"
-            android:layout_weight="1"
-            android:checked="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="Todas" />
+            android:layout_weight="1"
+            android:checked="true"
+            android:text="Todas"
+            android:textColor="@color/white" />
 
         <RadioButton
             android:id="@+id/rbNotCompletedTasks"
-            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="No completadas" />
+            android:layout_weight="1"
+            android:text="No completadas"
+            android:textColor="@color/white" />
 
         <RadioButton
             android:id="@+id/rbCompletedTasks"
-            android:layout_weight="1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/white"
-            android:text="Completadas" />
+            android:layout_weight="1"
+            android:text="Completadas"
+            android:textColor="@color/white" />
     </RadioGroup>
-
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/fabTask"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:clickable="true"
-        app:layout_constraintStart_toStartOf="@+id/cardView"
-        app:layout_constraintTop_toBottomOf="@+id/cardView"
-        app:srcCompat="@android:drawable/ic_input_add" />
 
     <androidx.cardview.widget.CardView
         android:id="@+id/cardView"
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:layout_margin="8dp"
+        android:layout_marginHorizontal="8dp"
+        android:layout_marginTop="16dp"
         android:background="@color/white"
         app:cardCornerRadius="8dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCompleted">
+        app:layout_constraintTop_toBottomOf="@+id/rgTaskFilter">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvSubTasks"
@@ -116,5 +106,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="gone" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabTask"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:clickable="true"
+        app:layout_constraintStart_toStartOf="@+id/cardView"
+        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        app:srcCompat="@android:drawable/ic_input_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

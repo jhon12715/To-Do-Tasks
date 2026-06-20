@@ -9,7 +9,7 @@ import com.example.todotasks.databinding.ItemTaskBinding
 import com.example.todotasks.domain.model.Task
 import com.example.todotasks.ui.task.TaskItemCallbacks
 import com.example.todotasks.domain.model.TaskPriority
-import com.example.todotasks.ui.task.model.TaskUI
+import com.example.todotasks.ui.model.TaskUI
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
@@ -28,6 +28,7 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         if (item.date != null) {
             setDate(item.date)
+            tvDate.visibility = View.VISIBLE
         } else {
             tvDate.visibility = View.GONE
         }
@@ -79,13 +80,13 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private fun setupClicks(
         item: TaskUI,
-        editTask: (Long, String, TaskPriority, LocalDate?) -> Unit,
+        editTask: (Long, String, TaskPriority, LocalDate?, Long?) -> Unit,
         openSubTaskActivity: (Long, String) -> Unit,
         deleteTask: (Task) -> Unit
     ) = with(binding) {
 
         ivEditTask.setOnClickListener {
-            editTask(item.id, item.task, item.priority, item.date)
+            editTask(item.id, item.task, item.priority, item.date, item.categoryId)
         }
 
         cvTaskItem.setOnClickListener {

@@ -5,7 +5,7 @@ import com.example.todotasks.domain.model.TaskPriority
 import java.time.LocalDate
 
 data class TaskItemCallbacks (
-    val editTask: (Long, String, TaskPriority, LocalDate?) -> Unit,
+    val editTask: (Long, String, TaskPriority, LocalDate?, Long?) -> Unit,
     val openSubTaskActivity: (Long, String) -> Unit,
     val deleteTask: (Task) -> Unit,
     val updateCompletedTask: (Long, Boolean) -> Unit

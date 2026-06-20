@@ -1,19 +1,18 @@
 package com.example.todotasks.ui.subTask
 
-import android.database.sqlite.SQLiteConstraintException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todotasks.domain.model.ParentTaskInfo
 import com.example.todotasks.domain.model.SubTask
-import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.model.TaskFilter
 import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.domain.usecase.DeleteSubtaskUseCase
-import com.example.todotasks.domain.usecase.InsertSubTaskUseCase
+import com.example.todotasks.domain.usecase.UpsertSubTaskUseCase
 import com.example.todotasks.domain.usecase.GetAllSubTasksUseCase
+import com.example.todotasks.domain.usecase.GetParentTaskInfoUseCase
 import com.example.todotasks.domain.usecase.UpdateSubTaskCompletedUseCase
-import com.example.todotasks.domain.usecase.UpdateSubTaskUseCase
-import com.example.todotasks.ui.task.UiState
-import com.example.todotasks.ui.task.model.SubTaskUi
+import com.example.todotasks.ui.core.ResultEvent
+import com.example.todotasks.ui.model.SubTaskUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -25,101 +24,188 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class SubTaskViewModel @Inject constructor(
-    private val getAllSubTasksUseCase: GetAllSubTasksUseCase,
-    private val insertSubTaskUseCase: InsertSubTaskUseCase,
+    getAllSubTasksUseCase: GetAllSubTasksUseCase,
+    private val upsertSubTaskUseCase: UpsertSubTaskUseCase,
     private val updateSubTaskCompletedUseCase: UpdateSubTaskCompletedUseCase,
-    private val deleteSubtaskUseCase: DeleteSubtaskUseCase,
-    private val updateSubTaskUseCase: UpdateSubTaskUseCase
+    private val deleteSubtaskUseCase: DeleteSubtaskUseCase
 ) :
     ViewModel() {
-    private val _taskId = MutableStateFlow<Long?>(null)
-    private val _taskFilter: MutableStateFlow<TaskFilter> =
+
+    private var originalSubtask: SubTask? = null
+
+    private val _subTaskFilter: MutableStateFlow<TaskFilter> =
         MutableStateFlow(TaskFilter.ALL)
 
-    private val allSubTasks: StateFlow<List<SubTask>> = _taskId
-        .filterNotNull()
-        .flatMapLatest { taskId -> getAllSubTasksUseCase(taskId) }
+    private val _parentTaskInfo: MutableStateFlow<ParentTaskInfo> =
+        MutableStateFlow(ParentTaskInfo())
+
+    private val _isFormVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
+
+    //SubTask
+    private val allSubTasks: StateFlow<List<SubTask>> = _parentTaskInfo.filterNotNull()
+        .flatMapLatest { getAllSubTasksUseCase(it.taskId) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
-    val listaSubTasks: StateFlow<SubTaskUi> = combine(
-        allSubTasks, // solo cuando la id existe
-        _taskFilter
-    ) { list, filter ->
-        val filteredList = list.applyFilterAndSort(filter)
-        val total = list.size
-        val completed = list.count { it.completed }
-        SubTaskUi(filteredList, total, completed)
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(5000),
-        SubTaskUi()
+    val subTaskUi: StateFlow<SubTaskUI> = allSubTasks.map { list ->
+        SubTaskUI(
+            list = list,
+            total = list.size,
+            completed = list.count() { it.completed }
+        )
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), SubTaskUI())
+
+
+    //Event Result
+    private val _subTaskEventResult: MutableSharedFlow<ResultEvent> =
+        MutableSharedFlow(replay = 0)
+    val subTaskEventResult: SharedFlow<ResultEvent> = _subTaskEventResult
+
+    // Ui State
+
+    val subTaskUiState: StateFlow<SubTaskUiState> =
+        combine(_subTaskFilter, subTaskUi, _isFormVisible) { filter, subTaskUi, isFormVisible ->
+            SubTaskUiState(
+                title = _parentTaskInfo.value.taskName,
+                filterSelected = filter,
+                listSubtasks = subTaskUi.list.applySubTaskFilterAndSort(filter),
+                subTasksCompleted = subTaskUi.completed,
+                subTaskTotal = subTaskUi.total,
+                isFormVisible = isFormVisible
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            SubTaskUiState()
+        )
+
+    //Form
+    private val _subTaskFormState: MutableStateFlow<SubTaskFormState> = MutableStateFlow(
+        SubTaskFormState()
     )
 
-    private val _subTaskState: MutableSharedFlow<UiState> =
-        MutableSharedFlow(replay = 0)
-    val subTaskState: SharedFlow<UiState> = _subTaskState
+    val subTaskFormState: StateFlow<SubTaskFormState> = _subTaskFormState
 
-    private val _priority: MutableStateFlow<TaskPriority> =
-        MutableStateFlow(TaskPriority.NORMAL)
-    val priority: StateFlow<TaskPriority> = _priority
-
-    fun setTaskId(taskId: Long) {
-        _taskId.value = taskId
+    fun init(taskId: Long, taskName: String) {
+        _parentTaskInfo.update {
+            ParentTaskInfo(taskId, taskName)
+        }
     }
 
-    fun insertSubTask(idTask: Long, newName: String, newPriority: TaskPriority) {
-        viewModelScope.launch {
-            _subTaskState.emit(UiState.Loading)
-            _subTaskState.emit(insertSubTaskUseCase(idTask, newName, newPriority)
+    fun onEvent(event: SubTaskUiEvent) {
+        when (event) {
+            is SubTaskUiEvent.UpdateFilterSubTaskCompleted -> updateFilterSubTaskCompleted(event.filterCompleted)
+            SubTaskUiEvent.CreateNewSubTaskForm -> createNewSubtaskForm()
+            is SubTaskUiEvent.EditSubTaskForm -> editSubTaskForm(event.subTask)
+            is SubTaskUiEvent.UpdateSubTaskCompleted -> updateSubTaskCompleted(
+                event.subTaskId,
+                event.isCompleted
+            )
+
+            is SubTaskUiEvent.DeleteSubTask -> deleteSubtask(event.subTaskId)
+            //Form
+            is SubTaskUiEvent.ChangeSubTaskNameForm -> changeSubTaskNameForm(event.newName)
+            is SubTaskUiEvent.ChangeSubTaskPriorityForm -> changeSubTaskPriorityForm(event.newPriority)
+            SubTaskUiEvent.UpsertSubTask -> upsertSubTask()
+            SubTaskUiEvent.CloseForm -> closeForm()
+        }
+    }
+
+    private fun updateFilterSubTaskCompleted(filterCompleted: TaskFilter) {
+        _subTaskFilter.update { filterCompleted }
+    }
+
+    private fun createNewSubtaskForm() {
+        _subTaskFormState.update {
+            originalSubtask = null
+            SubTaskFormState()
+        }
+
+        _isFormVisible.value = true
+
+    }
+
+    private fun editSubTaskForm(subTask: SubTask) {
+        _subTaskFormState.update {
+            originalSubtask = subTask
+            SubTaskFormState(
+                subTaskId = subTask.id,
+                subTasknameForm = subTask.title,
+                priorityForm = subTask.priority,
+                isValid = true
             )
         }
 
+        _isFormVisible.value = true
+
     }
 
-    fun updateSubTaskCompleted(idSubTask: Long, isChecked: Boolean) {
+    private fun updateSubTaskCompleted(subTaskId: Long, isChecked: Boolean) {
         viewModelScope.launch {
-            updateSubTaskCompletedUseCase(idSubTask, isChecked)
+            updateSubTaskCompletedUseCase(subTaskId, isChecked)
         }
     }
 
-    fun updateSubTask(
-        idSubTask: Long,
-        newName: String,
-        oldName: String,
-        newPriority: TaskPriority,
-        oldPriority: TaskPriority
-    ) {
+    private fun deleteSubtask(id: Long) {
         viewModelScope.launch {
-            _subTaskState.emit(UiState.Loading)
-            _subTaskState.emit(
-                updateSubTaskUseCase(
-                    idSubTask,
-                    newName,
-                    oldName,
-                    newPriority,
-                    oldPriority
-                )
+            _subTaskEventResult.emit(deleteSubtaskUseCase(id))
+        }
+    }
+
+    private fun changeSubTaskNameForm(newName: String) {
+
+        val id = subTaskFormState.value.subTaskId
+        val nameTrimed = newName.trim()
+
+        println("name: $nameTrimed ${nameTrimed.trim().isNotEmpty()}")
+
+        val isValid: Boolean = allSubTasks.value.none {
+            println("it.id: ${it.id} id: $id")
+            it.title == nameTrimed && it.id != id
+        } && nameTrimed.trim().isNotEmpty()
+
+        _subTaskFormState.update {
+            it.copy(subTasknameForm = nameTrimed, isValid = isValid)
+        }
+
+
+    }
+
+    private fun changeSubTaskPriorityForm(newPriority: TaskPriority) {
+        _subTaskFormState.update {
+            it.copy(priorityForm = newPriority)
+        }
+    }
+
+    private fun upsertSubTask() {
+        viewModelScope.launch {
+
+            val name = subTaskFormState.value.subTasknameForm
+            val priority = subTaskFormState.value.priorityForm
+            val taskId = _parentTaskInfo.value.taskId
+
+            val subTask = originalSubtask?.copy(
+                title = name,
+                priority = priority
+            ) ?: SubTask(
+                title = name,
+                priority = priority,
+                idTask = taskId
             )
+
+            _subTaskEventResult.emit(upsertSubTaskUseCase(subTask))
+
         }
+
     }
 
-    fun deleteSubtask(id: Long) {
-        viewModelScope.launch {
-            deleteSubtaskUseCase(id)
-        }
-    }
-
-    fun updateSubtaskPriority(newPriority: TaskPriority) {
-        _priority.value = newPriority
-    }
-
-    fun setTaskSubFilter(newFilter: TaskFilter) {
-        _taskFilter.value = newFilter
+    private fun closeForm() {
+        _isFormVisible.value = false
     }
 
 }

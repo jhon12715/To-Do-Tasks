@@ -1,4 +1,4 @@
-package com.example.todotasks.ui.task.Dialog
+package com.example.todotasks.ui.task.dialog
 
 import android.app.AlertDialog
 import android.app.Dialog
