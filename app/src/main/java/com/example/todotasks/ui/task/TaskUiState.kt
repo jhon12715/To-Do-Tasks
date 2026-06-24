@@ -10,7 +10,6 @@ import com.example.todotasks.ui.model.TypeCategoryUI
  * Created by: Jhon
  */
 data class TaskUiState (
-    val tasks: List<TaskUI> = emptyList(),
     val categories: List<TypeCategoryUI> = emptyList(),
     val selectedFilterCategoryId: Long = -1,
     val selectedFilterCompletedTask: TaskFilter = TaskFilter.ALL,

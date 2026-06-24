@@ -1,12 +1,12 @@
-package com.example.todotasks.ui.task.adapter
+package com.example.todotasks.ui.task.viewPagerAdapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import com.example.todotasks.R
-import com.example.todotasks.domain.model.Task
 import com.example.todotasks.ui.task.TaskItemCallbacks
 import com.example.todotasks.ui.model.TaskUI
+import com.example.todotasks.ui.task.adapter.TaskViewHolder
 
 class TaskListAdapter(
     private val callbacks: TaskItemCallbacks

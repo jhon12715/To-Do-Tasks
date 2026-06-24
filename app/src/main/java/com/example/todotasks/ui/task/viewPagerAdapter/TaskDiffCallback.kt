@@ -1,4 +1,4 @@
-package com.example.todotasks.ui.task.adapter
+package com.example.todotasks.ui.task.viewPagerAdapter
 
 import androidx.recyclerview.widget.DiffUtil
 import com.example.todotasks.domain.model.Task

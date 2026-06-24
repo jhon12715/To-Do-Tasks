@@ -6,9 +6,6 @@ import androidx.recyclerview.widget.ListAdapter
 import com.example.todotasks.R
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.ui.subTask.SubtaskItemCallbacks
-import com.example.todotasks.ui.task.adapter.TaskDiffCallback
-import com.example.todotasks.ui.task.adapter.TaskViewHolder
-import com.example.todotasks.ui.model.TaskUI
 
 class SubTaskListAdapter(
     private val callbacks: SubtaskItemCallbacks

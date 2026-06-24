@@ -31,6 +31,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -46,7 +47,6 @@ class TaskViewModel @Inject constructor(
     getAllCategoriesUseCase: GetAllCategoriesUseCase,
     private val insertCategoryUseCase: InsertCategoryUseCase
 ) : ViewModel() {
-    var start = SystemClock.elapsedRealtime()
     //Result
     private val _resultEvent: MutableSharedFlow<ResultEvent> = MutableSharedFlow(replay = 0)
     val resultEvent: SharedFlow<ResultEvent> = _resultEvent
@@ -67,24 +67,9 @@ class TaskViewModel @Inject constructor(
         initialValue = null
     )
 
-    val taskState: StateFlow<List<TaskUI>> = combine(
-        tasks,
-        _selectedFilterCategoryId,
-        taskFilter
-    ) { tasks, categoryId, filter ->
-        tasks.orEmpty()
-            .map { it.toUi() } // -> toUi() SOLO se ejecuta si cambian las tareas reales
-            .filterTaskByCategory(categoryId)
-            .applyTaskFilterAndSort(filter)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = emptyList()
-    )
-
     //Categories
 
-    private val categories: StateFlow<List<Category>?> = getAllCategoriesUseCase().stateIn(
+    val categories: StateFlow<List<Category>?> = getAllCategoriesUseCase().stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = null
@@ -102,15 +87,12 @@ class TaskViewModel @Inject constructor(
 
     val taskUIState: StateFlow<TaskUiState> =
         combine(
-            taskState,
             categoriesState,
             _selectedFilterCategoryId,
             taskFilter,
             _isLoading
-        ) { tasks, categories, categoryId, filter, isLoading ->
-            println("tiempo ahora 11: ${SystemClock.elapsedRealtime() - start} ms")
+        ) { categories, categoryId, filter, isLoading ->
             TaskUiState(
-                tasks = tasks,
                 categories = categories,
                 selectedFilterCategoryId = categoryId,
                 selectedFilterCompletedTask = filter,
@@ -161,7 +143,7 @@ class TaskViewModel @Inject constructor(
         viewModelScope.launch {
             combine(tasks, categories) { t, c ->
                 t != null && c != null
-            }.first {it}
+            }.first { it }
 
             _isLoading.value = false
         }
@@ -250,7 +232,7 @@ class TaskViewModel @Inject constructor(
         date: LocalDate?,
         categoryId: Long?
     ) {
-        originalTask = taskState.value.first { it.id == id }.toDomain()
+        originalTask = tasks.value!!.first { it.task.id == id }.task
         _taskFormState.update {
             it.copy(
                 id = id,
@@ -284,5 +266,15 @@ class TaskViewModel @Inject constructor(
         }
 
     }
+
+    fun getTasksByCategory(categoryId: Long): Flow<List<TaskUI>> = combine(
+        tasks,
+        taskFilter) { tasks, filter ->
+        tasks.orEmpty()
+            .map { it.toUi() }
+            .filterTaskByCategory(categoryId)
+            .applyTaskFilterAndSort(filter)
+    }
+
 
 }
