@@ -3,12 +3,19 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/fabtnAddCategory"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:clickable="true"
-    app:srcCompat="@drawable/ic_add"
-    app:maxImageSize="24dp"
-    android:padding="0dp"
+    android:layout_width="40dp"
+    android:layout_gravity="center_vertical"
+    android:layout_height="40dp"
     android:layout_marginEnd="8dp"
-    android:layout_gravity="center"
-    app:fabCustomSize="56dp"/>
+    android:layout_marginVertical="4dp"
+    android:backgroundTint="@color/baseColor"
+    android:clickable="true"
+    android:focusable="true"
+    app:fabCustomSize="40dp"
+    app:maxImageSize="20dp"
+    app:srcCompat="@drawable/ic_add"
+
+    app:useCompatPadding="false"
+    app:ensureMinTouchTargetSize="false"
+    />
+    <!-- Las dos últimas líneas son para quitar el espacio invisible reservado para el touch (min 48dp) -->

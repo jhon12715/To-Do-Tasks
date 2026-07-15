@@ -1,7 +1,8 @@
-package com.example.todotasks.ui.task
+package com.example.todotasks.ui.task.task_form
 
 import com.example.todotasks.domain.model.Category
 import com.example.todotasks.domain.model.TaskPriority
+import com.example.todotasks.ui.model.CategoryUI
 import com.example.todotasks.ui.model.TypeCategoryUI
 import java.time.LocalDate
 
@@ -13,11 +14,10 @@ import java.time.LocalDate
 
 data class TaskFormState(
     val id: Long = 0L,
-    val taskName: String = "",
+    val name: String = "",
     val priority: TaskPriority = TaskPriority.NORMAL,
     val date: LocalDate? = null,
     val categoryId:Long? = null,
     val isValid: Boolean = false,
-    val availableCategories: List<Category> = emptyList(),
-    val isFormLoading: Boolean = true
+    val availableCategories: List<CategoryUI> = emptyList()
 )

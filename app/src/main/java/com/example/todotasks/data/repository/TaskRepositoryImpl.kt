@@ -27,8 +27,8 @@ class TaskRepositoryImpl @Inject constructor(
     //TaskDao
     override fun getTasks(): Flow<List<TaskListItem>> = taskDao.getAllTasks()
         .map { list ->
-        list.map { item -> item.toDomain() }
-    }
+            list.map { item -> item.toDomain() }
+        }
 
     override suspend fun getTask(id: Long): Task = taskDao.getTask(id)
 
@@ -45,6 +45,8 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun updateCompletedTask(id: Long, completed: Boolean) {
         taskDao.updateCompletedTask(id, completed)
     }
+
+    override suspend fun taskExists(name: String, id: Long): Boolean = taskDao.taskExists(name, id)
 
 //SubTaskDao
 
@@ -69,8 +71,14 @@ class TaskRepositoryImpl @Inject constructor(
 //CategoriesDao
 
     override fun getAllCategories(): Flow<List<Category>> = categoryDao.getAllCategories()
-    override suspend fun insertCategory(category: Category) {
-        categoryDao.insertCategory(category.toEntity())
+    override suspend fun deleteCategory(category: Category) {
+        categoryDao.deleteCategory(category.toEntity())
     }
+
+    override suspend fun upsertCategory(category: Category) {
+        categoryDao.upsertCategory(category.toEntity())
+    }
+
+    override suspend fun categoryExists(name: String, id: Long): Boolean = categoryDao.categoryExists(name, id)
 
 }

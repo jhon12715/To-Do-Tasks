@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/baseColor">
+    android:clickable="true"
+    android:focusableInTouchMode="true"
+    android:padding="8dp"
+    android:background="@color/white">
 
     <TextView
         android:id="@+id/tvTittle"
@@ -16,42 +20,40 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvTaskName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        android:text="Nombre"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTittle" />
-
     <EditText
         android:id="@+id/etTask"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="144dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginHorizontal="8dp"
+        android:background="@drawable/custom_editext"
         android:ems="10"
+        android:hint="Nombre"
+        android:textSize="14dp"
         android:inputType="text"
-        app:layout_constraintBottom_toBottomOf="@+id/tvTaskName"
-        app:layout_constraintStart_toStartOf="@+id/tvTaskName"
-        app:layout_constraintTop_toTopOf="@+id/tvTaskName" />
+        android:padding="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.079"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvTittle" />
 
     <TextView
         android:id="@+id/tvTaskPriority"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="32dp"
         android:text="Prioridad"
-        app:layout_constraintStart_toStartOf="@+id/tvTaskName"
-        app:layout_constraintTop_toBottomOf="@+id/tvTaskName" />
+        app:layout_constraintStart_toStartOf="@+id/etTask"
+        app:layout_constraintTop_toBottomOf="@+id/etTask" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilPriorityTask"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginHorizontal="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/tvTaskPriority"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvTaskPriority"
         app:layout_constraintTop_toTopOf="@+id/tvTaskPriority">
 
@@ -63,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_weight="1"
-            android:inputType="none"/>
+            android:inputType="none" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -71,13 +73,14 @@
         android:id="@+id/tvDateTittle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="32dp"
         android:text="Fecha"
         app:layout_constraintStart_toStartOf="@+id/tvTaskPriority"
         app:layout_constraintTop_toBottomOf="@+id/tvTaskPriority" />
 
     <ImageButton
         android:id="@+id/ivDate"
+        android:backgroundTint="@color/baseColor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="64dp"
@@ -109,7 +112,7 @@
         android:id="@+id/tvTaskCategory"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="52dp"
+        android:layout_marginTop="32dp"
         android:text="Categoría"
         app:layout_constraintStart_toStartOf="@+id/tvDate"
         app:layout_constraintTop_toBottomOf="@+id/ivDate" />
@@ -117,10 +120,11 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilCategory"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="20dp"
+        android:layout_marginHorizontal="20dp"
         app:layout_constraintBottom_toBottomOf="@+id/tvTaskCategory"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/tvTaskCategory"
         app:layout_constraintTop_toTopOf="@+id/tvTaskCategory">
 
@@ -131,21 +135,20 @@
             android:id="@+id/autoCompleteCategorytv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:inputType="none"/>
+            android:inputType="none" />
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/btnFinish"
 
-        android:backgroundTint="@color/formNotValid"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="168dp"
+        android:layout_marginTop="68dp"
+        android:backgroundTint="@color/formNotValid"
         android:text="Button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvDate" />
+        app:layout_constraintTop_toBottomOf="@+id/tilCategory" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

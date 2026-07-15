@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Upsert
 import com.example.todotasks.data.database.entities.CategoryEntity
 import com.example.todotasks.domain.model.Category
 import kotlinx.coroutines.flow.Flow
@@ -13,9 +14,12 @@ interface CategoryDao{
     @Query("SELECT * FROM category")
     fun getAllCategories(): Flow<List<Category>>
 
-    @Insert
-    suspend fun insertCategory(category: CategoryEntity)
+    @Upsert
+    suspend fun upsertCategory(category: CategoryEntity)
 
     @Delete
     suspend fun deleteCategory(category: CategoryEntity)
+
+    @Query("SELECT COUNT(*) > 0 FROM category WHERE name = :name AND id = :id COLLATE NOCASE")
+    suspend fun categoryExists(name: String, id: Long): Boolean
 }

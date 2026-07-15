@@ -7,14 +7,16 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="baseColor">#467ED3</color>
+    <color name="baseColor">#0091FF</color>
     <color name="itemCompleted">#6E6E6E</color>
+    <color name="grey">#6E6E6E</color>
     <color name="itemDefault">#60EDE6</color>
     <color name="highPriority">#FA3434</color>
     <color name="normalPriority">#F8CF54</color>
     <color name="lowPriority">#80F45F</color>
     <color name="categorySelected">#4BED1C</color>
-    <color name="formValid">#FF6200EE</color>
-    <color name="formNotValid">#406200EE</color>
+    <color name="formValid">#0091FF</color>
+    <color name="formNotValid">#400091FF</color>
     <color name="viewIsLoading">#80000000</color>
+    <color name="btnColor">#AAAADD</color>
 </resources>

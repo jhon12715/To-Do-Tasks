@@ -19,6 +19,7 @@ interface TaskRepository {
     suspend fun upsertTask(task: Task): Long
     suspend fun deleteTask(id: Long)
     suspend fun updateCompletedTask(id: Long, completed: Boolean)
+    suspend fun taskExists(name: String, id: Long): Boolean
 
     //SubTaskDao
     fun getAllSubTasks(idTask: Long): Flow<List<SubTask>>
@@ -27,6 +28,8 @@ interface TaskRepository {
     suspend fun updateCompletedSubTask(id: Long, completed: Boolean)
     //CategoriesDao
     fun getAllCategories(): Flow<List<Category>>
-    suspend fun insertCategory(category: Category)
+    suspend fun deleteCategory(category: Category)
+    suspend fun upsertCategory(category: Category)
+    suspend fun categoryExists(name: String, id: Long): Boolean
 
 }

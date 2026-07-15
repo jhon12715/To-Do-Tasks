@@ -1,4 +1,4 @@
-package com.example.todotasks.ui.task.viewPagerAdapter
+package com.example.todotasks.ui.task.list
 
 import android.content.Intent
 import android.graphics.Canvas
@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -17,30 +16,28 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.databinding.ItemPageTaskBinding
 import com.example.todotasks.domain.model.Task
-import com.example.todotasks.domain.model.TaskPriority
+import com.example.todotasks.ui.model.TaskUI
 import com.example.todotasks.ui.subTask.SubTaskActivity
 import com.example.todotasks.ui.task.TaskItemCallbacks
-import com.example.todotasks.ui.task.TaskUiEvent
-import com.example.todotasks.ui.task.TaskViewModel
 import com.example.todotasks.ui.task.dialog.DialogDeleteTask
-import com.example.todotasks.ui.task.dialog.DialogTask
+import com.example.todotasks.ui.task.task_form.DialogTaskForm
+import com.example.todotasks.ui.task.list.adapter.TaskListAdapter
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 
 /**
  * Project: To Do Tasks
  * Created by: Jhon
  */
 
-class TasksFragment() : Fragment() {
+class TaskFragment() : Fragment() {
 
     companion object {
-        const val COLLECTION_POSITION = "COLLECTION_POSITION"
+        const val COLLECTION_CATEGORY_ID = "COLLECTION_CATEGORY_ID"
 
-        fun newInstance(position: Int): TasksFragment {
-            return TasksFragment().apply {
+        fun newInstance(categoryId: Long): TaskFragment {
+            return TaskFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(COLLECTION_POSITION, position)
+                    putLong(COLLECTION_CATEGORY_ID, categoryId)
                 }
             }
         }
@@ -48,20 +45,15 @@ class TasksFragment() : Fragment() {
 
     private var _binding: ItemPageTaskBinding? = null
     private val binding get() = _binding!!
-    private val viewModel: TaskViewModel by activityViewModels()
+    private val viewModel: TaskListViewModel by activityViewModels()
     private lateinit var rvAdapter: TaskListAdapter
     private var categoryId: Long = 0
+    private lateinit var dialogTaskForm: DialogTaskForm
 
     private val callbacks: TaskItemCallbacks by lazy {
         TaskItemCallbacks(
-            editTask = { id, name, priority, date, categoryId ->
-                openEditTaskDialog(
-                    id,
-                    name,
-                    priority,
-                    date,
-                    categoryId
-                )
+            editTask = { taskUI ->
+                openEditDialogTaskForm(taskUI)
             },
             openSubTaskActivity = { id, name -> openSubTaskById(id, name) },
             deleteTask = { task -> openDialogDeleteTask(task) },
@@ -78,21 +70,14 @@ class TasksFragment() : Fragment() {
         return binding.root
     }
 
+    val position = 0
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setAdapter()
         setFlows()
 
-        arguments?.takeIf { it.containsKey(COLLECTION_POSITION) }?.run {
-            val position = getInt(COLLECTION_POSITION)
-            println("position: $position size: ${viewModel.categories.value?.size}")
-
-            categoryId = when (position) {
-                0 -> -1
-                else -> viewModel.categories.value?.get(position - 1)?.id ?: -1L
-            }
-
-            //viewModel.onEvent(TaskUiEvent.UpdateCategoryTaskSelected(categoryId))
+        arguments?.takeIf { it.containsKey(COLLECTION_CATEGORY_ID) }?.run {
+            categoryId = getLong(COLLECTION_CATEGORY_ID)
         }
 
     }
@@ -128,24 +113,20 @@ class TasksFragment() : Fragment() {
         }
     }
 
-    private fun openEditTaskDialog(
-        id: Long,
-        name: String,
-        priority: TaskPriority,
-        date: LocalDate?,
-        categoryId: Long?
-    ) {
-        viewModel.onEvent(
-            TaskUiEvent.OpenEditTaskDialog(id, name, priority, date, categoryId)
-        )
-        DialogTask().show(parentFragmentManager, "")
+    private fun openEditDialogTaskForm(taskUI: TaskUI) {
+        dialogTaskForm = DialogTaskForm.newInstance(taskUI)
+        dialogTaskForm.show(parentFragmentManager, "")
     }
 
     private fun openSubTaskById(id: Long, task: String) {
 
         val intent = Intent(requireContext(), SubTaskActivity::class.java)
-        intent.putExtra(SubTaskActivity.EXTRA_TASK_ID, id)
-        intent.putExtra(SubTaskActivity.EXTRA_TASK_NAME, task)
+
+        intent.apply {
+            putExtra(SubTaskActivity.EXTRA_TASK_ID, id)
+            putExtra(SubTaskActivity.EXTRA_TASK_NAME, task)
+        }
+
         this.startActivity(intent)
     }
 
@@ -179,7 +160,7 @@ class TasksFragment() : Fragment() {
             val position = viewHolder.adapterPosition
             println("2222")
             val id = viewHolder.itemId
-            viewModel.onEvent(TaskUiEvent.DeletedTask(id))
+            viewModel.onEvent(TaskUiEvent.DeleteTask(id))
             // Llama a tu adaptador para eliminar el item
             // adapter.notifyItemRemoved(position)
         }

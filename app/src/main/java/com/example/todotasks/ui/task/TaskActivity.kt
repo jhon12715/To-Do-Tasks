@@ -1,9 +1,7 @@
 package com.example.todotasks.ui.task
 
-import android.graphics.Canvas
 import android.os.Build
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -12,25 +10,26 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.MarginPageTransformer
-import androidx.viewpager2.widget.ViewPager2
 import com.example.todotasks.R
 import com.example.todotasks.databinding.ActivityTaskBinding
 import com.example.todotasks.domain.model.TaskFilter
-import com.example.todotasks.ui.task.viewPagerAdapter.TaskListAdapter
-import com.example.todotasks.ui.task.dialog.DialogTask
-import com.example.todotasks.ui.task.adapter.CategoriesListAdapter
-import com.example.todotasks.ui.task.dialog.CategoryTaskSheet
+import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
+import com.example.todotasks.ui.model.CategoryUI
 import com.example.todotasks.ui.model.TaskUI
+import com.example.todotasks.ui.task.task_form.DialogTaskForm
+import com.example.todotasks.ui.task.adapter.CategoriesListAdapter
+import com.example.todotasks.ui.task.category_form.CategoryTaskSheet
 import com.example.todotasks.ui.model.TypeCategoryUI
-import com.example.todotasks.ui.task.viewPagerAdapter.TasksCollectionAdapter
-import com.example.todotasks.ui.task.viewPagerAdapter.TasksFragment
+import com.example.todotasks.ui.task.adapter.PopupCategoryCallbacks
+import com.example.todotasks.ui.task.list.TaskListViewModel
+import com.example.todotasks.ui.task.list.adapter.TasksCollectionAdapter
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import com.example.todotasks.ui.task.list.TaskUiEvent
 
 @AndroidEntryPoint
 class TaskActivity : AppCompatActivity() {
@@ -38,8 +37,17 @@ class TaskActivity : AppCompatActivity() {
     private lateinit var binding: ActivityTaskBinding
     private lateinit var rvCategoriesAdapter: CategoriesListAdapter
     private lateinit var tasksCollectionAdapter: TasksCollectionAdapter
-    private val viewModel: TaskViewModel by viewModels()
+    private val viewModel: TaskListViewModel by viewModels()
     private var toast: Toast? = null
+    private lateinit var categoryForm: CategoryTaskSheet
+    private lateinit var taskForm: DialogTaskForm
+
+    private val popupCategoryCallbacks by lazy {
+        PopupCategoryCallbacks(
+            onEdit = ::editCategory,
+            onDelete = ::deleteCategory
+        )
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,12 +57,14 @@ class TaskActivity : AppCompatActivity() {
         setRvAdapter()
         setRvCategoriesAdapter()
         setFlows()
+
+        binding.clParent.backgroundMoreWhite(0.9f)
     }
 
     private fun setListeners() {
 
         binding.fabTask.setOnClickListener {
-            openNewTaskDialog()
+            openNewDialogTaskForm()
         }
 
         binding.rgTaskFilter.setOnCheckedChangeListener { _, checkedId ->
@@ -82,14 +92,15 @@ class TaskActivity : AppCompatActivity() {
         val offset = resources.getDimensionPixelOffset(R.dimen.off_margin)
 
         binding.vpTasks.apply {
-        // 1. Margen entre páginas
+            // 1. Margen entre páginas
             setPageTransformer(MarginPageTransformer(pageMargin))
 
-        // 2. Permitir que los bordes se dibujen fuera del padding
+            // 2. Permitir que los bordes se dibujen fuera del padding
             clipToPadding = false
             clipChildren = false
+            offscreenPageLimit = 1
 
-        // 3. Agregar padding lateral para mostrar la página anterior/siguiente
+            // 3. Agregar padding lateral para mostrar la página anterior/siguiente
             setPadding(offset, 0, offset, 0)
         }
     }
@@ -100,7 +111,14 @@ class TaskActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.categoriesState.collect { categories ->
                     updateCategories(categories)
-                    updateCountCollectionAdapter(categories.size)
+                    binding.vpTasks.post {
+                        updateCollectionAdapter(categories)
+
+                        if (binding.vpTasks.currentItem >= categories.size) {
+                            binding.vpTasks.setCurrentItem(categories.lastIndex, false)
+                        }
+                        tasksCollectionAdapter.notifyDataSetChanged()
+                    }
                 }
             }
         }
@@ -108,6 +126,7 @@ class TaskActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.taskUIState.map { it.isLoading }
+                    .distinctUntilChanged()
                     .collect { isLoading ->
                         binding.viewIsLoading.isVisible = isLoading
                     }
@@ -127,8 +146,21 @@ class TaskActivity : AppCompatActivity() {
 
     }
 
-    private fun openAddCategoryDialog() {
-        CategoryTaskSheet().show(supportFragmentManager, "")
+    private fun newCategory() {
+        categoryForm = CategoryTaskSheet.newInstance(CategoryUI())
+        openCategoryTaskSheet()
+    }
+
+    private fun editCategory(category: CategoryUI) {
+        categoryForm = CategoryTaskSheet.newInstance(category)
+        openCategoryTaskSheet()
+    }
+    private fun openCategoryTaskSheet() {
+        categoryForm.show(supportFragmentManager, "")
+    }
+
+    private fun deleteCategory(category: CategoryUI) {
+        viewModel.onEvent(TaskUiEvent.DeleteCategory(category))
     }
 
     private fun showToast(message: String) {
@@ -138,28 +170,32 @@ class TaskActivity : AppCompatActivity() {
         toast?.show()
     }
 
-    private fun openNewTaskDialog() {
-        viewModel.onEvent(
-            TaskUiEvent.OpenNewTaskDialog
-        )
-        DialogTask().show(supportFragmentManager, "")
+    private fun openNewDialogTaskForm() {
+        taskForm = DialogTaskForm.newInstance(TaskUI())
+        taskForm.show(supportFragmentManager, "")
     }
 
     private fun updateCategories(categories: List<TypeCategoryUI>) {
         rvCategoriesAdapter.submitList(categories)
     }
 
-    private fun updateCountCollectionAdapter(size: Int) {
-        tasksCollectionAdapter.submitCount(size)
+    private fun updateCollectionAdapter(category: List<TypeCategoryUI>) {
+        val categoriesFiltered = category.filterIsInstance<TypeCategoryUI.CategoryItem>()
+        tasksCollectionAdapter.submitList(categoriesFiltered)
     }
 
-    private fun updateCategorySelected(idCategorySelected: Long) {
+    private fun updateCategorySelected(idCategorySelected: Long, position: Int) {
         viewModel.onEvent(TaskUiEvent.UpdateCategoryTaskSelected(idCategorySelected))
+        binding.vpTasks.currentItem = position
     }
 
     private fun setRvCategoriesAdapter() {
         rvCategoriesAdapter =
-            CategoriesListAdapter(::openAddCategoryDialog, ::updateCategorySelected)
+            CategoriesListAdapter(
+                popupCategoryCallbacks,
+                ::newCategory,
+                ::updateCategorySelected
+            )
         binding.rvCategories.apply {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             adapter = rvCategoriesAdapter

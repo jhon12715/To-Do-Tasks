@@ -2,14 +2,13 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clParent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/baseColor">
+    android:layout_height="match_parent">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/baseColor"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -18,8 +17,8 @@
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/vpTasks"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/fabTask"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rgTaskFilter" />
@@ -28,28 +27,20 @@
             android:id="@+id/fabTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="16dp"
+            android:layout_margin="16dp"
+            android:backgroundTint="@color/baseColor"
             android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@android:drawable/ic_input_add" />
 
-        <TextView
-            android:id="@+id/textView"
-            style="@style/TitleText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="To Do Tasks"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
         <RadioGroup
             android:id="@+id/rgTaskFilter"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:background="@drawable/custom_radio_button"
+            android:checkedButton="@+id/rbAll"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -57,38 +48,52 @@
 
             <RadioButton
                 android:id="@+id/rbAll"
+                style="@style/CustomRadioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:checked="true"
-                android:text="Todas"
-                android:textColor="@color/white" />
+                android:text="Todas" />
 
             <RadioButton
                 android:id="@+id/rbNotCompletedTasks"
+                style="@style/CustomRadioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="No completadas"
-                android:textColor="@color/white" />
+                android:text="No completadas" />
 
             <RadioButton
                 android:id="@+id/rbCompletedTasks"
+                style="@style/CustomRadioButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Completadas"
-                android:textColor="@color/white" />
+                android:text="Completadas" />
         </RadioGroup>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCategories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="16dp"
             app:layout_constraintBottom_toTopOf="@+id/rgTaskFilter"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView" />
+            app:layout_constraintTop_toBottomOf="@+id/iv_more_vert" />
+
+        <ImageView
+            android:id="@+id/iv_more_vert"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_more_vert"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout

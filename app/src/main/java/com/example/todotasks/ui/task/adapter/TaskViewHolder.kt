@@ -80,13 +80,13 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private fun setupClicks(
         item: TaskUI,
-        editTask: (Long, String, TaskPriority, LocalDate?, Long?) -> Unit,
+        editTask: (TaskUI) -> Unit,
         openSubTaskActivity: (Long, String) -> Unit,
         deleteTask: (Task) -> Unit
     ) = with(binding) {
 
         ivEditTask.setOnClickListener {
-            editTask(item.id, item.task, item.priority, item.date, item.categoryId)
+            editTask(item)
         }
 
         cvTaskItem.setOnClickListener {
@@ -123,11 +123,11 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
             setUpCount(item.totalSubTask)
 
-            val color = getPriorityColor(item.priority)
+            //val color = getPriorityColor(item.priority)
 
-            cvTaskItem.setCardBackgroundColor(
-                ContextCompat.getColor(context, color)
-            )
+            //cvTaskItem.setCardBackgroundColor(
+            //ContextCompat.getColor(context, color)
+            //)
         }
     }
 

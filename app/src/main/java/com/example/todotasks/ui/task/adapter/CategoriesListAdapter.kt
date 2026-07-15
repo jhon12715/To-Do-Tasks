@@ -7,7 +7,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
 import com.example.todotasks.ui.model.TypeCategoryUI
 
-class CategoriesListAdapter(private val openAddCategoryDialog:() -> Unit, private val updateCategorySelected:(Long) -> Unit) :
+class CategoriesListAdapter(
+    private val popupCategoryCallbacks: PopupCategoryCallbacks,
+    private val openAddCategoryDialog: () -> Unit,
+    private val updateCategorySelected: (Long, Int) -> Unit
+) :
     ListAdapter<TypeCategoryUI, RecyclerView.ViewHolder>(CategoriesDiffCallback()) {
 
     companion object {
@@ -38,7 +42,11 @@ class CategoriesListAdapter(private val openAddCategoryDialog:() -> Unit, privat
         when (val item = getItem(position)) {
 
             is TypeCategoryUI.CategoryItem ->
-                (holder as CategoriesViewHolder).render(item, updateCategorySelected)
+                (holder as CategoriesViewHolder).render(
+                    item,
+                    popupCategoryCallbacks,
+                    updateCategorySelected
+                )
 
             is TypeCategoryUI.AddCategory ->
                 (holder as AddCategoryViewHolder).render(openAddCategoryDialog)

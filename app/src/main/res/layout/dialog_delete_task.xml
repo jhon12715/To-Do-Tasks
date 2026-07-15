@@ -4,28 +4,30 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/baseColor">
+    android:background="@color/baseColor"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/tvTittle"
+        style="@style/TitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        style="@style/TitleText"/>
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/tvMessage"
+        style="@style/SubTitleText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
+        android:gravity="center"
         android:text="TextView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTittle"
-        style="@style/SubTitleText"/>
+        app:layout_constraintTop_toBottomOf="@+id/tvTittle" />
 
     <LinearLayout
         android:id="@+id/linearLayout"
@@ -39,12 +41,15 @@
 
         <Button
             android:id="@+id/btnCancel"
+            style="@style/btnStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
             android:text="Cancelar" />
 
         <Button
             android:id="@+id/btnAccept"
+            style="@style/btnStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Aceptar" />

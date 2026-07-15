@@ -1,4 +1,4 @@
-package com.example.todotasks.ui.task.dialog
+package com.example.todotasks.ui.task.task_form
 
 import android.R
 import android.app.DatePickerDialog
@@ -7,20 +7,23 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.todotasks.databinding.DialogFormTaskBinding
 import com.example.todotasks.domain.model.TaskPriority
-import com.example.todotasks.ui.task.TaskUiEvent
-import com.example.todotasks.ui.task.TaskViewModel
 import com.example.todotasks.ui.core.ResultEvent
-import com.example.todotasks.ui.subTask.SubTaskUiEvent
+import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
+import com.example.todotasks.ui.core.extensions.hideKeyboard
+import com.example.todotasks.ui.model.CategoryUI
+import com.example.todotasks.ui.model.TaskUI
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -28,19 +31,44 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class DialogTask() : DialogFragment() {
+@AndroidEntryPoint
+class DialogTaskForm() : DialogFragment() {
 
     private var _binding: DialogFormTaskBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: TaskViewModel by activityViewModels()
+    private val viewModel: TaskFormViewModel by viewModels()
 
-    private val taskFormState
-        get() = viewModel.taskFormState.value
+    private val taskForm get() = viewModel.taskFormState.value
+
+    companion object {
+        private const val TASK_ITEM = "TASK_ITEM"
+
+        fun newInstance(task: TaskUI): DialogTaskForm {
+            val dialog = DialogTaskForm()
+            val bundle = Bundle().apply {
+                putParcelable(TASK_ITEM, task)
+            }
+
+            dialog.arguments = bundle
+
+            return dialog
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        arguments?.run {
+            val task = getParcelable<TaskUI>(TASK_ITEM) ?: TaskUI()
+            viewModel.onEvent(TaskFormEvent.OpeningForm(task))
+        }
+
+
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogFormTaskBinding.inflate(layoutInflater)
-
         val builder = AlertDialog.Builder(requireContext())
         builder.setView(binding.root)
         initUI()
@@ -51,30 +79,43 @@ class DialogTask() : DialogFragment() {
         return builder.create()
     }
 
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.apply {
+            setBackgroundDrawableResource(com.example.todotasks.R.drawable.bg_dialog)
+            setLayout(
+                (resources.displayMetrics.widthPixels * 0.8).toInt(), // ancho 80%
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        }
+    }
+
     private fun initUI() {
-        val tittleModeForm = if (taskFormState.id == 0L) "Nuevo" else "Editar"
+
+        binding.parent.backgroundMoreWhite(0.9f)
+
+        val tittleModeForm = if (taskForm.id == 0L) "Nuevo" else "Editar"
         binding.tvTittle.text = tittleModeForm
-        binding.etTask.setText(taskFormState.taskName)
-        editDateFormUI(taskFormState.date)
+        binding.etTask.setText(taskForm.name)
+        editDateFormUI(taskForm.date)
         initDownMenu()
     }
 
     private fun initDownMenu() {
         initPriorityTaskDownMenu()
-        initCategoryTaskDownMenu()
     }
 
     private fun initPriorityTaskDownMenu() {
         val priorities = TaskPriority.values()
         val stringPriorities = priorities.map { it.name }
-        println("priorities: $stringPriorities")
+
         val arrayAdapter =
             ArrayAdapter(requireContext(), R.layout.simple_spinner_dropdown_item, stringPriorities)
-        val taskPriority = taskFormState.priority
+        val taskPriority = viewModel.taskFormState.value.priority
         binding.autoCompletePriorityTasktv.apply {
             setAdapter(arrayAdapter)
             setOnItemClickListener { _, _, position, _ ->
-                viewModel.onEvent(TaskUiEvent.UpdatePriorityTaskForm(priorities[position]))
+                viewModel.onEvent(TaskFormEvent.UpdatePriorityTaskForm(priorities[position]))
             }
 
 
@@ -87,9 +128,9 @@ class DialogTask() : DialogFragment() {
 
     private fun initCategoryTaskDownMenu() {
 
-        val categoryId: Long = taskFormState.categoryId ?: -1L
+        val categoryId: Long = taskForm.categoryId ?: -1L
         println("idd: $categoryId")
-        val categories = taskFormState.availableCategories
+        val categories = taskForm.availableCategories
         val stringsCategories: List<String> =
             categories.map { category -> category.name }
 
@@ -104,29 +145,40 @@ class DialogTask() : DialogFragment() {
             setOnItemClickListener { _, _, position, _ ->
                 val idCategorySelected = categories[position].id
                 println("category id: $idCategorySelected")
-                viewModel.onEvent(TaskUiEvent.UpdateCategoryIdTaskForm(idCategorySelected))
+                viewModel.onEvent(TaskFormEvent.UpdateCategoryIdTaskForm(idCategorySelected))
             }
-            println("categories: ${taskFormState.availableCategories}")
+            println("categories: ${taskForm.availableCategories}")
             setText(categories.first { it.id == categoryId }.name, false)
 
 
         }
     }
 
-    private fun setListeners() {
-        binding.btnFinish.setOnClickListener {
-            viewModel.onEvent(TaskUiEvent.UpsertTaskForm)
+    private fun setListeners() = with(binding) {
+
+        btnFinish.setOnClickListener {
+            viewModel.onEvent(TaskFormEvent.UpsertTaskForm)
         }
 
-        binding.ivDate.setOnClickListener { showDatePicker() }
+        ivDate.setOnClickListener { showDatePicker() }
 
-        binding.ivDelete.setOnClickListener { viewModel.onEvent(TaskUiEvent.UpdateDateTaskForm(null)) }
+        ivDelete.setOnClickListener {
+            viewModel.onEvent(
+                TaskFormEvent.UpdateDateTaskForm(
+                    null
+                )
+            )
+        }
 
-        binding.etTask.addTextChangedListener(object : TextWatcher {
+        etTask.setOnFocusChangeListener { view, _ ->
+            view.hideKeyboard()
+        }
+
+        etTask.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 viewModel.onEvent(
-                    TaskUiEvent.UpdateNameTaskForm(
-                        s.toString(), viewModel.taskFormState.value.id
+                    TaskFormEvent.UpdateNameTaskForm(
+                        s.toString()
                     )
                 )
             }
@@ -174,8 +226,20 @@ class DialogTask() : DialogFragment() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.taskFormState.map { it.availableCategories }
+                    .distinctUntilChanged()
+                    .collect { categories ->
+                        if (categories.isNotEmpty()) {
+                            initCategoryTaskDownMenu()
+                        }
+                    }
+            }
+        }
+
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.taskFormState.map { it.isValid }
-                    .debounce { 50 }
+                    .debounce { 100 }
                     .distinctUntilChanged()
                     .collect { isValid ->
 
@@ -234,13 +298,13 @@ class DialogTask() : DialogFragment() {
 
     private fun showDatePicker() {
 
-        val today = taskFormState.date ?: LocalDate.now()
+        val today = taskForm.date ?: LocalDate.now()
         // Ponerle mínimo
         val datePicker = DatePickerDialog(
             requireContext(),
             { _, year, month, dayOfMonth ->
                 val selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
-                viewModel.onEvent(TaskUiEvent.UpdateDateTaskForm(selectedDate))
+                viewModel.onEvent(TaskFormEvent.UpdateDateTaskForm(selectedDate))
             },
             today.year,
             today.monthValue - 1,

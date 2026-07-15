@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Ancho y color del borde -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/baseColor" /> <!-- Cambia #FF0000 por tu color deseado -->
+
+    <!-- Bordes redondeados (opcional) -->
+    <corners android:radius="8dp" />
+
+    <!-- Margen interno entre el borde y los RadioButtons -->
+</shape>

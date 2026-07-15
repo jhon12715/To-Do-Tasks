@@ -9,7 +9,6 @@ import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.domain.usecase.DeleteSubtaskUseCase
 import com.example.todotasks.domain.usecase.UpsertSubTaskUseCase
 import com.example.todotasks.domain.usecase.GetAllSubTasksUseCase
-import com.example.todotasks.domain.usecase.GetParentTaskInfoUseCase
 import com.example.todotasks.domain.usecase.UpdateSubTaskCompletedUseCase
 import com.example.todotasks.ui.core.ResultEvent
 import com.example.todotasks.ui.model.SubTaskUI

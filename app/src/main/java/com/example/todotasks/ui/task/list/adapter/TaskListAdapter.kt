@@ -1,4 +1,4 @@
-package com.example.todotasks.ui.task.viewPagerAdapter
+package com.example.todotasks.ui.task.list.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

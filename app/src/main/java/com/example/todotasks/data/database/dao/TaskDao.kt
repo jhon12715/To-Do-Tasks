@@ -34,4 +34,7 @@ interface TaskDao {
     @Query("UPDATE task SET isCompleted = :isCompleted WHERE id = :id")
     suspend fun updateCompletedTask(id: Long, isCompleted: Boolean)
 
+    @Query("SELECT COUNT(*) > 0 FROM task WHERE task = :name AND id != :id COLLATE NOCASE")
+    suspend fun taskExists(name: String, id: Long): Boolean
+
 }
