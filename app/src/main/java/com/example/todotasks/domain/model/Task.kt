@@ -4,9 +4,9 @@ import java.time.LocalDate
 
 data class Task(
     val id: Long = 0L,
-    val task: String,
-    val priority: TaskPriority,
+    val tittle: String,
+    val priority: TaskPriority = TaskPriority.NORMAL,
     val isCompleted: Boolean = false,
-    val date: LocalDate?,
-    val categoryId: Long?
+    val date: LocalDate? = null,
+    val categoryId: Long? = null
 )

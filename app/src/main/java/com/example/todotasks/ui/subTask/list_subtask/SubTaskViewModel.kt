@@ -46,8 +46,8 @@ class SubTaskViewModel @Inject constructor(
     private val _subTaskIsCompletedFilter: MutableStateFlow<TaskIsCompletedFilter> =
         MutableStateFlow(TaskIsCompletedFilter.ALL)
 
-    private val _parentTaskInfo: MutableStateFlow<ParentTaskInfo> =
-        MutableStateFlow(ParentTaskInfo())
+    private val _parentTaskInfo: MutableStateFlow<ParentTaskInfo?> =
+        MutableStateFlow(null)
 
     private val _isFormVisible: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
@@ -67,7 +67,7 @@ class SubTaskViewModel @Inject constructor(
     val subTaskUiState: StateFlow<SubTaskUiState> =
         combine(_subTaskIsCompletedFilter, allSubTasks, _isFormVisible) { filter, subTaskList, isFormVisible ->
             SubTaskUiState(
-                title = _parentTaskInfo.value.taskName,
+                title = _parentTaskInfo.value?.taskName ?: "",
                 filterSelected = filter,
                 listSubtasks = subTaskList.applySubTaskFilterAndSort(filter),
                 subTasksCompleted = subTaskList.count { it.completed },
@@ -179,7 +179,7 @@ class SubTaskViewModel @Inject constructor(
 
             val name = subTaskFormState.value.subTasknameForm
             val priority = subTaskFormState.value.priorityForm
-            val taskId = _parentTaskInfo.value.taskId
+            val taskId = _parentTaskInfo.value!!.taskId
 
             val subTask = originalSubtask?.copy(
                 title = name,
