@@ -1,0 +1,36 @@
+[versions]
+appcompat = "1.7.1"
+constraintlayout = "2.2.1"
+coreKtx = "1.9.0"
+datastore = "1.1.1"
+espressoCore = "3.7.0"
+hiltVersion = "2.49"
+junit = "4.13.2"
+junitVersion = "1.3.0"
+kotlinxSerializationJson = "1.6.0"
+material = "1.12.0"
+navigationFragmentKtx = "2.7.7"
+room = "2.5.0"
+threetenabpVersion = "1.4.6"
+workVersion = "2.9.1"
+
+[libraries]
+appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
+datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
+ext-junit = { module = "androidx.test.ext:junit", version.ref = "junitVersion" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltVersion" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltVersion" }
+junit = { module = "junit:junit", version.ref = "junit" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+material = { module = "com.google.android.material:material", version.ref = "material" }
+navigation-fragment-ktx = { module = "androidx.navigation:navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
+navigation-ui-ktx = { module = "androidx.navigation:navigation-ui-ktx", version.ref = "navigationFragmentKtx" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+threetenabp = { module = "com.jakewharton.threetenabp:threetenabp", version.ref = "threetenabpVersion" }
+work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "workVersion" }
