@@ -8,15 +8,17 @@ plugins {
     id("com.google.devtools.ksp")
     //Parcelize
     id("kotlin-parcelize")
+    //Json
+    id("org.jetbrains.kotlin.plugin.serialization")
 }
 
-configurations.all {
+/*configurations.all {
     resolutionStrategy.eachDependency {
         if (requested.group == "org.jetbrains.kotlin") {
             useVersion("1.9.0")
         }
     }
-}
+}*/
 
 android {
     namespace = "com.example.todotasks"
@@ -63,35 +65,40 @@ android {
 
 dependencies {
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
+    //implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
 
     //Room
-    val roomVersion = "2.5.0"
-    implementation("androidx.room:room-runtime:$roomVersion")
-    implementation("androidx.room:room-ktx:$roomVersion")
-    ksp("androidx.room:room-compiler:$roomVersion")
+    implementation(libs.room.runtime)
+    implementation(libs.room.ktx)
+    ksp(libs.room.compiler)
+
     //Hilt
-    val hiltVersion = "2.49"
-    implementation("com.google.dagger:hilt-android:$hiltVersion")
-    kapt("com.google.dagger:hilt-compiler:$hiltVersion")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.compiler)
     //ksp
     //ksp("com.google.devtools.ksp:symbol-processing-api:1.9.0-1.0.13")
 
     // WorkManager (Kotlin + coroutines)
-    val workVersion = "2.9.1"
     //implementation("androidx.work:work-runtime:$workVersion")
-    implementation("androidx.work:work-runtime-ktx:$workVersion")
+    implementation(libs.work.runtime.ktx)
 
     // ThreeTenABP
-    implementation("com.jakewharton.threetenabp:threetenabp:1.4.6")
+    implementation(libs.threetenabp)
 
-    implementation("androidx.core:core-ktx:1.9.0")
-    implementation("androidx.appcompat:appcompat:1.7.1")
-    implementation("com.google.android.material:material:1.12.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.2.1")
-    implementation("androidx.navigation:navigation-fragment-ktx:2.9.3")
-    implementation("androidx.navigation:navigation-ui-ktx:2.9.3")
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.3.0")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
+    //DataStore
+        // Preferences DataStore (SharedPreferences like APIs)
+    implementation(libs.datastore.preferences)
+    implementation(libs.datastore)
+    implementation(libs.kotlinx.serialization.json)
+
+    implementation(libs.core.ktx)
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.constraintlayout)
+    // original 2.9.3
+    implementation(libs.navigation.fragment.ktx)
+    implementation(libs.navigation.ui.ktx)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.ext.junit)
+    androidTestImplementation(libs.espresso.core)
 }
