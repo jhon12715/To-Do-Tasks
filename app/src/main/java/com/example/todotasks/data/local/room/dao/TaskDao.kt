@@ -1,9 +1,9 @@
-package com.example.todotasks.data.database.room.dao
+package com.example.todotasks.data.local.room.dao
 
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.example.todotasks.data.database.room.entities.TaskEntity
+import com.example.todotasks.data.local.room.entities.TaskEntity
 import com.example.todotasks.data.projection.TaskWithStatsProjection
 import com.example.todotasks.domain.model.ParentTaskInfo
 import com.example.todotasks.domain.model.Task

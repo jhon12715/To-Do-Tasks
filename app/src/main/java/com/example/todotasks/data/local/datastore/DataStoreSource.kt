@@ -1,10 +1,8 @@
-package com.example.todotasks.data.database.datastore
+package com.example.todotasks.data.local.datastore
 
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
 import com.example.todotasks.domain.model.SettingsApp
 import com.example.todotasks.domain.model.TaskListPreferences
-import com.example.todotasks.ui.model.GroupAndSort
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

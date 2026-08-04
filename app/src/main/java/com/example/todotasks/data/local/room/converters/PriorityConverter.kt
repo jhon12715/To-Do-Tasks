@@ -1,4 +1,4 @@
-package com.example.todotasks.data.database.room.converters
+package com.example.todotasks.data.local.room.converters
 
 import androidx.room.TypeConverter
 import com.example.todotasks.domain.model.TaskPriority

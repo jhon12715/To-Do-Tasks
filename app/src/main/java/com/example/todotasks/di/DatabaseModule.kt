@@ -4,10 +4,10 @@ import android.content.Context
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.example.todotasks.data.database.room.AppDataBase
-import com.example.todotasks.data.database.room.dao.CategoryDao
-import com.example.todotasks.data.database.room.dao.SubTaskDao
-import com.example.todotasks.data.database.room.dao.TaskDao
+import com.example.todotasks.data.local.room.AppDataBase
+import com.example.todotasks.data.local.room.dao.CategoryDao
+import com.example.todotasks.data.local.room.dao.SubTaskDao
+import com.example.todotasks.data.local.room.dao.TaskDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

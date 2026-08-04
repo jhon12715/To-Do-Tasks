@@ -15,6 +15,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,12 +34,12 @@ class SubTaskFormViewModel @Inject constructor(
 
     private val _subTaskFormState: MutableStateFlow<SubTaskFormState> =
         MutableStateFlow(SubTaskFormState())
-    val subTaskFormState: StateFlow<SubTaskFormState> = _subTaskFormState
+    val subTaskFormState: StateFlow<SubTaskFormState> = _subTaskFormState.asStateFlow()
 
     private val _resultEvent: MutableSharedFlow<ResultEvent> = MutableSharedFlow(replay = 0)
-    val resultEvent: SharedFlow<ResultEvent> = _resultEvent
+    val resultEvent: SharedFlow<ResultEvent> = _resultEvent.asSharedFlow()
 
-    private var originalSubTask: SubTask = SubTask()
+    private lateinit var originalSubTask: SubTask
 
     fun onEvent(event: SubTaskFormEvent) {
         when (event) {
@@ -49,15 +51,18 @@ class SubTaskFormViewModel @Inject constructor(
     }
 
     private fun openingForm(subTask: SubTaskUI) {
-        originalSubTask = subTask.toDomain()
-        _subTaskFormState.update {
-            SubTaskFormState(
-                taskId = originalSubTask.idTask,
-                subTaskId = originalSubTask.id,
-                nameSubTask = originalSubTask.title,
-                prioritySubTask = originalSubTask.priority,
-                isValid = originalSubTask.id != 0L,
-            )
+        if (!_subTaskFormState.value.isInitialized) {
+            originalSubTask = subTask.toDomain()
+            _subTaskFormState.update {
+                SubTaskFormState(
+                    taskId = originalSubTask.idTask,
+                    subTaskId = originalSubTask.id,
+                    nameSubTask = originalSubTask.title,
+                    prioritySubTask = originalSubTask.priority,
+                    isValid = originalSubTask.id != 0L,
+                    isInitialized = true
+                )
+            }
         }
     }
 

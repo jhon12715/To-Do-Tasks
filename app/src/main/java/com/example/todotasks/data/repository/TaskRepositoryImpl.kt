@@ -1,8 +1,8 @@
 package com.example.todotasks.data.repository
 
-import com.example.todotasks.data.database.room.dao.CategoryDao
-import com.example.todotasks.data.database.room.dao.SubTaskDao
-import com.example.todotasks.data.database.room.dao.TaskDao
+import com.example.todotasks.data.local.room.dao.CategoryDao
+import com.example.todotasks.data.local.room.dao.SubTaskDao
+import com.example.todotasks.data.local.room.dao.TaskDao
 import com.example.todotasks.data.mapper.toDomain
 import com.example.todotasks.data.mapper.toEntity
 import com.example.todotasks.domain.model.Category
@@ -11,7 +11,6 @@ import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.model.TaskListItem
 import com.example.todotasks.domain.repository.TaskRepository
-import com.example.todotasks.ui.core.ResultEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject

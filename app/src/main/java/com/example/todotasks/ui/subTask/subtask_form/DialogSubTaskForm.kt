@@ -6,6 +6,8 @@ import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
@@ -49,16 +51,21 @@ class DialogSubTaskForm() :
             }
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        val subTask = arguments?.getParcelableCompat<SubTaskUI>(SUBTASK_ITEM) ?: SubTaskUI()
+        viewModel.onEvent(SubTaskFormEvent.OpeningForm(subTask))
+        Log.i("OnCreate","")
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogFormTaskBinding.inflate(layoutInflater)
         val builder = AlertDialog.Builder(requireContext())
         builder.setView(binding.root)
-        val subTask = arguments?.getParcelableCompat<SubTaskUI>(SUBTASK_ITEM) ?: SubTaskUI()
-        viewModel.onEvent(SubTaskFormEvent.OpeningForm(subTask))
-        startUI(subTask)
+        startUI()
         setFlows()
         setListeners()
-
+        Log.i("Lifecycle", "onCreateDialog")
         return builder.create()
     }
 
@@ -68,13 +75,14 @@ class DialogSubTaskForm() :
         initSpinner()
     }
 
-    private fun startUI(subTask: SubTaskUI) {
+    private fun startUI() {
         binding.parent.cardbackgroundMoreWhite(0.9f)
-        if (subTask.id == 0L) {
+        val subTask = viewModel.subTaskFormState.value
+        if (subTask.subTaskId == 0L) {
             binding.tvTittle.text = "Añadir Subtarea"
         } else {
             binding.tvTittle.text = "Editar Subtarea"
-            binding.etTask.setText(subTask.title)
+            binding.etTask.setText(subTask.nameSubTask)
         }
 
         binding.tvDateTittle.visibility = View.GONE
@@ -173,7 +181,7 @@ class DialogSubTaskForm() :
     }
 
     private fun initSpinner() {
-
+        Log.i("Spinner", "")
         val priorities = TaskPriority.values()
 
         val arrayAdapter =
@@ -185,6 +193,7 @@ class DialogSubTaskForm() :
                 viewModel.onEvent(SubTaskFormEvent.UpdateSubTaskPriority(priorities[position]))
             }
             val priorityName = viewModel.subTaskFormState.value.prioritySubTask.name
+            println("priorityy: $priorityName, subTask: ${viewModel.subTaskFormState.value}")
             setText(priorityName, false)
 
         }

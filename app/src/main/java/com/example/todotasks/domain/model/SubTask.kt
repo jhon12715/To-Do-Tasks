@@ -2,7 +2,7 @@ package com.example.todotasks.domain.model
 
 data class SubTask(
     val id: Long = 0,
-    val idTask: Long = 0,
-    val title: String = "",
+    val idTask: Long,
+    val title: String,
     val completed: Boolean = false,
-    val priority: TaskPriority = TaskPriority.NORMAL)
+    val priority: TaskPriority)
