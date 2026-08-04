@@ -6,6 +6,6 @@ package com.example.todotasks.domain.model
  */
 
 data class ParentTaskInfo(
-    val taskId: Long = 0,
-    val taskName: String = ""
+    val taskId: Long,
+    val taskName: String
 )

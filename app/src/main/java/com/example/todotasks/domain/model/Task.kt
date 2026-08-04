@@ -7,6 +7,6 @@ data class Task(
     val task: String,
     val priority: TaskPriority,
     val isCompleted: Boolean = false,
-    val date: LocalDate? = null,
-    val categoryId: Long? = null
+    val date: LocalDate?,
+    val categoryId: Long?
 )
