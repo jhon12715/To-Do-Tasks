@@ -2,6 +2,7 @@ package com.example.todotasks.ui.task
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -14,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.example.todotasks.R
 import com.example.todotasks.databinding.ActivityTaskBinding
-import com.example.todotasks.domain.model.TaskFilter
+import com.example.todotasks.domain.model.TaskIsCompletedFilter
 import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
 import com.example.todotasks.ui.model.CategoryUI
 import com.example.todotasks.ui.model.TaskUI
@@ -23,13 +24,17 @@ import com.example.todotasks.ui.task.adapter.CategoriesListAdapter
 import com.example.todotasks.ui.task.category_form.CategoryTaskSheet
 import com.example.todotasks.ui.model.TypeCategoryUI
 import com.example.todotasks.ui.task.adapter.PopupCategoryCallbacks
-import com.example.todotasks.ui.task.list.TaskListViewModel
-import com.example.todotasks.ui.task.list.adapter.TasksCollectionAdapter
+import com.example.todotasks.ui.task.group_and_sort.GroupAndSortTaskSheet
+import com.example.todotasks.ui.task.task_list.TaskListViewModel
+import com.example.todotasks.ui.task.task_list.adapter.TasksCollectionAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import com.example.todotasks.ui.task.list.TaskUiEvent
+import com.example.todotasks.ui.task.task_list.TaskUiEvent
+import com.example.todotasks.ui.task.more_vert.PopupMenuMoreVert
+import com.example.todotasks.ui.task.more_vert.PopupMoreVertCallbacks
+import kotlinx.coroutines.flow.filterNotNull
 
 @AndroidEntryPoint
 class TaskActivity : AppCompatActivity() {
@@ -40,6 +45,7 @@ class TaskActivity : AppCompatActivity() {
     private val viewModel: TaskListViewModel by viewModels()
     private var toast: Toast? = null
     private lateinit var categoryForm: CategoryTaskSheet
+    private val groupAndFilter: GroupAndSortTaskSheet by lazy { GroupAndSortTaskSheet() }
     private lateinit var taskForm: DialogTaskForm
 
     private val popupCategoryCallbacks by lazy {
@@ -49,15 +55,26 @@ class TaskActivity : AppCompatActivity() {
         )
     }
 
+    private val popupMoreVertCallbacks by lazy {
+        PopupMoreVertCallbacks(
+            groupAndOrder = ::openGroupAndFilterTaskSheet
+        )
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityTaskBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        initUI()
         setListeners()
         setRvAdapter()
         setRvCategoriesAdapter()
         setFlows()
 
+
+    }
+
+    private fun initUI() {
         binding.clParent.backgroundMoreWhite(0.9f)
     }
 
@@ -67,12 +84,16 @@ class TaskActivity : AppCompatActivity() {
             openNewDialogTaskForm()
         }
 
+        binding.ivMoreVert.setOnClickListener {
+            PopupMenuMoreVert(binding.root.context).show(binding.ivMoreVert, popupMoreVertCallbacks)
+        }
+
         binding.rgTaskFilter.setOnCheckedChangeListener { _, checkedId ->
             val filter = when (checkedId) {
-                R.id.rbAll -> TaskFilter.ALL
-                R.id.rbCompletedTasks -> TaskFilter.COMPLETED
-                R.id.rbNotCompletedTasks -> TaskFilter.NOT_COMPLETED
-                else -> TaskFilter.ALL
+                R.id.rbAll -> TaskIsCompletedFilter.ALL
+                R.id.rbCompletedTasks -> TaskIsCompletedFilter.COMPLETED
+                R.id.rbNotCompletedTasks -> TaskIsCompletedFilter.NOT_COMPLETED
+                else -> TaskIsCompletedFilter.ALL
             }
             viewModel.onEvent(TaskUiEvent.UpdateTaskFilter(filter))
         }
@@ -109,43 +130,43 @@ class TaskActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.categoriesState.collect { categories ->
-                    updateCategories(categories)
-                    binding.vpTasks.post {
-                        updateCollectionAdapter(categories)
-
-                        if (binding.vpTasks.currentItem >= categories.size) {
-                            binding.vpTasks.setCurrentItem(categories.lastIndex, false)
+                launch {
+                    viewModel.categoriesState
+                        .filterNotNull()
+                        .collect { categories ->
+                            updateCategories(categories)
+                            binding.vpTasks.post {
+                                updateCollectionAdapter(categories)
+                                if (binding.vpTasks.currentItem >= categories.size) {
+                                    binding.vpTasks.setCurrentItem(categories.lastIndex, false)
+                                }
+                                tasksCollectionAdapter.notifyDataSetChanged()
+                            }
                         }
-                        tasksCollectionAdapter.notifyDataSetChanged()
+                }
+
+                launch {
+                    viewModel.taskUIState.map { it.isLoading }
+                        .distinctUntilChanged()
+                        .collect { isLoading ->
+                            binding.viewIsLoading.isVisible = isLoading
+                            println("isLoading: $isLoading")
+                        }
+                }
+
+                launch {
+                    viewModel.resultEvent.collect { result ->
+
+                        showToast(result.message)
                     }
                 }
-            }
-        }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.taskUIState.map { it.isLoading }
-                    .distinctUntilChanged()
-                    .collect { isLoading ->
-                        binding.viewIsLoading.isVisible = isLoading
-                    }
-            }
-        }
-
-        lifecycleScope.launch {
-
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.resultEvent.collect { result ->
-
-                    showToast(result.message)
-                }
             }
 
         }
-
     }
 
+    //PopupCategory
     private fun newCategory() {
         categoryForm = CategoryTaskSheet.newInstance(CategoryUI())
         openCategoryTaskSheet()
@@ -155,6 +176,12 @@ class TaskActivity : AppCompatActivity() {
         categoryForm = CategoryTaskSheet.newInstance(category)
         openCategoryTaskSheet()
     }
+
+    //PopupMoreVert
+    private fun openGroupAndFilterTaskSheet() {
+        groupAndFilter.show(supportFragmentManager, "")
+    }
+
     private fun openCategoryTaskSheet() {
         categoryForm.show(supportFragmentManager, "")
     }

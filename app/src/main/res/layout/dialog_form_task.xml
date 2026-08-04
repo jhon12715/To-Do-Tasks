@@ -1,154 +1,143 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/parent"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/parent"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
-    android:focusableInTouchMode="true"
-    android:padding="8dp"
-    android:background="@color/white">
+    app:contentPadding="8dp"
+    android:focusableInTouchMode="true">
 
-    <TextView
-        android:id="@+id/tvTittle"
-        style="@style/TitleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <EditText
-        android:id="@+id/etTask"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginHorizontal="8dp"
-        android:background="@drawable/custom_editext"
-        android:ems="10"
-        android:hint="Nombre"
-        android:textSize="14dp"
-        android:inputType="text"
-        android:padding="8dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.079"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvTittle" />
+        <TextView
+            android:id="@+id/tvTittle"
+            style="@style/TitleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/tvTaskPriority"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Prioridad"
-        app:layout_constraintStart_toStartOf="@+id/etTask"
-        app:layout_constraintTop_toBottomOf="@+id/etTask" />
+        <EditText
+            android:id="@+id/etTask"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="8dp"
+            android:layout_marginTop="16dp"
+            android:background="@drawable/custom_editext"
+            android:ems="10"
+            android:hint="Nombre"
+            android:inputType="text"
+            android:padding="8dp"
+            android:textSize="14dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.079"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTittle" />
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilPriorityTask"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvTaskPriority"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvTaskPriority"
-        app:layout_constraintTop_toTopOf="@+id/tvTaskPriority">
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilPriorityTask"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="@+id/etTask"
+            app:layout_constraintStart_toStartOf="@+id/etTask"
+            app:layout_constraintTop_toBottomOf="@+id/etTask">
 
-        <!-- Inside text input layout add
-              an auto complete text view
-                and make its input type to none-->
-        <AutoCompleteTextView
-            android:id="@+id/autoCompletePriorityTasktv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:inputType="none" />
+            <!-- Inside text input layout add
+                  an auto complete text view
+                    and make its input type to none-->
+            <AutoCompleteTextView
+                android:id="@+id/autoCompletePriorityTasktv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:hint="Prioridad"
+                android:inputType="none" />
 
-    </com.google.android.material.textfield.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <TextView
-        android:id="@+id/tvDateTittle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Fecha"
-        app:layout_constraintStart_toStartOf="@+id/tvTaskPriority"
-        app:layout_constraintTop_toBottomOf="@+id/tvTaskPriority" />
+        <TextView
+            android:id="@+id/tvDateTittle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:text="Fecha"
+            app:layout_constraintStart_toStartOf="@+id/tilPriorityTask"
+            app:layout_constraintTop_toBottomOf="@+id/tilPriorityTask" />
 
-    <ImageButton
-        android:id="@+id/ivDate"
-        android:backgroundTint="@color/baseColor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="64dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvDate"
-        app:layout_constraintStart_toEndOf="@+id/tvDate"
-        app:layout_constraintTop_toTopOf="@+id/tvDate"
-        app:layout_constraintVertical_bias="0.468"
-        app:srcCompat="@android:drawable/ic_menu_my_calendar" />
+        <ImageButton
+            android:id="@+id/ivDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="64dp"
+            android:backgroundTint="@color/baseColor"
+            app:layout_constraintBottom_toBottomOf="@+id/tvDate"
+            app:layout_constraintStart_toEndOf="@+id/tvDate"
+            app:layout_constraintTop_toTopOf="@+id/tvDate"
+            app:layout_constraintVertical_bias="0.468"
+            app:srcCompat="@android:drawable/ic_menu_my_calendar" />
 
-    <ImageView
-        android:id="@+id/ivDelete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="@+id/ivDate"
-        app:layout_constraintStart_toEndOf="@+id/ivDate"
-        app:layout_constraintTop_toTopOf="@+id/ivDate"
-        app:srcCompat="@android:drawable/ic_delete" />
+        <ImageView
+            android:id="@+id/ivDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="@+id/ivDate"
+            app:layout_constraintStart_toEndOf="@+id/ivDate"
+            app:layout_constraintTop_toTopOf="@+id/ivDate"
+            app:srcCompat="@android:drawable/ic_delete" />
 
-    <TextView
-        android:id="@+id/tvDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="TextView"
-        app:layout_constraintStart_toStartOf="@+id/tvDateTittle"
-        app:layout_constraintTop_toBottomOf="@+id/tvDateTittle" />
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            app:layout_constraintStart_toStartOf="@+id/tvDateTittle"
+            app:layout_constraintTop_toBottomOf="@+id/tvDateTittle" />
 
-    <TextView
-        android:id="@+id/tvTaskCategory"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Categoría"
-        app:layout_constraintStart_toStartOf="@+id/tvDate"
-        app:layout_constraintTop_toBottomOf="@+id/ivDate" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilCategory"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintEnd_toEndOf="@+id/etTask"
+            app:layout_constraintStart_toStartOf="@+id/etTask"
+            app:layout_constraintTop_toBottomOf="@+id/ivDate">
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/tilCategory"
-        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="20dp"
-        app:layout_constraintBottom_toBottomOf="@+id/tvTaskCategory"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/tvTaskCategory"
-        app:layout_constraintTop_toTopOf="@+id/tvTaskCategory">
+            <!-- Inside text input layout add
+                  an auto complete text view
+                    and make its input type to none-->
+            <AutoCompleteTextView
+                android:id="@+id/autoCompleteCategorytv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:completionThreshold="1"
+                android:hint="Categoría"
+                android:inputType="text" />
 
-        <!-- Inside text input layout add
-              an auto complete text view
-                and make its input type to none-->
-        <AutoCompleteTextView
-            android:id="@+id/autoCompleteCategorytv"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:inputType="none" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    </com.google.android.material.textfield.TextInputLayout>
+        <Button
+            android:id="@+id/btnFinish"
 
-    <Button
-        android:id="@+id/btnFinish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="68dp"
+            android:backgroundTint="@color/formNotValid"
+            android:text="Button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tilCategory" />
 
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="68dp"
-        android:backgroundTint="@color/formNotValid"
-        android:text="Button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tilCategory" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.cardview.widget.CardView>

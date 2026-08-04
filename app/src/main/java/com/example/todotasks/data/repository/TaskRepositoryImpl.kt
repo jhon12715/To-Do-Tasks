@@ -1,9 +1,8 @@
 package com.example.todotasks.data.repository
 
-import android.app.TaskInfo
-import com.example.todotasks.data.database.dao.CategoryDao
-import com.example.todotasks.data.database.dao.SubTaskDao
-import com.example.todotasks.data.database.dao.TaskDao
+import com.example.todotasks.data.database.room.dao.CategoryDao
+import com.example.todotasks.data.database.room.dao.SubTaskDao
+import com.example.todotasks.data.database.room.dao.TaskDao
 import com.example.todotasks.data.mapper.toDomain
 import com.example.todotasks.data.mapper.toEntity
 import com.example.todotasks.domain.model.Category
@@ -11,9 +10,8 @@ import com.example.todotasks.domain.model.ParentTaskInfo
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.model.TaskListItem
-import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.domain.repository.TaskRepository
-import com.example.todotasks.ui.model.TaskUI
+import com.example.todotasks.ui.core.ResultEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -25,7 +23,13 @@ class TaskRepositoryImpl @Inject constructor(
 ) : TaskRepository {
 
     //TaskDao
-    override fun getTasks(): Flow<List<TaskListItem>> = taskDao.getAllTasks()
+    override fun getAllTasksByCategory(categoryId: Long): Flow<List<TaskListItem>> =
+        taskDao.getAllTasksByCategory(categoryId)
+            .map { list ->
+                list.map { item -> item.toDomain() }
+            }
+
+    override fun getAllTasks(): Flow<List<TaskListItem>> = taskDao.getAllTasks()
         .map { list ->
             list.map { item -> item.toDomain() }
         }
@@ -55,8 +59,9 @@ class TaskRepositoryImpl @Inject constructor(
 
 
     override suspend fun upsertSubTask(subTask: SubTask) {
-        val entity = subTask.toEntity()
-        subTaskDao.upsertSubTask(entity)
+
+            val entity = subTask.toEntity()
+            subTaskDao.upsertSubTask(entity)
     }
 
 
@@ -67,6 +72,9 @@ class TaskRepositoryImpl @Inject constructor(
     override suspend fun updateCompletedSubTask(id: Long, completed: Boolean) {
         subTaskDao.updateCompletedSubTask(id, completed)
     }
+
+    override suspend fun subTaskExists(name: String, subTaskId: Long, taskId: Long): Boolean =
+        subTaskDao.subTaskExists(name, subTaskId, taskId)
 
 //CategoriesDao
 
@@ -79,6 +87,7 @@ class TaskRepositoryImpl @Inject constructor(
         categoryDao.upsertCategory(category.toEntity())
     }
 
-    override suspend fun categoryExists(name: String, id: Long): Boolean = categoryDao.categoryExists(name, id)
+    override suspend fun categoryExists(name: String, id: Long): Boolean =
+        categoryDao.categoryExists(name, id)
 
 }

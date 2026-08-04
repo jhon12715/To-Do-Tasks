@@ -9,6 +9,7 @@ class DeleteTaskUseCase @Inject constructor(private val repository: TaskReposito
 
     suspend operator fun invoke(id: Long): ResultEvent {
         val task = repository.getTask(id)
+        println("id: $id task: $task")
         scheduler.cancel(task)
         repository.deleteTask(id)
         return ResultEvent.Success("La tarea se ha borrado correctamente")

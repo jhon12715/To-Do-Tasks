@@ -1,8 +1,8 @@
 package com.example.todotasks.data.mapper
 
-import com.example.todotasks.data.database.entities.CategoryEntity
-import com.example.todotasks.data.database.entities.SubTaskEntity
-import com.example.todotasks.data.database.entities.TaskEntity
+import com.example.todotasks.data.database.room.entities.CategoryEntity
+import com.example.todotasks.data.database.room.entities.SubTaskEntity
+import com.example.todotasks.data.database.room.entities.TaskEntity
 import com.example.todotasks.data.projection.TaskWithStatsProjection
 import com.example.todotasks.domain.model.Category
 import com.example.todotasks.domain.model.SubTask
