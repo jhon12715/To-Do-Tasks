@@ -2,9 +2,9 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/clParent"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/baseColor">
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/tvTaskName"
@@ -23,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
-        android:text="Tareas completadas: "
+        android:text="Subtareas completadas: "
         app:layout_constraintEnd_toStartOf="@+id/tvSubTasksCompleted"
         app:layout_constraintTop_toBottomOf="@+id/tvTaskName" />
 
@@ -42,57 +42,47 @@
         android:id="@+id/rgTaskFilter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="16dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvCompleted">
 
         <RadioButton
             android:id="@+id/rbAll"
+            style="@style/CustomRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:checked="true"
-            android:text="Todas"
-            android:textColor="@color/white" />
+            android:text="Todas" />
 
         <RadioButton
             android:id="@+id/rbNotCompletedTasks"
+            style="@style/CustomRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="No completadas"
-            android:textColor="@color/white" />
+            android:text="No completadas" />
 
         <RadioButton
             android:id="@+id/rbCompletedTasks"
+            style="@style/CustomRadioButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Completadas"
-            android:textColor="@color/white" />
+            android:text="Completadas" />
     </RadioGroup>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvSubTasks"
         android:layout_width="match_parent"
         android:layout_height="400dp"
         android:layout_marginHorizontal="8dp"
         android:layout_marginTop="16dp"
-        android:background="@color/white"
-        app:cardCornerRadius="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rgTaskFilter">
-
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvSubTasks"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp"/>
-
-    </androidx.cardview.widget.CardView>
+        app:layout_constraintTop_toBottomOf="@+id/rgTaskFilter" />
 
     <ProgressBar
         android:id="@+id/pbLoading"
@@ -112,9 +102,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
+        android:backgroundTint="@color/baseColor"
         android:clickable="true"
-        app:layout_constraintStart_toStartOf="@+id/cardView"
-        app:layout_constraintTop_toBottomOf="@+id/cardView"
+        app:layout_constraintStart_toStartOf="@+id/rvSubTasks"
+        app:layout_constraintTop_toBottomOf="@+id/rvSubTasks"
         app:srcCompat="@android:drawable/ic_input_add" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

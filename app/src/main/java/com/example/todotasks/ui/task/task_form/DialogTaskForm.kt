@@ -20,6 +20,8 @@ import com.example.todotasks.databinding.DialogFormTaskBinding
 import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.ui.core.ResultEvent
 import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
+import com.example.todotasks.ui.core.extensions.cardbackgroundMoreWhite
+import com.example.todotasks.ui.core.extensions.getParcelableCompat
 import com.example.todotasks.ui.core.extensions.hideKeyboard
 import com.example.todotasks.ui.model.CategoryUI
 import com.example.todotasks.ui.model.TaskUI
@@ -49,7 +51,6 @@ class DialogTaskForm() : DialogFragment() {
             val bundle = Bundle().apply {
                 putParcelable(TASK_ITEM, task)
             }
-
             dialog.arguments = bundle
 
             return dialog
@@ -60,18 +61,15 @@ class DialogTaskForm() : DialogFragment() {
         super.onCreate(savedInstanceState)
 
         arguments?.run {
-            val task = getParcelable<TaskUI>(TASK_ITEM) ?: TaskUI()
+            val task = getParcelableCompat<TaskUI>(TASK_ITEM) ?: TaskUI()
             viewModel.onEvent(TaskFormEvent.OpeningForm(task))
         }
-
-
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogFormTaskBinding.inflate(layoutInflater)
         val builder = AlertDialog.Builder(requireContext())
         builder.setView(binding.root)
-        initUI()
         setListeners()
         setFlows()
 
@@ -88,17 +86,6 @@ class DialogTaskForm() : DialogFragment() {
                 ViewGroup.LayoutParams.WRAP_CONTENT
             )
         }
-    }
-
-    private fun initUI() {
-
-        binding.parent.backgroundMoreWhite(0.9f)
-
-        val tittleModeForm = if (taskForm.id == 0L) "Nuevo" else "Editar"
-        binding.tvTittle.text = tittleModeForm
-        binding.etTask.setText(taskForm.name)
-        editDateFormUI(taskForm.date)
-        initDownMenu()
     }
 
     private fun initDownMenu() {
@@ -142,6 +129,7 @@ class DialogTaskForm() : DialogFragment() {
 
         binding.autoCompleteCategorytv.apply {
             setAdapter(arrayAdapter)
+            threshold = 1
             setOnItemClickListener { _, _, position, _ ->
                 val idCategorySelected = categories[position].id
                 println("category id: $idCategorySelected")
@@ -150,8 +138,17 @@ class DialogTaskForm() : DialogFragment() {
             println("categories: ${taskForm.availableCategories}")
             setText(categories.first { it.id == categoryId }.name, false)
 
-
         }
+    }
+
+    private fun initUI() {
+        binding.parent.cardbackgroundMoreWhite(0.9f)
+        val tittleModeForm = if (taskForm.id == 0L) "Nuevo" else "Editar"
+        binding.tvTittle.text = tittleModeForm
+        binding.etTask.setText(taskForm.name)
+        editDateFormUI(taskForm.date)
+        initDownMenu()
+
     }
 
     private fun setListeners() = with(binding) {
@@ -204,73 +201,78 @@ class DialogTaskForm() : DialogFragment() {
 
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.resultEvent
-                    .collect { resultEvent ->
-                        when (resultEvent) {
-                            is ResultEvent.Error -> {}
-                            is ResultEvent.Success -> dismiss()
+
+                launch {
+                    viewModel.resultEvent
+                        .collect { resultEvent ->
+                            when (resultEvent) {
+                                is ResultEvent.Error -> {}
+                                is ResultEvent.Success -> dismiss()
+                            }
                         }
-                    }
-            }
-        }
+                }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.taskFormState.map { it.date }
-                    .distinctUntilChanged()
-                    .collect { date ->
-                        editDateFormUI(date)
-                    }
-            }
-        }
+                launch {
+                    viewModel.taskFormState.map { it.isReady }
+                        .distinctUntilChanged()
+                        .collect {
+                            initUI()
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.taskFormState.map { it.availableCategories }
-                    .distinctUntilChanged()
-                    .collect { categories ->
-                        if (categories.isNotEmpty()) {
-                            initCategoryTaskDownMenu()
                         }
-                    }
-            }
-        }
+                }
 
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.taskFormState.map { it.isValid }
-                    .debounce { 100 }
-                    .distinctUntilChanged()
-                    .collect { isValid ->
+                launch {
+                    viewModel.taskFormState.map { it.date }
+                        .distinctUntilChanged()
+                        .collect { date ->
+                            editDateFormUI(date)
+                        }
+                }
 
-                        binding.btnFinish.isClickable = isValid
+                launch {
+                    viewModel.taskFormState.map { it.availableCategories }
+                        .distinctUntilChanged()
+                        .collect { categories ->
+                            if (categories.isNotEmpty()) {
+                                initCategoryTaskDownMenu()
+                            }
+                        }
+                }
+
+                launch {
+                    viewModel.taskFormState.map { it.isValid }
+                        .debounce { 100 }
+                        .distinctUntilChanged()
+                        .collect { isValid ->
+
+                            binding.btnFinish.isClickable = isValid
 
 
-                        if (isValid) {
+                            if (isValid) {
 
-                            binding.btnFinish.text = "Valido"
-                            binding.btnFinish.setBackgroundColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    com.example.todotasks.R.color.formValid
+                                binding.btnFinish.text = "Valido"
+                                binding.btnFinish.setBackgroundColor(
+                                    ContextCompat.getColor(
+                                        requireContext(),
+                                        com.example.todotasks.R.color.formValid
+                                    )
                                 )
-                            )
 
-                        } else {
+                            } else {
 
-                            binding.btnFinish.text = "No Valido"
-                            binding.btnFinish.setBackgroundColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    com.example.todotasks.R.color.formNotValid
+                                binding.btnFinish.text = "No Valido"
+                                binding.btnFinish.setBackgroundColor(
+                                    ContextCompat.getColor(
+                                        requireContext(),
+                                        com.example.todotasks.R.color.formNotValid
+                                    )
                                 )
-                            )
-                        }
+                            }
 
-                    }
+                        }
+                }
             }
         }
-
     }
 
     private fun editDateFormUI(newDate: LocalDate?) {

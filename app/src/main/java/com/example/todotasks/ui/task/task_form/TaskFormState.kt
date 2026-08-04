@@ -19,5 +19,6 @@ data class TaskFormState(
     val date: LocalDate? = null,
     val categoryId:Long? = null,
     val isValid: Boolean = false,
+    val isReady: Boolean = false,
     val availableCategories: List<CategoryUI> = emptyList()
 )

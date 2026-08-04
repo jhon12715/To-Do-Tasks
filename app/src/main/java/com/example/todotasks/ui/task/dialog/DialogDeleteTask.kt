@@ -9,7 +9,9 @@ import androidx.fragment.app.activityViewModels
 import com.example.todotasks.R
 import com.example.todotasks.databinding.DialogDeleteTaskBinding
 import com.example.todotasks.domain.model.Task
-import com.example.todotasks.ui.task.list.TaskListViewModel
+import com.example.todotasks.ui.core.extensions.applyWindowApparence
+import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
+import com.example.todotasks.ui.task.task_list.TaskListViewModel
 
 class DialogDeleteTask(
     private val task: Task
@@ -31,13 +33,8 @@ class DialogDeleteTask(
 
     override fun onStart() {
         super.onStart()
-        dialog?.window?.apply {
-            setBackgroundDrawableResource(R.drawable.bg_dialog)
-            setLayout(
-                (resources.displayMetrics.widthPixels * 0.8).toInt(), // ancho 80%
-                ViewGroup.LayoutParams.WRAP_CONTENT
-            )
-        }
+        binding.clParent.backgroundMoreWhite(0.9f)
+        applyWindowApparence()
     }
 
     private fun startUI() {

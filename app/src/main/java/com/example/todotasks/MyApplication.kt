@@ -2,11 +2,8 @@ package com.example.todotasks
 
 import android.app.AlarmManager
 import android.app.Application
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Build
 import android.provider.Settings
 import com.example.todotasks.data.notification.NotificationHelper
@@ -15,7 +12,7 @@ import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
 @HiltAndroidApp
-class MyApplication: Application() {
+class MyApplication : Application() {
 
     @Inject
     lateinit var notificationHelper: NotificationHelper

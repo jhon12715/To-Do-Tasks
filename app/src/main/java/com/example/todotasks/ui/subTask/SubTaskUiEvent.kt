@@ -1,7 +1,7 @@
 package com.example.todotasks.ui.subTask
 
 import com.example.todotasks.domain.model.SubTask
-import com.example.todotasks.domain.model.TaskFilter
+import com.example.todotasks.domain.model.TaskIsCompletedFilter
 import com.example.todotasks.domain.model.TaskPriority
 
 /**
@@ -10,7 +10,7 @@ import com.example.todotasks.domain.model.TaskPriority
  */
 
 sealed class SubTaskUiEvent() {
-    data class UpdateFilterSubTaskCompleted(val filterCompleted: TaskFilter) : SubTaskUiEvent()
+    data class UpdateFilterSubTaskCompleted(val filterCompleted: TaskIsCompletedFilter) : SubTaskUiEvent()
     data object CreateNewSubTaskForm : SubTaskUiEvent()
     data class EditSubTaskForm(val subTask: SubTask) : SubTaskUiEvent()
     data class UpdateSubTaskCompleted(val subTaskId: Long, val isCompleted: Boolean) : SubTaskUiEvent()

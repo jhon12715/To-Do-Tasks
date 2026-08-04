@@ -4,9 +4,9 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
-import com.example.todotasks.domain.model.Task
 import com.example.todotasks.ui.task.TaskItemCallbacks
 import com.example.todotasks.ui.model.TaskUI
+import com.example.todotasks.ui.task.task_list.adapter.TaskViewHolder
 
 class TaskAdapter(
     private val lista: List<TaskUI> = listOf(),

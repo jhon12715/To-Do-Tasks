@@ -40,7 +40,7 @@
         </activity>
 
         <activity
-            android:name=".ui.subTask.SubTaskActivity"
+            android:name=".ui.subTask.list_subtask.SubTaskActivity"
             android:exported="true"
             android:label="@string/title_activity_main"
             android:parentActivityName=".ui.task.TaskActivity"

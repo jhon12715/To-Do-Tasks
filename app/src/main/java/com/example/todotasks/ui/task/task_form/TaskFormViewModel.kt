@@ -102,6 +102,7 @@ class TaskFormViewModel @Inject constructor(
             val categories = getAllCategoriesUseCase().map { it.toFormUi() }.first()
             originalTask = task
             _taskFormState.update {
+                println("item: $task")
                 TaskFormState(
                     id = task.id,
                     name = task.task,
@@ -109,6 +110,7 @@ class TaskFormViewModel @Inject constructor(
                     date = task.date,
                     categoryId = task.categoryId,
                     isValid = task.task.isNotEmpty(),
+                    isReady = true,
                     availableCategories = categories
                 )
             }

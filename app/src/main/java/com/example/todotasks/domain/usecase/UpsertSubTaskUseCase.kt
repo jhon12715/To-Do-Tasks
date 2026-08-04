@@ -17,7 +17,7 @@ class UpsertSubTaskUseCase @Inject constructor(private val repository: TaskRepos
 
         return try {
             repository.upsertSubTask(subTask)
-            if (subTask.id != 0L) {
+            if (subTask.id == 0L) {
                 ResultEvent.Success("Se ha añadido la subtarea correctamente")
             } else {
                 ResultEvent.Success("Se ha editado la subtarea correctamente")

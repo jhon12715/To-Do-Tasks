@@ -7,13 +7,15 @@ import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.model.TaskListItem
 import com.example.todotasks.domain.model.TaskPriority
+import com.example.todotasks.ui.core.ResultEvent
 import com.example.todotasks.ui.model.TaskUI
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
 
     //TaskDao
-    fun getTasks(): Flow<List<TaskListItem>>
+    fun getAllTasksByCategory(categoryId: Long): Flow<List<TaskListItem>>
+    fun getAllTasks(): Flow<List<TaskListItem>>
     suspend fun getTask(id: Long): Task
     suspend fun getParentTaskInfo(id: Long): ParentTaskInfo
     suspend fun upsertTask(task: Task): Long
@@ -26,6 +28,7 @@ interface TaskRepository {
     suspend fun upsertSubTask(subTask: SubTask)
     suspend fun deleteSubTask(id: Long)
     suspend fun updateCompletedSubTask(id: Long, completed: Boolean)
+    suspend fun subTaskExists(name: String, subTaskId: Long, taskId: Long): Boolean
     //CategoriesDao
     fun getAllCategories(): Flow<List<Category>>
     suspend fun deleteCategory(category: Category)

@@ -14,7 +14,7 @@ class TaskExistsUseCase @Inject constructor(private val repository: TaskReposito
 
         val nameTrimmed = name.trim()
 
-        if (nameTrimmed.isEmpty() || nameTrimmed.equals("todas", ignoreCase = true)) return true
+        if (nameTrimmed.isEmpty()) return true
 
         return repository.taskExists(nameTrimmed, id)
     }

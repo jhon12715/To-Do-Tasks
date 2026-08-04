@@ -1,12 +1,14 @@
 package com.example.todotasks.ui.model
 
-import com.example.todotasks.domain.model.SubTask
+import android.os.Parcelable
+import com.example.todotasks.domain.model.TaskPriority
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class SubTaskUI(
-    val list: List<SubTask> = emptyList(),
-    val total: Int = 0,
-    val completed: Int = 0
-) {
-    val textSubTasksCompleted: String
-        get() = "$completed/$total"
-}
+    val id: Long = 0,
+    val idTask: Long = 0,
+    val title: String = "",
+    val completed: Boolean = false,
+    val priority: TaskPriority = TaskPriority.NORMAL
+): Parcelable

@@ -8,10 +8,9 @@ import android.content.Intent
 import androidx.core.app.NotificationCompat
 import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.example.todotasks.domain.model.SubTask
-import com.example.todotasks.ui.subTask.SubTaskActivity
-import com.example.todotasks.ui.subTask.SubTaskActivity.Companion.EXTRA_TASK_ID
-import com.example.todotasks.ui.subTask.SubTaskActivity.Companion.EXTRA_TASK_NAME
+import com.example.todotasks.ui.subTask.list_subtask.SubTaskActivity
+import com.example.todotasks.ui.subTask.list_subtask.SubTaskActivity.Companion.EXTRA_TASK_ID
+import com.example.todotasks.ui.subTask.list_subtask.SubTaskActivity.Companion.EXTRA_TASK_NAME
 import com.example.todotasks.ui.task.TaskActivity
 
 class TaskReminderWorker(
