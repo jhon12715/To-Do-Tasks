@@ -9,19 +9,6 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-data class TaskListPreferences(
-    val groupAndSort: GroupAndSort = GroupAndSort(),
-    val isCompletedFilter: TaskIsCompletedFilter = TaskIsCompletedFilter.ALL
-)
-
-@Serializable
-enum class TaskIsCompletedFilter{
-    ALL,
-    COMPLETED,
-    NOT_COMPLETED
-}
-
-@Serializable
 data class GroupAndSort(
     val groupBy: GroupByTask = GroupByTask.PRIORITY,
     val sortBy: SortByTask = SortByTask.TITTLE,
