@@ -9,4 +9,8 @@ data class Task(
     val isCompleted: Boolean = false,
     val date: LocalDate? = null,
     val categoryId: Long? = null
-)
+){
+    companion object{
+        const val TASK_TITTLE_MAX_LENGTH = 60
+    }
+}
