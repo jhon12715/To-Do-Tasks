@@ -32,7 +32,7 @@ println("lista: ${listOf(noCategory)  + this.map { it.toUI()}}")
 
 fun TaskListItem.toUi(): TaskUI = TaskUI(
     id = task.id,
-    task = task.task,
+    tittle = task.tittle,
     completedSubtask = completedSubtask,
     totalSubTask = totalSubTask,
     isCompleted = task.isCompleted,
@@ -43,7 +43,7 @@ fun TaskListItem.toUi(): TaskUI = TaskUI(
 
 fun TaskUI.toDomain(): Task = Task(
     id = id,
-    task = task,
+    tittle = tittle,
     priority = priority,
     isCompleted = isCompleted,
     date = date,
