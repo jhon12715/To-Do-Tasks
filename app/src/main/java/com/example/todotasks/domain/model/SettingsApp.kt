@@ -16,7 +16,7 @@ import java.io.OutputStream
 
 @Serializable
 data class SettingsApp(
-    val taskListPreferences: TaskListPreferences = TaskListPreferences()
+    val groupAndSort: GroupAndSort = GroupAndSort()
 )
 
 object SettingsAppSerializer : Serializer<SettingsApp> {
