@@ -12,14 +12,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization")
 }
 
-/*configurations.all {
-    resolutionStrategy.eachDependency {
-        if (requested.group == "org.jetbrains.kotlin") {
-            useVersion("1.9.0")
-        }
-    }
-}*/
-
 android {
     namespace = "com.example.todotasks"
     compileSdk = 34
@@ -65,8 +57,6 @@ android {
 
 dependencies {
 
-    //implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.0")
-
     //Room
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
@@ -75,19 +65,11 @@ dependencies {
     //Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    //ksp
-    //ksp("com.google.devtools.ksp:symbol-processing-api:1.9.0-1.0.13")
 
     // WorkManager (Kotlin + coroutines)
-    //implementation("androidx.work:work-runtime:$workVersion")
     implementation(libs.work.runtime.ktx)
 
-    // ThreeTenABP
-    implementation(libs.threetenabp)
-
     //DataStore
-        // Preferences DataStore (SharedPreferences like APIs)
-    implementation(libs.datastore.preferences)
     implementation(libs.datastore)
     implementation(libs.kotlinx.serialization.json)
 
@@ -95,7 +77,6 @@ dependencies {
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.constraintlayout)
-    // original 2.9.3
     implementation(libs.navigation.fragment.ktx)
     implementation(libs.navigation.ui.ktx)
     testImplementation(libs.junit)
