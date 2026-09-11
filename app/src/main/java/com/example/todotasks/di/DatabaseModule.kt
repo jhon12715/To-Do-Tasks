@@ -33,6 +33,7 @@ object DatabaseModule {
     )
         .addMigrations(MIGRATION_11_12)
         .addMigrations(MIGRATION_12_13)
+        .addMigrations(MIGRATION_13_14)
         .build()
 
     private val MIGRATION_11_12 = object : Migration(11, 12) {
@@ -115,6 +116,19 @@ object DatabaseModule {
                         "GROUP BY name)"
             )
             database.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS index_category_name ON category(name)")
+        }
+    }
+
+    private val MIGRATION_13_14 = object : Migration(13, 14) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL(
+                "ALTER TABLE task RENAME COLUMN task to tittle"
+            )
+
+            database.execSQL(
+                "ALTER TABLE task RENAME COLUMN category to categoryId"
+            )
+
         }
     }
 
