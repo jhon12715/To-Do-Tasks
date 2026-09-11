@@ -8,10 +8,11 @@ import java.time.LocalDate
 @Parcelize
 data class TaskUI(
     val id: Long = 0,
-    val task: String = "",
+    val tittle: String = "",
     val completedSubtask: Int = 0,
     val totalSubTask: Int = 0,
     val isCompleted: Boolean = false,
+    val isSelectedToDelete: Boolean = false,
     val priority: TaskPriority = TaskPriority.NORMAL,
     val date: LocalDate? = null,
     val categoryId: Long? = null
