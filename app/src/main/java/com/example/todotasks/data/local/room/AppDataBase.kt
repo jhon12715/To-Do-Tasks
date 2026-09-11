@@ -12,7 +12,7 @@ import com.example.todotasks.data.local.room.entities.SubTaskEntity
 import com.example.todotasks.data.local.room.entities.TaskEntity
 
 @Database(
-    entities = [TaskEntity::class, SubTaskEntity::class, CategoryEntity::class], version = 13, exportSchema = true
+    entities = [TaskEntity::class, SubTaskEntity::class, CategoryEntity::class], version = 14, exportSchema = true
 )
 @TypeConverters(PriorityConverter::class)
 abstract class AppDataBase : RoomDatabase() {
