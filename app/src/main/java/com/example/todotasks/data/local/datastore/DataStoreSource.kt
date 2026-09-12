@@ -1,8 +1,8 @@
 package com.example.todotasks.data.local.datastore
 
 import androidx.datastore.core.DataStore
+import com.example.todotasks.domain.model.GroupAndSort
 import com.example.todotasks.domain.model.SettingsApp
-import com.example.todotasks.domain.model.TaskListPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
@@ -14,13 +14,13 @@ import javax.inject.Inject
 
 class DataStoreSource @Inject constructor(private val dataStore: DataStore<SettingsApp>) {
 
-    fun getTaskListPreferences(): Flow<TaskListPreferences> =
-        dataStore.data.map { settings -> settings.taskListPreferences }
+    fun getTaskGroupAndSort(): Flow<GroupAndSort> =
+        dataStore.data.map { settings -> settings.groupAndSort }
 
-    suspend fun setTaskListPreferences(taskListPreferences: TaskListPreferences) {
+    suspend fun setTaskGroupAndSort(groupAndSort: GroupAndSort) {
         dataStore.updateData { settings ->
             settings.copy(
-                taskListPreferences
+                groupAndSort = groupAndSort
             )
         }
     }
