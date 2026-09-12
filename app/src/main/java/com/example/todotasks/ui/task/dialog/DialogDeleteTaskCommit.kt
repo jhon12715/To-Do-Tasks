@@ -7,7 +7,7 @@ import androidx.fragment.app.activityViewModels
 import com.example.todotasks.databinding.DialogDeleteTaskBinding
 import com.example.todotasks.ui.core.dialog_base_commit_action.DialogBaseCommitAction
 import com.example.todotasks.ui.task.task_list.TaskListViewModel
-import com.example.todotasks.ui.task.task_list.TaskUiEvent
+import com.example.todotasks.ui.task.TaskUiEvent
 
 class DialogDeleteTaskCommit() : DialogBaseCommitAction() {
 
