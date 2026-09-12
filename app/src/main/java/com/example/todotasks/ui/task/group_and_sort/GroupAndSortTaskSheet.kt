@@ -15,7 +15,7 @@ import com.example.todotasks.databinding.GroupAndSorterTaskSheetBinding
 import com.example.todotasks.domain.model.GroupByTask
 import com.example.todotasks.domain.model.SortByTask
 import com.example.todotasks.ui.task.task_list.TaskListViewModel
-import com.example.todotasks.ui.task.task_list.TaskUiEvent
+import com.example.todotasks.ui.task.TaskUiEvent
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import kotlinx.coroutines.launch
 
@@ -57,9 +57,9 @@ class GroupAndSortTaskSheet : BottomSheetDialogFragment() {
     private fun initFlows() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.taskListPreferences.collect { taskListPreferences ->
-                    val groupAndSort = taskListPreferences?.groupAndSort
-                    putSelectedButton(groupAndSort!!.groupBy, groupAndSort.sortBy)
+                viewModel.groupAndSort.collect { groupAndSort ->
+
+                    putSelectedButton(groupAndSort!!.groupBy, groupAndSort!!.sortBy)
                 }
             }
         }
