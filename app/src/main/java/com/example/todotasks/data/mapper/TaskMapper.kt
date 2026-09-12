@@ -18,11 +18,11 @@ fun TaskWithStatsProjection.toDomain() = TaskListItem(
 
 fun TaskEntity.toDomain() = Task(
     id = id,
-    task = task,
+    tittle = tittle,
     priority = priority,
     isCompleted = isCompleted,
     date = date,
-    categoryId = category
+    categoryId = categoryId
 )
 
 fun List<TaskEntity>.toDomain(): List<Task> =
@@ -30,18 +30,18 @@ fun List<TaskEntity>.toDomain(): List<Task> =
 
 fun Task.toEntity() = TaskEntity(
     id = id,
-    task = task,
+    tittle = tittle,
     isCompleted = isCompleted,
     priority = priority,
     date = date,
-    category = categoryId
+    categoryId = categoryId
 )
 
 //SubTask
 fun SubTaskEntity.toDomain() = SubTask(
     id = id,
     idTask = idTask,
-    title = title,
+    tittle = title,
     completed = completed,
     priority = priority
 )
@@ -49,7 +49,7 @@ fun SubTaskEntity.toDomain() = SubTask(
 fun SubTask.toEntity() = SubTaskEntity(
     id = id,
     idTask = idTask,
-    title = title,
+    title = tittle,
     completed = completed,
     priority = priority
 )
