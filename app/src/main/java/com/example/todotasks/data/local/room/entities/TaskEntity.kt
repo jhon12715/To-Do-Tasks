@@ -10,13 +10,13 @@ import java.time.LocalDate
 
 @Entity(
     tableName = "task", indices = [
-        Index(value = ["task"], unique = true),
-        Index(value = ["category"])],
+        Index(value = ["tittle"], unique = true),
+        Index(value = ["categoryId"])],
     foreignKeys = [
         ForeignKey(
             entity = CategoryEntity::class,
             parentColumns = ["id"],
-            childColumns = ["category"],
+            childColumns = ["categoryId"],
             onDelete = ForeignKey.SET_NULL
         )
     ]
@@ -25,8 +25,8 @@ data class TaskEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo("id") val id: Long = 0,
     @ColumnInfo("priority") val priority: TaskPriority,
-    @ColumnInfo("task", collate = ColumnInfo.NOCASE) val task: String,
+    @ColumnInfo("tittle", collate = ColumnInfo.NOCASE) val tittle: String,
     @ColumnInfo("isCompleted") val isCompleted: Boolean,
     @ColumnInfo("date") val date: LocalDate?,
-    @ColumnInfo("category") val category: Long?
+    @ColumnInfo("categoryId") val categoryId: Long?
 )
