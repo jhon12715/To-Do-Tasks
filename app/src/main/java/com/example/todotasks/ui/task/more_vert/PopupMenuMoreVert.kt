@@ -36,7 +36,7 @@ class PopupMenuMoreVert (context: Context) {
             popup.dismiss()
         }
 
-        tvGroupAndFilter.setOnClickListener {
+        tvGroupAndSort.setOnClickListener {
             popupMoreVertCallbacks.groupAndOrder()
             popup.dismiss()
         }
