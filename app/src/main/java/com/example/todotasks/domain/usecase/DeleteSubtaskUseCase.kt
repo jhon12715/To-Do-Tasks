@@ -6,8 +6,13 @@ import javax.inject.Inject
 
 class DeleteSubtaskUseCase @Inject constructor(private val repository: TaskRepository) {
 
-    suspend operator fun invoke(id: Long): ResultEvent {
-        repository.deleteSubTask(id)
-        return ResultEvent.Success("La subtarea ha sido borrada correctamente")
+    suspend operator fun invoke(listSubTaskId: List<Long>): ResultEvent {
+        if (listSubTaskId.isEmpty()) return ResultEvent.Error("Debe seleccionar al menos una subtarea")
+        repository.deleteSubTask(listSubTaskId)
+        return if (listSubTaskId.size == 1){
+            ResultEvent.Success("La subtarea ha sido borrada correctamente")
+        } else{
+            ResultEvent.Success("Las subtareas han sido borradas correctamente")
+        }
     }
 }
