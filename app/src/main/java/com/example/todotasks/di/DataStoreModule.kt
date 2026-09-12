@@ -3,6 +3,7 @@ package com.example.todotasks.di
 import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.core.DataStoreFactory
+import androidx.datastore.core.handlers.ReplaceFileCorruptionHandler
 import androidx.datastore.dataStoreFile
 import com.example.todotasks.domain.model.SettingsApp
 import com.example.todotasks.domain.model.SettingsAppSerializer
@@ -27,6 +28,7 @@ object DataStoreModule {
         @ApplicationContext context: Context
     ): DataStore<SettingsApp> = DataStoreFactory.create(
         serializer = SettingsAppSerializer,
-        produceFile = { context.dataStoreFile("settingsApp.json") }
+        produceFile = { context.dataStoreFile("settingsApp.json") },
+        corruptionHandler = ReplaceFileCorruptionHandler { SettingsApp() }
     )
 }
