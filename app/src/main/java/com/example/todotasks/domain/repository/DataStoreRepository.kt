@@ -1,7 +1,6 @@
 package com.example.todotasks.domain.repository
 
-import com.example.todotasks.domain.model.TaskListPreferences
-import com.example.todotasks.ui.model.GroupAndSort
+import com.example.todotasks.domain.model.GroupAndSort
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -10,6 +9,6 @@ import kotlinx.coroutines.flow.Flow
  */
 
 interface DataStoreRepository{
-    fun getTaskListPreferences(): Flow<TaskListPreferences>
-    suspend fun setTaskListPreferences(taskListPreferences: TaskListPreferences)
+    fun getTaskGroupAndSort(): Flow<GroupAndSort>
+    suspend fun setTaskGroupAndSort(groupAndSort: GroupAndSort)
 }
