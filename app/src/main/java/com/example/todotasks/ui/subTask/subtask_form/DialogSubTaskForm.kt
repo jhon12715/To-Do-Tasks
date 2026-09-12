@@ -19,11 +19,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.todotasks.databinding.DialogFormTaskBinding
+import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.ui.core.ResultEvent
 import com.example.todotasks.ui.core.extensions.applyWindowApparence
 import com.example.todotasks.ui.core.extensions.cardbackgroundMoreWhite
 import com.example.todotasks.ui.core.extensions.getParcelableCompat
+import com.example.todotasks.ui.core.extensions.hideKeyboard
+import com.example.todotasks.ui.core.extensions.setSettingsEditTextOfForm
 import com.example.todotasks.ui.model.SubTaskUI
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.debounce
@@ -42,27 +45,36 @@ class DialogSubTaskForm() :
     private var toast: Toast? = null
 
     companion object {
-        const val SUBTASK_ITEM = "SUBTASK_ITEM"
-        fun newInstance(subTask: SubTaskUI = SubTaskUI()): DialogSubTaskForm =
+        const val SUBTASK_ID = "SUBTASK_ID"
+        const val TASK_ID = "TASK_ID"
+        fun newInstance(subTaskId: Long = 0, taskId: Long = 0): DialogSubTaskForm =
             DialogSubTaskForm().apply {
                 arguments = Bundle().apply {
-                    putParcelable(SUBTASK_ITEM, subTask)
+                    putLong(SUBTASK_ID, subTaskId)
+                    putLong(TASK_ID, taskId)
                 }
             }
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val subTask = arguments?.getParcelableCompat<SubTaskUI>(SUBTASK_ITEM) ?: SubTaskUI()
-        viewModel.onEvent(SubTaskFormEvent.OpeningForm(subTask))
-        Log.i("OnCreate","")
+        val subTaskId = arguments?.getLong(SUBTASK_ID) ?: 0L
+        val taskId = arguments?.getLong(TASK_ID) ?: 0L
+
+        if (subTaskId == 0L) {
+            viewModel.onEvent(SubTaskFormEvent.OpeningNewForm(taskId))
+        } else {
+            viewModel.onEvent(SubTaskFormEvent.OpeningEditForm(subTaskId))
+        }
+
+        Log.i("OnCreate", "")
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         _binding = DialogFormTaskBinding.inflate(layoutInflater)
         val builder = AlertDialog.Builder(requireContext())
+        Log.i("text", viewModel.subTaskFormState.value.toString())
         builder.setView(binding.root)
-        startUI()
         setFlows()
         setListeners()
         Log.i("Lifecycle", "onCreateDialog")
@@ -82,68 +94,88 @@ class DialogSubTaskForm() :
             binding.tvTittle.text = "Añadir Subtarea"
         } else {
             binding.tvTittle.text = "Editar Subtarea"
-            binding.etTask.setText(subTask.nameSubTask)
+            binding.tiedTaskName.setText(subTask.nameSubTask)
         }
 
         binding.tvDateTittle.visibility = View.GONE
         binding.tvDate.visibility = View.GONE
         binding.ivDate.visibility = View.GONE
         binding.tilCategory.visibility = View.GONE
+        setSettingsComponents()
+    }
 
+    private fun setSettingsComponents() {
+        setSettingsEditTextOfForm(
+            binding.tilTaskName,
+            binding.tiedTaskName,
+            SubTask.SUBTASK_TITTLE_MAX_LENGTH
+        )
     }
 
     private fun setFlows() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.resultEvent.collect { eventResult ->
 
-                    showToast(eventResult.message)
+                launch {
+                    viewModel.resultEvent.collect { eventResult ->
 
-                    when (eventResult) {
-                        is ResultEvent.Success -> {
-                            dismiss()
-                        }
+                        showToast(eventResult.message)
 
-                        else -> {
+                        when (eventResult) {
+                            is ResultEvent.Success -> {
+                                dismiss()
+                            }
 
+                            else -> {
+
+                            }
                         }
                     }
                 }
-            }
-        }
-
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.subTaskFormState.map { it.isValid }
-                    .debounce { 50 }
-                    .distinctUntilChanged()
-                    .collect { isValid ->
-
-                        binding.btnFinish.isClickable = isValid
 
 
-                        if (isValid) {
+                launch {
+                    viewModel.subTaskFormState.map { it.isValid }
+                        .debounce { 50 }
+                        .distinctUntilChanged()
+                        .collect { isValid ->
 
-                            binding.btnFinish.text = "Valido"
-                            binding.btnFinish.setBackgroundColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    com.example.todotasks.R.color.formValid
+                            binding.btnFinish.isClickable = isValid
+
+
+                            if (isValid) {
+
+                                binding.btnFinish.text = "Valido"
+                                binding.btnFinish.setBackgroundColor(
+                                    ContextCompat.getColor(
+                                        requireContext(),
+                                        com.example.todotasks.R.color.formValid
+                                    )
                                 )
-                            )
 
-                        } else {
+                            } else {
 
-                            binding.btnFinish.text = "No Valido"
-                            binding.btnFinish.setBackgroundColor(
-                                ContextCompat.getColor(
-                                    requireContext(),
-                                    com.example.todotasks.R.color.formNotValid
+                                binding.btnFinish.text = "No Valido"
+                                binding.btnFinish.setBackgroundColor(
+                                    ContextCompat.getColor(
+                                        requireContext(),
+                                        com.example.todotasks.R.color.formNotValid
+                                    )
                                 )
-                            )
+                            }
+
                         }
+                }
 
-                    }
+                launch {
+                    viewModel.subTaskFormState.map { it.isInitialized }
+                        .distinctUntilChanged()
+                        .collect { isInitialized ->
+                            if (isInitialized) {
+                                startUI()
+                            }
+                        }
+                }
             }
         }
 
@@ -155,7 +187,7 @@ class DialogSubTaskForm() :
             viewModel.onEvent(SubTaskFormEvent.CommitForm)
         }
 
-        binding.etTask.addTextChangedListener(object : TextWatcher {
+        binding.tiedTaskName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 viewModel.onEvent(
                     SubTaskFormEvent.UpdateSubTaskName(s.toString())
@@ -177,6 +209,10 @@ class DialogSubTaskForm() :
         }
 
         )
+
+        binding.tiedTaskName.setOnFocusChangeListener { view, isFocused ->
+            if (!isFocused) view.hideKeyboard()
+        }
 
     }
 
