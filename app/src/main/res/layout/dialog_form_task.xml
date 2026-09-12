@@ -6,8 +6,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
-    app:contentPadding="8dp"
-    android:focusableInTouchMode="true">
+    android:focusableInTouchMode="true"
+    app:contentPadding="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
 
         <TextView
             android:id="@+id/tvTittle"
-            style="@style/TitleText"
+            style="@style/TittleText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="TextView"
@@ -23,33 +23,38 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <EditText
-            android:id="@+id/etTask"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilTaskName"
+            style="@style/outlinedTextInputLayoutNormal"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
             android:layout_marginTop="16dp"
-            android:background="@drawable/custom_editext"
-            android:ems="10"
+            android:layout_marginHorizontal="16dp"
             android:hint="Nombre"
-            android:inputType="text"
-            android:padding="8dp"
-            android:textSize="14dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.079"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvTittle" />
+            app:layout_constraintTop_toBottomOf="@+id/tvTittle" >
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/tiedTaskName"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:inputType="textCapSentences| textMultiLine |textAutoCorrect"
+                android:textSize="14dp"
+                />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPriorityTask"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            style="@style/outlinedTextInputLayoutWithDropDownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
             android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="@+id/etTask"
-            app:layout_constraintStart_toStartOf="@+id/etTask"
-            app:layout_constraintTop_toBottomOf="@+id/etTask">
+            android:hint="Prioridad"
+            app:layout_constraintEnd_toEndOf="@+id/tilTaskName"
+            app:layout_constraintStart_toStartOf="@+id/tilTaskName"
+            app:layout_constraintTop_toBottomOf="@+id/tilTaskName">
 
             <!-- Inside text input layout add
                   an auto complete text view
@@ -58,8 +63,8 @@
                 android:id="@+id/autoCompletePriorityTasktv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:hint="Prioridad"
+                android:paddingStart="16dp"
+                android:textSize="14sp"
                 android:inputType="none" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -105,13 +110,13 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilCategory"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+            style="@style/outlinedTextInputLayoutWithDropDownMenu"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
             android:layout_marginTop="16dp"
-            app:layout_constraintEnd_toEndOf="@+id/etTask"
-            app:layout_constraintStart_toStartOf="@+id/etTask"
+            android:hint="Categoría"
+            app:layout_constraintEnd_toEndOf="@+id/tilTaskName"
+            app:layout_constraintStart_toStartOf="@+id/tilTaskName"
             app:layout_constraintTop_toBottomOf="@+id/ivDate">
 
             <!-- Inside text input layout add
@@ -121,8 +126,9 @@
                 android:id="@+id/autoCompleteCategorytv"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:paddingStart="16dp"
+                android:textSize="14sp"
                 android:completionThreshold="1"
-                android:hint="Categoría"
                 android:inputType="text" />
 
         </com.google.android.material.textfield.TextInputLayout>
