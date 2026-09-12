@@ -21,7 +21,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rgTaskFilter" />
+            app:layout_constraintTop_toBottomOf="@+id/tvSelectedToDelete" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/fabTask"
@@ -39,7 +39,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="8dp"
-            android:background="@drawable/custom_radio_button"
             android:checkedButton="@+id/rbAll"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -94,6 +93,25 @@
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_more_vert"
             android:background="?attr/selectableItemBackgroundBorderless"/>
+
+        <ImageView
+            android:id="@+id/ivDeleteTask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@+id/tvSelectedToDelete"
+            app:layout_constraintEnd_toStartOf="@+id/tvSelectedToDelete"
+            app:layout_constraintTop_toTopOf="@+id/tvSelectedToDelete"
+            android:layout_marginEnd="4dp"
+            app:srcCompat="@drawable/ic_delete" />
+
+        <TextView
+            android:id="@+id/tvSelectedToDelete"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="8dp"
+            android:text="TextView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rgTaskFilter" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
@@ -107,7 +125,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:visibility="invisible">
+        tools:visibility="gone">
 
         <ProgressBar
             android:id="@+id/pbLoading"
@@ -115,7 +133,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="visible" />
+            android:visibility="visible"
+            tools:visibility="gone" />
     </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
