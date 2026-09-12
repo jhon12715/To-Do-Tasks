@@ -17,12 +17,14 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.todotasks.databinding.DialogFormTaskBinding
+import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.ui.core.ResultEvent
 import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
 import com.example.todotasks.ui.core.extensions.cardbackgroundMoreWhite
 import com.example.todotasks.ui.core.extensions.getParcelableCompat
 import com.example.todotasks.ui.core.extensions.hideKeyboard
+import com.example.todotasks.ui.core.extensions.setSettingsEditTextOfForm
 import com.example.todotasks.ui.model.CategoryUI
 import com.example.todotasks.ui.model.TaskUI
 import dagger.hilt.android.AndroidEntryPoint
@@ -70,11 +72,15 @@ class DialogTaskForm() : DialogFragment() {
         _binding = DialogFormTaskBinding.inflate(layoutInflater)
         val builder = AlertDialog.Builder(requireContext())
         builder.setView(binding.root)
+        setSettingsComponents()
         setListeners()
         setFlows()
 
-
         return builder.create()
+    }
+
+    private fun setSettingsComponents(){
+        setSettingsEditTextOfForm(binding.tilTaskName, binding.tiedTaskName, Task.TASK_TITTLE_MAX_LENGTH)
     }
 
     override fun onStart() {
@@ -145,7 +151,7 @@ class DialogTaskForm() : DialogFragment() {
         binding.parent.cardbackgroundMoreWhite(0.9f)
         val tittleModeForm = if (taskForm.id == 0L) "Nuevo" else "Editar"
         binding.tvTittle.text = tittleModeForm
-        binding.etTask.setText(taskForm.name)
+        binding.tiedTaskName.setText(taskForm.name)
         editDateFormUI(taskForm.date)
         initDownMenu()
 
@@ -167,11 +173,11 @@ class DialogTaskForm() : DialogFragment() {
             )
         }
 
-        etTask.setOnFocusChangeListener { view, _ ->
-            view.hideKeyboard()
+        tiedTaskName.setOnFocusChangeListener { view, isFocused ->
+            if (!isFocused) view.hideKeyboard()
         }
 
-        etTask.addTextChangedListener(object : TextWatcher {
+        tiedTaskName.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable) {
                 viewModel.onEvent(
                     TaskFormEvent.UpdateNameTaskForm(
@@ -195,6 +201,10 @@ class DialogTaskForm() : DialogFragment() {
         }
 
         )
+
+        binding.autoCompleteCategorytv.setOnFocusChangeListener { view, isFocused ->
+            if (!isFocused) view.hideKeyboard()
+        }
     }
 
     private fun setFlows() {
