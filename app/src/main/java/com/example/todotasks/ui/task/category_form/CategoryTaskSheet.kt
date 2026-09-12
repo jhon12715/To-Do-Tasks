@@ -13,9 +13,12 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.example.todotasks.R
 import com.example.todotasks.databinding.CategoryTaskSheetBinding
+import com.example.todotasks.domain.model.Category
+import com.example.todotasks.domain.usecase.UpsertTaskUseCase
 import com.example.todotasks.ui.core.ResultEvent
 import com.example.todotasks.ui.core.extensions.getParcelableCompat
 import com.example.todotasks.ui.core.extensions.hideKeyboard
+import com.example.todotasks.ui.core.extensions.setSettingsEditTextOfForm
 import com.example.todotasks.ui.model.CategoryUI
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,15 +63,24 @@ class CategoryTaskSheet : BottomSheetDialogFragment() {
     }
 
     private fun startUI() {
+        setSettingsComponents()
         val categoryForm = viewModel.categoryFormState.value
-        val title = if (categoryForm.categoryIdForm == 0L) {
+        val tittle = if (categoryForm.categoryIdForm == 0L) {
             "Añadir nueva categoría"
         } else {
             "Editar categoría"
         }
 
-        binding.tvTittle.text = title
-        binding.etCategory.setText(categoryForm.nameCategoryForm)
+        binding.tvTittle.text = tittle
+        binding.tiedCategoryName.setText(categoryForm.nameCategoryForm)
+    }
+
+    private fun setSettingsComponents() {
+        setSettingsEditTextOfForm(
+            binding.tilCategoryName,
+            binding.tiedCategoryName,
+            Category.CATEGORY_TITTLE_MAX_LENGTH
+        )
     }
 
     private fun initListeners() {
@@ -76,7 +88,7 @@ class CategoryTaskSheet : BottomSheetDialogFragment() {
             viewModel.onEvent(CategoryEvent.UpsertCategory)
         }
 
-        binding.etCategory.addTextChangedListener(object : TextWatcher {
+        binding.tiedCategoryName.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
 
             }
@@ -90,7 +102,7 @@ class CategoryTaskSheet : BottomSheetDialogFragment() {
 
         })
 
-        binding.etCategory.setOnFocusChangeListener { view, _ -> view.hideKeyboard() }
+        binding.tiedCategoryName.setOnFocusChangeListener { view, _ -> view.hideKeyboard() }
     }
 
     private fun setFlows() {
