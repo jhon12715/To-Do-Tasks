@@ -4,7 +4,8 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
-import com.example.todotasks.ui.task.TaskItemCallbacks
+import com.example.todotasks.ui.model.ScreenMode
+import com.example.todotasks.ui.task.task_list.adapter.TaskItemCallbacks
 import com.example.todotasks.ui.model.TaskUI
 import com.example.todotasks.ui.task.task_list.adapter.TaskViewHolder
 
@@ -24,7 +25,7 @@ class TaskAdapter(
     override fun onBindViewHolder(
         holder: TaskViewHolder, position: Int
     ) {
-        holder.render(lista[position], callbacks)
+        holder.render(lista[position], ScreenMode.NORMAL, callbacks)
     }
 
 }
