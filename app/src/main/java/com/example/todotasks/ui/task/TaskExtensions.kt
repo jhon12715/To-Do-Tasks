@@ -1,8 +1,8 @@
-package com.example.todotasks.ui.core.extensions
+package com.example.todotasks.ui.task
 
 import com.example.todotasks.domain.model.GroupByTask
 import com.example.todotasks.domain.model.SortByTask
-import com.example.todotasks.domain.model.TaskIsCompletedFilter
+import com.example.todotasks.domain.model.IsCompletedFilter
 import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.ui.model.DateHeaderSorter
 import com.example.todotasks.ui.model.TaskUI
@@ -11,12 +11,12 @@ import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 
 
-fun List<TaskUI>.filterByIsCompleted(filterIsCompleted: TaskIsCompletedFilter): List<TaskUI> {
+fun List<TaskUI>.filterByIsCompleted(filterIsCompleted: IsCompletedFilter): List<TaskUI> {
 
     return when (filterIsCompleted) {
-        TaskIsCompletedFilter.ALL -> this
-        TaskIsCompletedFilter.COMPLETED -> this.filter { it.isCompleted }
-        TaskIsCompletedFilter.NOT_COMPLETED -> this.filter { !it.isCompleted }
+        IsCompletedFilter.ALL -> this
+        IsCompletedFilter.COMPLETED -> this.filter { it.isCompleted }
+        IsCompletedFilter.NOT_COMPLETED -> this.filter { !it.isCompleted }
     }
 }
 
@@ -79,7 +79,7 @@ fun List<TaskUI>.applyTaskGroupByAndSorterBy(
 
     fun Map<String, List<TaskUI>>.getListSorted(): Map<String, List<TaskUI>> {
         return when (sortByTask) {
-            SortByTask.TITTLE -> this.mapValues { it.value.sortedBy { task -> task.task.lowercase() } }
+            SortByTask.TITTLE -> this.mapValues { it.value.sortedBy { task -> task.tittle.lowercase() } }
             SortByTask.PRIORITY -> this.mapValues { it.value.sortedBy { task -> task.priority } }
             SortByTask.DATE -> this.mapValues {
                 it.value.sortedBy { task -> sortBydate(task.date) }
@@ -106,7 +106,7 @@ fun TaskUI.toTaskItem(): TypeTaskListItem.TaskItem {
     return TypeTaskListItem.TaskItem(this)
 }
 
-fun List<TaskUI>.applyTaskFilterAndSort(filter: TaskIsCompletedFilter): List<TaskUI> {
+fun List<TaskUI>.applyTaskFilterAndSort(filter: IsCompletedFilter): List<TaskUI> {
 
     val today = LocalDate.now()
 
@@ -132,7 +132,7 @@ fun List<TaskUI>.applyTaskFilterAndSort(filter: TaskIsCompletedFilter): List<Tas
 
     return when (filter) {
 
-        TaskIsCompletedFilter.ALL ->
+        IsCompletedFilter.ALL ->
             sortedWith(
                 compareBy<TaskUI> { it.isCompleted }
                     .thenBy { it.priority.num }
@@ -141,7 +141,7 @@ fun List<TaskUI>.applyTaskFilterAndSort(filter: TaskIsCompletedFilter): List<Tas
                     .thenBy { it.id }
             )
 
-        TaskIsCompletedFilter.NOT_COMPLETED ->
+        IsCompletedFilter.NOT_COMPLETED ->
             filter { !it.isCompleted }
                 .sortedWith(
                     compareBy<TaskUI> { it.priority.num }
@@ -150,7 +150,7 @@ fun List<TaskUI>.applyTaskFilterAndSort(filter: TaskIsCompletedFilter): List<Tas
                         .thenBy { it.id }
                 )
 
-        TaskIsCompletedFilter.COMPLETED ->
+        IsCompletedFilter.COMPLETED ->
             filter { it.isCompleted }
                 .sortedBy { it.id }
     }
