@@ -12,11 +12,11 @@ class UpsertTaskUseCase @Inject constructor(
     private val scheduler: TaskNotificationAlarmManager
 ) {
 
-    suspend operator fun invoke(
-        task: Task
-    ): ResultEvent {
+    suspend operator fun invoke(task: Task): ResultEvent {
 
-        return if (task.task.trim().isNotEmpty()) {
+        if (isNotValidLenght(task.tittle)) return ResultEvent.Error("Te has pasado del límite de carácteres")
+
+        return if (task.tittle.trim().isNotEmpty()) {
             try {
 
                 val isEditing = task.id != 0L
@@ -56,5 +56,7 @@ class UpsertTaskUseCase @Inject constructor(
 
         }
     }
+
+    private fun isNotValidLenght(name: String): Boolean = name.length > Task.TASK_TITTLE_MAX_LENGTH
 
 }

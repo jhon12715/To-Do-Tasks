@@ -11,7 +11,9 @@ class UpsertSubTaskUseCase @Inject constructor(private val repository: TaskRepos
 
     suspend operator fun invoke(subTask: SubTask): ResultEvent {
 
-        if (subTask.title.trim().isEmpty()) {
+        if (isNotValidLenght(subTask.tittle)) return ResultEvent.Error("Te has pasado del límite de carácteres")
+
+        if (subTask.tittle.trim().isEmpty()) {
             return ResultEvent.Error("El nombre no puede estar vacío")
         }
 
@@ -26,4 +28,6 @@ class UpsertSubTaskUseCase @Inject constructor(private val repository: TaskRepos
             ResultEvent.Error("La subtarea ya existe")
         }
     }
+
+    private fun isNotValidLenght(name: String): Boolean = name.length > SubTask.SUBTASK_TITTLE_MAX_LENGTH
 }

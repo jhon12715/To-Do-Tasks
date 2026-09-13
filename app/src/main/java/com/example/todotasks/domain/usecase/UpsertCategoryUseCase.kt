@@ -10,6 +10,8 @@ class UpsertCategoryUseCase @Inject constructor(private val repository: TaskRepo
 
     suspend operator fun invoke(category: Category): ResultEvent {
 
+        if (isNotValidLenght(category.name)) return ResultEvent.Error("Te has pasado del límite de carácteres")
+
         val categoryTrim = category.name.trim()
 
         if (categoryTrim.isEmpty()) return ResultEvent.Error("El campo no puede ir vacío")
@@ -22,4 +24,6 @@ class UpsertCategoryUseCase @Inject constructor(private val repository: TaskRepo
             ResultEvent.Error("La categoría ya existe")
         }
     }
+
+    private fun isNotValidLenght(name: String) = name.length > Category.CATEGORY_TITTLE_MAX_LENGTH
 }
