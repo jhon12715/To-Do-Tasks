@@ -7,8 +7,9 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class SubTaskUI(
     val id: Long = 0,
-    val idTask: Long = 0,
-    val title: String = "",
-    val completed: Boolean = false,
+    val idTask: Long  =0,
+    val tittle: String = "",
+    val isCompleted: Boolean = false,
+    val isSelectedToDelete: Boolean = false,
     val priority: TaskPriority = TaskPriority.NORMAL
 ): Parcelable
