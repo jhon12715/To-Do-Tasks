@@ -19,16 +19,17 @@ interface TaskRepository {
     suspend fun getTask(id: Long): Task
     suspend fun getParentTaskInfo(id: Long): ParentTaskInfo
     suspend fun upsertTask(task: Task): Long
-    suspend fun deleteTask(id: Long)
+    suspend fun deleteTasks(listId: List<Long>)
     suspend fun updateCompletedTask(id: Long, completed: Boolean)
     suspend fun taskExists(name: String, id: Long): Boolean
 
     //SubTaskDao
     fun getAllSubTasks(idTask: Long): Flow<List<SubTask>>
     suspend fun upsertSubTask(subTask: SubTask)
-    suspend fun deleteSubTask(id: Long)
+    suspend fun deleteSubTask(listSubTaskId: List<Long>)
     suspend fun updateCompletedSubTask(id: Long, completed: Boolean)
     suspend fun subTaskExists(name: String, subTaskId: Long, taskId: Long): Boolean
+    suspend fun getSubtaskById(subTaskId: Long): SubTask
     //CategoriesDao
     fun getAllCategories(): Flow<List<Category>>
     suspend fun deleteCategory(category: Category)
