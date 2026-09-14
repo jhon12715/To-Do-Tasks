@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
 import com.example.todotasks.ui.core.adapter.TaskHeaderViewHolder
-import com.example.todotasks.ui.task.TaskItemCallbacks
+import com.example.todotasks.ui.model.ScreenMode
 import com.example.todotasks.ui.model.TypeTaskListItem
 
 class TaskListAdapter(
@@ -16,6 +16,13 @@ class TaskListAdapter(
     companion object {
         const val TYPE_HEADER_TASK = 0
         const val TYPE_ITEM_TASK = 1
+    }
+
+    private var screenMode: ScreenMode = ScreenMode.NORMAL
+
+    fun updateScreenMode(newScreenMode: ScreenMode) {
+        screenMode = newScreenMode
+        notifyItemRangeChanged(0, itemCount)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -38,15 +45,33 @@ class TaskListAdapter(
 
     }
 
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        val item = getItem(position)
+
+        if (item is TypeTaskListItem.TaskItem){
+            val holderItem = holder as TaskViewHolder
+            when(val latestPayload = payloads.lastOrNull()){
+                is TaskPayload.TittleChange -> holderItem.renderTittle(latestPayload.newTittle)
+                is TaskPayload.IsCompletedChange -> holderItem.renderIscompleted(latestPayload.newIsCompleted)
+                is TaskPayload.IsSelectedToDeleteChange -> holderItem
+                is TaskPayload.DateChange -> holderItem.renderDate(latestPayload.newDate)
+                is TaskPayload.SubTaskCompletedChange -> holderItem
+            }
+        }
+
+        onBindViewHolder(holder, position)
+    }
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        println("item3: ${getItem(position)}")
+
         when (val item = getItem(position)) {
             is TypeTaskListItem.HeaderItem -> {
                 (holder as TaskHeaderViewHolder).render(item.header)
             }
 
             is TypeTaskListItem.TaskItem -> {
-                (holder as TaskViewHolder).render(item.task, callbacks)
+                (holder as TaskViewHolder).render(item.task, screenMode, callbacks)
             }
         }
     }
