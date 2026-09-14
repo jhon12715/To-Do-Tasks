@@ -9,7 +9,8 @@ import com.example.todotasks.ui.model.SubTaskUI
  */
 
 sealed class SubTaskFormEvent(){
-    data class OpeningForm(val subTask: SubTaskUI): SubTaskFormEvent()
+    data class OpeningNewForm(val taskId: Long): SubTaskFormEvent()
+    data class OpeningEditForm(val subTaskId: Long): SubTaskFormEvent()
     data class UpdateSubTaskName(val name: String): SubTaskFormEvent()
     data class UpdateSubTaskPriority(val priority: TaskPriority): SubTaskFormEvent()
     data object CommitForm: SubTaskFormEvent()
