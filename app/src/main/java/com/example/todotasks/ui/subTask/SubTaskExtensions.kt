@@ -1,56 +1,51 @@
 package com.example.todotasks.ui.subTask
 
+import com.example.todotasks.domain.model.IsCompletedFilter
 import com.example.todotasks.domain.model.SubTask
-import com.example.todotasks.domain.model.TaskIsCompletedFilter
 import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.ui.model.SubTaskUI
 import com.example.todotasks.ui.model.TypeSubTaskListItem
 
-fun List<SubTask>.applySubTaskFilterAndSort(filter: TaskIsCompletedFilter): List<TypeSubTaskListItem> {
+fun List<SubTaskUI>.applySubTaskFilterAndSort(filter: IsCompletedFilter): List<TypeSubTaskListItem> {
 
-    fun List<SubTask>.listFiltered(): List<SubTask> {
+    fun List<SubTaskUI>.listFiltered(): List<SubTaskUI> {
         return when (filter) {
 
-            TaskIsCompletedFilter.ALL ->
-                sortedBy { it.id }
+            IsCompletedFilter.ALL -> this
 
-            TaskIsCompletedFilter.COMPLETED ->
-                filter { it.completed }
-                    .sortedBy { it.id }
+            IsCompletedFilter.COMPLETED ->
+                filter { it.isCompleted }
 
-            TaskIsCompletedFilter.NOT_COMPLETED ->
-                filter { !it.completed }
-                    .sortedBy { it.id }
-        }
+            IsCompletedFilter.NOT_COMPLETED ->
+                filter { !it.isCompleted }
+
+        }.sortedBy { it.id }
     }
 
-    fun List<SubTask>.listGroupedBy(): Map<TaskPriority, List<SubTask>> {
+    fun List<SubTaskUI>.listGrouped(): Map<TaskPriority, List<SubTaskUI>> {
         return this.groupBy { it.priority }.toSortedMap(compareBy() { it.num })
     }
 
-    val listFiltered = this.listFiltered()
-    val listfilteredAndGrouped: Map<TaskPriority, List<SubTask>> = listFiltered.listGroupedBy()
+
+    val filtered = listFiltered()
+    val grouped = filtered.listGrouped()
 
 
-    val listflated = listfilteredAndGrouped.flatMap {
-        val header = listOf(TypeSubTaskListItem.HeaderItem(it.key.name))
-        val items = it.value.map {
-            TypeSubTaskListItem.SubTaskItem(
-                it.toUI()
-            )
-        }
-        header + items
+    return grouped.flatMap {(priority, subtasks) ->
+        val header = TypeSubTaskListItem.HeaderItem(priority.name)
+        val items = subtasks.map { TypeSubTaskListItem.SubTaskItem(it) }
+
+       listOf(header)+ items
 
     }
-    return listflated
 }
 
 fun SubTaskUI.toDomain(): SubTask {
     return SubTask(
         id = this.id,
         idTask = this.idTask,
-        title = this.title,
-        completed = this.completed,
+        tittle = this.tittle,
+        completed = this.isCompleted,
         priority = this.priority
     )
 }
@@ -59,8 +54,8 @@ fun SubTask.toUI(): SubTaskUI {
     return SubTaskUI(
         id = this.id,
         idTask = this.idTask,
-        title = this.title,
-        completed = this.completed,
+        tittle = this.tittle,
+        isCompleted = this.completed,
         priority = this.priority
     )
 }
