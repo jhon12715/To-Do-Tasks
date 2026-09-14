@@ -1,6 +1,5 @@
 package com.example.todotasks.ui.task.task_list
 
-import android.graphics.Canvas
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,18 +10,18 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.databinding.ItemPageTaskBinding
-import com.example.todotasks.domain.model.Task
+import com.example.todotasks.ui.model.ScreenMode
 import com.example.todotasks.ui.model.TaskUI
-import com.example.todotasks.ui.model.TypeTaskListItem
-import com.example.todotasks.ui.subTask.list_subtask.SubTaskActivity
-import com.example.todotasks.ui.task.TaskItemCallbacks
-import com.example.todotasks.ui.task.dialog.DialogDeleteTask
+import com.example.todotasks.ui.model.TypeCategoryUI
+import com.example.todotasks.ui.subTask.subtask_list.SubTaskActivity
+import com.example.todotasks.ui.task.TaskUiEvent
+import com.example.todotasks.ui.task.task_list.adapter.TaskItemCallbacks
 import com.example.todotasks.ui.task.task_form.DialogTaskForm
 import com.example.todotasks.ui.task.task_list.adapter.TaskListAdapter
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 /**
@@ -57,8 +56,10 @@ class TaskFragment() : Fragment() {
                 openEditDialogTaskForm(taskUI)
             },
             openSubTaskActivity = { id, name -> openSubTaskById(id, name) },
-            deleteTask = { task -> openDialogDeleteTask(task) },
-            updateCompletedTask = { id, completed -> updateCompletedTask(id, completed) }
+            updateCompletedTask = { id, completed -> updateCompletedTask(id, completed) },
+            updateScreenMode = { screenMode -> updateScreenMode(screenMode) },
+            addTaskToDelete = { taskId -> addTaskToDelete(taskId) },
+            removeTaskToDelete = { taskId -> removeTaskToDelete(taskId) }
         )
     }
 
@@ -69,16 +70,6 @@ class TaskFragment() : Fragment() {
     ): View? {
         _binding = ItemPageTaskBinding.inflate(inflater)
         return binding.root
-    }
-
-    override fun onStart() {
-        super.onStart()
-        Log.d("LIFECYCLE", "onStart $categoryId")
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.d("LIFECYCLE", "onStop $categoryId")
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -104,9 +95,6 @@ class TaskFragment() : Fragment() {
                 LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
             this.adapter = rvAdapter
         }
-        println("entraaaa")
-        val itemTouchHelper = ItemTouchHelper(itemTouchHelperCallback)
-        itemTouchHelper.attachToRecyclerView(binding.rvTasks)
 
     }
 
@@ -116,15 +104,42 @@ class TaskFragment() : Fragment() {
 
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
 
-                viewModel.getTasksByCategory(categoryId).collect { tasks ->
-                    println("recibe: $tasks, size: ${tasks.size}")
-                    if (tasks.isNotEmpty()) {
+                launch {
+                    viewModel.taskUIState.map { it.selectedFilterCategoryId }
+                        .distinctUntilChanged()
+                        .collect { selectedFilterCategoryId ->
+                            val position: Int =
+                                viewModel.categoriesUI.value!!.indexOfFirst { category ->
+                                    if (category is TypeCategoryUI.CategoryItem) {
+                                        category.category.id == selectedFilterCategoryId
+                                    } else {
+                                        false
+                                    }
+                                }
+                            binding.rvTasks.smoothScrollToPosition(position)
+                        }
+                }
+
+                launch {
+                    viewModel.getTasksByCategory(categoryId).collect { tasks ->
                         rvAdapter.submitList(tasks)
+
                     }
+                }
+
+                launch {
+                    viewModel.taskUIState.map { it.screenMode }
+                        .distinctUntilChanged()
+                        .collect { screenMode ->
+
+                            rvAdapter.updateScreenMode(screenMode)
+
+                        }
                 }
             }
         }
     }
+
 
     private fun openEditDialogTaskForm(taskUI: TaskUI) {
         dialogTaskForm = DialogTaskForm.newInstance(taskUI)
@@ -138,75 +153,25 @@ class TaskFragment() : Fragment() {
         this.startActivity(intent)
     }
 
-    private fun openDialogDeleteTask(task: Task) {
-        DialogDeleteTask(task).show(parentFragmentManager, "")
-    }
-
     private fun updateCompletedTask(id: Long, isCompleted: Boolean) {
         viewModel.onEvent(TaskUiEvent.UpdateCompletedTask(id, isCompleted))
     }
 
+    private fun updateScreenMode(screenMode: ScreenMode) {
+        viewModel.onEvent(TaskUiEvent.UpdateScreenMode(screenMode))
+    }
+
+    private fun addTaskToDelete(taskId: Long) {
+        viewModel.onEvent(TaskUiEvent.AddTaskToDelete(taskId))
+    }
+
+    private fun removeTaskToDelete(taskId: Long) {
+        viewModel.onEvent(TaskUiEvent.RemoveTaskToDelete(taskId))
+    }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-    }
-
-    private val itemTouchHelperCallback = object : ItemTouchHelper.SimpleCallback(
-        0, /*ItemTouchHelper.LEFT or*/ ItemTouchHelper.RIGHT
-    ) {
-        override fun onMove(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            target: RecyclerView.ViewHolder
-        ): Boolean {
-            return false // No necesitamos drag & drop
-        }
-
-        override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-            val position = viewHolder.adapterPosition
-            val id = viewHolder.itemId
-            println("id: $id position: $position")
-            viewModel.onEvent(TaskUiEvent.DeleteTask(id))
-            // Llama a tu adaptador para eliminar el item
-            // adapter.notifyItemRemoved(position)
-        }
-
-        override fun getSwipeDirs(
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder
-        ): Int {
-            val position = viewHolder.adapterPosition
-
-            // Evita errores si la posición ya no es válida en el adaptador
-            if (position == RecyclerView.NO_POSITION) return 0
-
-            // 1. Obtén el adaptador
-            val adapter = recyclerView.adapter as? TaskListAdapter
-
-            // 2. Obtén el ítem actual de tu lista de datos
-            val item = adapter?.currentList?.getOrNull(position)
-
-            // 3. Verifica si es instancia de la clase permitida
-            if (item is TypeTaskListItem.TaskItem) {
-                return super.getSwipeDirs(recyclerView, viewHolder) // Permite el swipe
-            }
-
-            return 0
-        }
-
-        override fun onChildDraw(
-            c: Canvas,
-            recyclerView: RecyclerView,
-            viewHolder: RecyclerView.ViewHolder,
-            dX: Float,
-            dY: Float,
-            actionState: Int,
-            isCurrentlyActive: Boolean
-        ) {
-            // Aplica la animación nativa de Material Design al deslizar
-            super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive)
-        }
     }
 
 }
