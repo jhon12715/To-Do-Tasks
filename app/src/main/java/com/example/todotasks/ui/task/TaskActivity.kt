@@ -2,7 +2,6 @@ package com.example.todotasks.ui.task
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -15,15 +14,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.MarginPageTransformer
 import com.example.todotasks.R
 import com.example.todotasks.databinding.ActivityTaskBinding
-import com.example.todotasks.domain.model.TaskIsCompletedFilter
+import com.example.todotasks.domain.model.IsCompletedFilter
 import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
 import com.example.todotasks.ui.model.CategoryUI
+import com.example.todotasks.ui.model.ScreenMode
 import com.example.todotasks.ui.model.TaskUI
 import com.example.todotasks.ui.task.task_form.DialogTaskForm
 import com.example.todotasks.ui.task.adapter.CategoriesListAdapter
 import com.example.todotasks.ui.task.category_form.CategoryTaskSheet
 import com.example.todotasks.ui.model.TypeCategoryUI
 import com.example.todotasks.ui.task.adapter.PopupCategoryCallbacks
+import com.example.todotasks.ui.task.dialog.DialogDeleteTaskCommit
 import com.example.todotasks.ui.task.group_and_sort.GroupAndSortTaskSheet
 import com.example.todotasks.ui.task.task_list.TaskListViewModel
 import com.example.todotasks.ui.task.task_list.adapter.TasksCollectionAdapter
@@ -31,7 +32,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import com.example.todotasks.ui.task.task_list.TaskUiEvent
 import com.example.todotasks.ui.task.more_vert.PopupMenuMoreVert
 import com.example.todotasks.ui.task.more_vert.PopupMoreVertCallbacks
 import kotlinx.coroutines.flow.filterNotNull
@@ -90,12 +90,19 @@ class TaskActivity : AppCompatActivity() {
 
         binding.rgTaskFilter.setOnCheckedChangeListener { _, checkedId ->
             val filter = when (checkedId) {
-                R.id.rbAll -> TaskIsCompletedFilter.ALL
-                R.id.rbCompletedTasks -> TaskIsCompletedFilter.COMPLETED
-                R.id.rbNotCompletedTasks -> TaskIsCompletedFilter.NOT_COMPLETED
-                else -> TaskIsCompletedFilter.ALL
+                R.id.rbAll -> IsCompletedFilter.ALL
+                R.id.rbCompletedTasks -> IsCompletedFilter.COMPLETED
+                R.id.rbNotCompletedTasks -> IsCompletedFilter.NOT_COMPLETED
+                else -> IsCompletedFilter.ALL
             }
-            viewModel.onEvent(TaskUiEvent.UpdateTaskFilter(filter))
+            viewModel.onEvent(TaskUiEvent.UpdateTaskIsCompletedFilter(filter))
+        }
+
+        binding.ivDeleteTask.setOnClickListener {
+            DialogDeleteTaskCommit().show(
+                supportFragmentManager,
+                ""
+            )
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -131,7 +138,7 @@ class TaskActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch {
-                    viewModel.categoriesState
+                    viewModel.categoriesUI
                         .filterNotNull()
                         .collect { categories ->
                             updateCategories(categories)
@@ -146,11 +153,42 @@ class TaskActivity : AppCompatActivity() {
                 }
 
                 launch {
-                    viewModel.taskUIState.map { it.isLoading }
+                    viewModel.taskUIState.map { it.screenMode }
                         .distinctUntilChanged()
-                        .collect { isLoading ->
-                            binding.viewIsLoading.isVisible = isLoading
-                            println("isLoading: $isLoading")
+                        .collect { screenMode ->
+
+                            binding.viewIsLoading.isVisible = screenMode == ScreenMode.LOADING
+                            val isVisibleIfIsDeleteMode =
+                                if (screenMode != ScreenMode.DELETE) View.GONE else View.VISIBLE
+                            binding.tvSelectedToDelete.visibility = isVisibleIfIsDeleteMode
+                            binding.ivDeleteTask.visibility = isVisibleIfIsDeleteMode
+
+                        }
+                }
+
+                launch {
+                    viewModel.taskUIState.map { it.tasksSelectedToDeleteText }
+                        .distinctUntilChanged()
+                        .collect { tasksSelectedToDeleteText ->
+                            binding.tvSelectedToDelete.text = tasksSelectedToDeleteText
+                        }
+                }
+
+                launch {
+                    viewModel.taskUIState.map { it.tasksSelectedToDelete }
+                        .distinctUntilChanged()
+                        .collect { tasksSelectedToDelete ->
+                            val isListEmpty = tasksSelectedToDelete.isEmpty()
+                            binding.ivDeleteTask.apply {
+                                isClickable = !isListEmpty
+                                setAlpha(
+                                    if (isListEmpty) {
+                                        128
+                                    } else {
+                                        255
+                                    }
+                                )
+                            }
                         }
                 }
 
@@ -198,7 +236,8 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun openNewDialogTaskForm() {
-        taskForm = DialogTaskForm.newInstance(TaskUI())
+        val currentCategoryId = viewModel.taskUIState.value.selectedFilterCategoryId
+        taskForm = DialogTaskForm.newInstance(TaskUI(categoryId = currentCategoryId))
         taskForm.show(supportFragmentManager, "")
     }
 
@@ -228,6 +267,15 @@ class TaskActivity : AppCompatActivity() {
             adapter = rvCategoriesAdapter
         }
 
+    }
+
+    override fun onBackPressed() {
+        val currentScreenMode = viewModel.taskUIState.value.screenMode
+        if (currentScreenMode == ScreenMode.DELETE) viewModel.onEvent(
+            TaskUiEvent.UpdateScreenMode(
+                ScreenMode.NORMAL
+            )
+        ) else super.onBackPressed()
     }
 
 }
