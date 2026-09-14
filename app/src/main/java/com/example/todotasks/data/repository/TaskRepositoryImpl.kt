@@ -41,8 +41,8 @@ class TaskRepositoryImpl @Inject constructor(
         return taskDao.upsertTask(task.toEntity())
     }
 
-    override suspend fun deleteTask(id: Long) {
-        taskDao.deleteTask(id)
+    override suspend fun deleteTasks(listId: List<Long>) {
+        taskDao.deleteTasks(listId)
     }
 
     override suspend fun updateCompletedTask(id: Long, completed: Boolean) {
@@ -54,18 +54,18 @@ class TaskRepositoryImpl @Inject constructor(
 //SubTaskDao
 
     override fun getAllSubTasks(idTask: Long): Flow<List<SubTask>> =
-        subTaskDao.getAllSubTasks(idTask)
+        subTaskDao.getAllSubTasks(idTask).map { list -> list.map { entity -> entity.toDomain() } }
 
 
     override suspend fun upsertSubTask(subTask: SubTask) {
 
-            val entity = subTask.toEntity()
-            subTaskDao.upsertSubTask(entity)
+        val entity = subTask.toEntity()
+        subTaskDao.upsertSubTask(entity)
     }
 
 
-    override suspend fun deleteSubTask(id: Long) {
-        subTaskDao.deleteSubTask(id)
+    override suspend fun deleteSubTask(listSubTaskId: List<Long>) {
+        subTaskDao.deleteSubTask(listSubTaskId)
     }
 
     override suspend fun updateCompletedSubTask(id: Long, completed: Boolean) {
@@ -74,6 +74,9 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun subTaskExists(name: String, subTaskId: Long, taskId: Long): Boolean =
         subTaskDao.subTaskExists(name, subTaskId, taskId)
+
+    override suspend fun getSubtaskById(subTaskId: Long): SubTask =
+        subTaskDao.getSubtaskById(subTaskId).toDomain()
 
 //CategoriesDao
 
