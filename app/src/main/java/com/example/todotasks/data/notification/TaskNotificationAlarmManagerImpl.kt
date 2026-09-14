@@ -28,7 +28,7 @@ class TaskNotificationAlarmManagerImpl @Inject constructor(
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             action = "TASK_REMINDER_$idNotificationTask"
         }
-        intent.putExtra(NAME_TASK_ALARM, task.task)
+        intent.putExtra(NAME_TASK_ALARM, task.tittle)
         val dayBeforeText = when (dayBefore) {
             7L -> "Quedan 7 días"
             2L -> "Quedan 2 días"
