@@ -2,29 +2,21 @@ package com.example.todotasks.ui.task.task_form
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.todotasks.domain.model.Category
 import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.domain.usecase.GetAllCategoriesUseCase
 import com.example.todotasks.domain.usecase.TaskExistsUseCase
 import com.example.todotasks.domain.usecase.UpsertTaskUseCase
 import com.example.todotasks.ui.core.ResultEvent
-import com.example.todotasks.ui.mapper.toDomain
 import com.example.todotasks.ui.mapper.toFormUi
-import com.example.todotasks.ui.model.CategoryUI
 import com.example.todotasks.ui.model.TaskUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.WhileSubscribed
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -105,11 +97,11 @@ class TaskFormViewModel @Inject constructor(
                 println("item: $task")
                 TaskFormState(
                     id = task.id,
-                    name = task.task,
+                    name = task.tittle,
                     priority = task.priority,
                     date = task.date,
                     categoryId = task.categoryId,
-                    isValid = task.task.isNotEmpty(),
+                    isValid = task.tittle.isNotEmpty(),
                     isReady = true,
                     availableCategories = categories
                 )
@@ -122,7 +114,7 @@ class TaskFormViewModel @Inject constructor(
 
         return Task(
             id = originalTask!!.id,
-            task = taskForm.name,
+            tittle = taskForm.name,
             priority = taskForm.priority,
             isCompleted = originalTask!!.isCompleted,
             date = taskForm.date,
