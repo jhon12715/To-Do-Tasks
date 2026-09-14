@@ -39,7 +39,7 @@ class TaskNotificationWorkManagerImpl @Inject constructor(
                 .setInputData(
                     workDataOf(
                         TASK_ID_WORKER to task.id,
-                        TASK_NAME_WORKER to task.task,
+                        TASK_NAME_WORKER to task.tittle,
                         DAYS_BEFORE_WORKER to daysBefore
                     )
                 )
