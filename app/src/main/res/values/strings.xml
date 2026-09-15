@@ -2,4 +2,6 @@
     <string name="app_name">To Do Tasks</string>
     <string name="tittle_activity_main">To Do Tasks</string>
     <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
 </resources>
