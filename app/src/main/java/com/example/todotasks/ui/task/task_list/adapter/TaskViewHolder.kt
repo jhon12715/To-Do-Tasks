@@ -47,7 +47,7 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     private fun renderModeNormal() = with(binding) {
 
         renderDate(item.date)
-        renderTaskCompleted(item.subTaskCompleted)
+        renderSubTasksCompleted(item.subTaskCompleted)
         setupCheckbox()
         setupClicks()
 
@@ -82,7 +82,7 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    fun renderTaskCompleted(subTaskCompleted: String) {
+    fun renderSubTasksCompleted(subTaskCompleted: String) {
         binding.tvTaskCompleted.apply {
             visibility = if (item.totalSubTask == 0) View.GONE else View.VISIBLE
             text = subTaskCompleted
