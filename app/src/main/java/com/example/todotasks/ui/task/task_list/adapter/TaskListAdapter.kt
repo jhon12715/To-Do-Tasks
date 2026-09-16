@@ -54,9 +54,9 @@ class TaskListAdapter(
             when(val latestPayload = payloads.lastOrNull()){
                 is TaskPayload.TittleChange -> holderItem.renderTittle(latestPayload.newTittle)
                 is TaskPayload.IsCompletedChange -> holderItem.renderIscompleted(latestPayload.newIsCompleted)
-                is TaskPayload.IsSelectedToDeleteChange -> holderItem
+                is TaskPayload.IsSelectedToDeleteChange -> holderItem.renderIsSelectedToDelete(latestPayload.newIsSelectedToDeleteChange)
                 is TaskPayload.DateChange -> holderItem.renderDate(latestPayload.newDate)
-                is TaskPayload.SubTaskCompletedChange -> holderItem
+                is TaskPayload.SubTaskCompletedChange -> holderItem.renderSubTasksCompleted(latestPayload.newSubTaskCompleted)
             }
         }
 
