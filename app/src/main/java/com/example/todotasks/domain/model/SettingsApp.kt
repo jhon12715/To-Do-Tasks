@@ -16,7 +16,8 @@ import java.io.OutputStream
 
 @Serializable
 data class SettingsApp(
-    val groupAndSort: GroupAndSort = GroupAndSort()
+    val groupAndSortTask: GroupAndSortTask = GroupAndSortTask(),
+    val groupAndSortSubTask: GroupAndSortSubTask = GroupAndSortSubTask()
 )
 
 object SettingsAppSerializer : Serializer<SettingsApp> {
