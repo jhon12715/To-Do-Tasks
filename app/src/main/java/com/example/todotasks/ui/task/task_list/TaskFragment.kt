@@ -48,13 +48,10 @@ class TaskFragment() : Fragment() {
     private val viewModel: TaskListViewModel by activityViewModels()
     private lateinit var rvAdapter: TaskListAdapter
     private var categoryId: Long = 0
-    private lateinit var dialogTaskForm: DialogTaskForm
 
     private val callbacks: TaskItemCallbacks by lazy {
         TaskItemCallbacks(
-            editTask = { taskUI ->
-                openEditDialogTaskForm(taskUI)
-            },
+            editTask = { taskUI -> openEditDialogTaskForm(taskUI) },
             openSubTaskActivity = { id, name -> openSubTaskById(id, name) },
             updateCompletedTask = { id, completed -> updateCompletedTask(id, completed) },
             updateScreenMode = { screenMode -> updateScreenMode(screenMode) },
@@ -142,8 +139,7 @@ class TaskFragment() : Fragment() {
 
 
     private fun openEditDialogTaskForm(taskUI: TaskUI) {
-        dialogTaskForm = DialogTaskForm.newInstance(taskUI)
-        dialogTaskForm.show(parentFragmentManager, "")
+        DialogTaskForm.newInstance(taskUI).show(parentFragmentManager, "")
     }
 
     private fun openSubTaskById(id: Long, task: String) {
