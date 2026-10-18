@@ -19,6 +19,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/iv_more_vert"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_margin="@dimen/margin_iv_more_vert"
+        android:clickable="true"
+        android:focusable="true"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_more_vert"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
+
     <TextView
         android:id="@+id/tvCompleted"
         style="@style/SubTittleText"
