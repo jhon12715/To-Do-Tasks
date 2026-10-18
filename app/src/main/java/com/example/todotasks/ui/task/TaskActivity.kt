@@ -25,15 +25,16 @@ import com.example.todotasks.ui.task.category_form.CategoryTaskSheet
 import com.example.todotasks.ui.model.TypeCategoryUI
 import com.example.todotasks.ui.task.adapter.PopupCategoryCallbacks
 import com.example.todotasks.ui.task.dialog.DialogDeleteTaskCommit
-import com.example.todotasks.ui.task.group_and_sort.GroupAndSortTaskSheet
+import com.example.todotasks.ui.more_vert.group_and_sort.GroupAndSortTaskSheet
+import com.example.todotasks.ui.more_vert.group_and_sort.GroupAndSortType
 import com.example.todotasks.ui.task.task_list.TaskListViewModel
 import com.example.todotasks.ui.task.task_list.adapter.TasksCollectionAdapter
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import com.example.todotasks.ui.task.more_vert.PopupMenuMoreVert
-import com.example.todotasks.ui.task.more_vert.PopupMoreVertCallbacks
+import com.example.todotasks.ui.more_vert.more_vert.PopupMenuMoreVert
+import com.example.todotasks.ui.more_vert.more_vert.PopupMoreVertCallbacks
 import kotlinx.coroutines.flow.filterNotNull
 
 @AndroidEntryPoint
@@ -45,7 +46,6 @@ class TaskActivity : AppCompatActivity() {
     private val viewModel: TaskListViewModel by viewModels()
     private var toast: Toast? = null
     private lateinit var categoryForm: CategoryTaskSheet
-    private val groupAndFilter: GroupAndSortTaskSheet by lazy { GroupAndSortTaskSheet() }
     private lateinit var taskForm: DialogTaskForm
 
     private val popupCategoryCallbacks by lazy {
@@ -217,7 +217,7 @@ class TaskActivity : AppCompatActivity() {
 
     //PopupMoreVert
     private fun openGroupAndFilterTaskSheet() {
-        groupAndFilter.show(supportFragmentManager, "")
+        GroupAndSortTaskSheet.newInstance(GroupAndSortType.TASK).show(supportFragmentManager, "")
     }
 
     private fun openCategoryTaskSheet() {
@@ -236,8 +236,9 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun openNewDialogTaskForm() {
-        val currentCategoryId = viewModel.taskUIState.value.selectedFilterCategoryId
-        taskForm = DialogTaskForm.newInstance(TaskUI(categoryId = currentCategoryId))
+
+        val idVerify = viewModel.verifyCurrentCategoryIdExists()
+        taskForm = DialogTaskForm.newInstance(TaskUI(categoryId = idVerify))
         taskForm.show(supportFragmentManager, "")
     }
 
