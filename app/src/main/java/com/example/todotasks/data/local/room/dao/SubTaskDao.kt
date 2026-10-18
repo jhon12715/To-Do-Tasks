@@ -22,7 +22,7 @@ interface SubTaskDao {
     @Query("UPDATE subTask SET completed = :completed WHERE id = :id")
     suspend fun updateCompletedSubTask(id: Long, completed: Boolean)
 
-    @Query("SELECT EXISTS (SELECT * FROM subTask WHERE title = :name AND id != :subTaskId AND idTask = :taskId COLLATE NOCASE)")
+    @Query("SELECT EXISTS (SELECT * FROM subTask WHERE title = :name AND id != :subTaskId COLLATE NOCASE AND idTask = :taskId)")
     suspend fun subTaskExists(name: String, subTaskId: Long, taskId: Long): Boolean
 
     @Query("SELECT * FROM subTask WHERE id = :subTaskId")

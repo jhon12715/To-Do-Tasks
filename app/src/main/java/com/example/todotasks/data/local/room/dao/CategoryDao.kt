@@ -19,6 +19,6 @@ interface CategoryDao{
     @Delete
     suspend fun deleteCategory(category: CategoryEntity)
 
-    @Query("SELECT EXISTS(SELECT * FROM category WHERE name = :name AND id != :id COLLATE NOCASE)")
+    @Query("SELECT EXISTS(SELECT * FROM category WHERE name = :name COLLATE NOCASE AND id != :id)")
     suspend fun categoryExists(name: String, id: Long): Boolean
 }
