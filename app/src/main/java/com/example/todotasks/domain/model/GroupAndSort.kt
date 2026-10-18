@@ -9,9 +9,16 @@ import kotlinx.serialization.Serializable
  */
 
 @Serializable
-data class GroupAndSort(
+data class GroupAndSortTask(
     val groupBy: GroupByTask = GroupByTask.PRIORITY,
     val sortBy: SortByTask = SortByTask.TITTLE,
+    val sortOrder: SortOrder = SortOrder.ASC
+)
+
+@Serializable
+data class GroupAndSortSubTask(
+    val groupBy: GroupBySubTask = GroupBySubTask.PRIORITY,
+    val sortBy: SortBySubTask = SortBySubTask.TITTLE,
     val sortOrder: SortOrder = SortOrder.ASC
 )
 
@@ -22,10 +29,21 @@ enum class GroupByTask() {
 }
 
 @Serializable
+enum class GroupBySubTask() {
+    PRIORITY
+}
+
+@Serializable
 enum class SortByTask() {
     TITTLE,
     PRIORITY,
     DATE
+}
+
+@Serializable
+enum class SortBySubTask() {
+    TITTLE,
+    PRIORITY
 }
 
 @Serializable
