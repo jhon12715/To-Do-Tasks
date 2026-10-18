@@ -1,6 +1,7 @@
 package com.example.todotasks.domain.repository
 
-import com.example.todotasks.domain.model.GroupAndSort
+import com.example.todotasks.domain.model.GroupAndSortSubTask
+import com.example.todotasks.domain.model.GroupAndSortTask
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -9,6 +10,9 @@ import kotlinx.coroutines.flow.Flow
  */
 
 interface DataStoreRepository{
-    fun getTaskGroupAndSort(): Flow<GroupAndSort>
-    suspend fun setTaskGroupAndSort(groupAndSort: GroupAndSort)
+    fun getTaskGroupAndSort(): Flow<GroupAndSortTask>
+    suspend fun setTaskGroupAndSort(groupAndSort: GroupAndSortTask)
+
+    fun getSubTaskGroupAndSort(): Flow<GroupAndSortSubTask>
+    suspend fun setSubTaskGroupAndSort(groupAndSort: GroupAndSortSubTask)
 }
