@@ -66,7 +66,7 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    fun getDateByDiferenceOfToday(date: LocalDate): String{
+    private fun getDateByDiferenceOfToday(date: LocalDate): String {
         val today = LocalDate.now()
         val dayRest: Long = ChronoUnit.DAYS.between(today, date)
         val dateFormatted = date.format(getAppFormatter())
@@ -91,16 +91,18 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
     private fun setupCheckbox() = with(binding) {
 
-        cbIsCompleted.setOnCheckedChangeListener(null)
-        renderIscompleted(item.isCompleted)
+        renderIsCompleted(item.isCompleted)
 
         cbIsCompleted.setOnCheckedChangeListener { _, isChecked ->
             callbacks.updateCompletedTask(item.id, isChecked)
         }
     }
 
-    fun renderIscompleted(isCompleted: Boolean) {
-        binding.cbIsCompleted.isChecked = isCompleted
+    fun renderIsCompleted(isCompleted: Boolean) = with(binding) {
+        cbIsCompleted.apply {
+            setOnCheckedChangeListener(null)
+            cbIsCompleted.isChecked = isCompleted
+        }
     }
 
     private fun setupClicks() = with(binding) {
@@ -157,8 +159,6 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     }
 
     private fun setupCheckboxDeleteMode() = with(binding) {
-
-        cbIsSelectedToDelete.setOnCheckedChangeListener(null)
         renderIsSelectedToDelete(item.isSelectedToDelete)
 
         cbIsSelectedToDelete.setOnCheckedChangeListener { _, isChecked ->
@@ -170,8 +170,11 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    fun renderIsSelectedToDelete(isSelectedToDelete: Boolean) {
-        binding.cbIsSelectedToDelete.isChecked = isSelectedToDelete
+    fun renderIsSelectedToDelete(isSelectedToDelete: Boolean) = with(binding) {
+        cbIsSelectedToDelete.apply {
+            setOnCheckedChangeListener(null)
+            isChecked = isSelectedToDelete
+        }
     }
 
     private fun setupClicksDeleteMode() = with(binding) {
