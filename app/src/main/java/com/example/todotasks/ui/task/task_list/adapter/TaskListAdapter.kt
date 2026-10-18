@@ -27,7 +27,6 @@ class TaskListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        println("entraaaaa")
         return when (viewType) {
             TYPE_HEADER_TASK -> {
                 val view = inflater.inflate(R.layout.item_task_header, parent, false)
@@ -53,7 +52,7 @@ class TaskListAdapter(
             val holderItem = holder as TaskViewHolder
             when(val latestPayload = payloads.lastOrNull()){
                 is TaskPayload.TittleChange -> holderItem.renderTittle(latestPayload.newTittle)
-                is TaskPayload.IsCompletedChange -> holderItem.renderIscompleted(latestPayload.newIsCompleted)
+                is TaskPayload.IsCompletedChange -> holderItem.renderIsCompleted(latestPayload.newIsCompleted)
                 is TaskPayload.IsSelectedToDeleteChange -> holderItem.renderIsSelectedToDelete(latestPayload.newIsSelectedToDeleteChange)
                 is TaskPayload.DateChange -> holderItem.renderDate(latestPayload.newDate)
                 is TaskPayload.SubTaskCompletedChange -> holderItem.renderSubTasksCompleted(latestPayload.newSubTaskCompleted)
