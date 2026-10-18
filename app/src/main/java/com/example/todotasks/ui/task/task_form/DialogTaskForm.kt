@@ -137,8 +137,8 @@ class DialogTaskForm() : DialogFragment() {
             setAdapter(arrayAdapter)
             threshold = 1
             setOnItemClickListener { _, _, position, _ ->
-                val idCategorySelected = categories[position].id
-                println("category id: $idCategorySelected")
+                val idCategorySelected = if(categories[position].id > 1) categories[position].id else null
+
                 viewModel.onEvent(TaskFormEvent.UpdateCategoryIdTaskForm(idCategorySelected))
             }
             println("categories: ${taskForm.availableCategories}")
