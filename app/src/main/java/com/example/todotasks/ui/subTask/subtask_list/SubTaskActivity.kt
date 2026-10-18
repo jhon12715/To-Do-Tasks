@@ -17,6 +17,10 @@ import com.example.todotasks.domain.model.IsCompletedFilter
 import com.example.todotasks.ui.subTask.DialogDeleteSubtaskCommit
 import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
 import com.example.todotasks.ui.model.ScreenMode
+import com.example.todotasks.ui.more_vert.group_and_sort.GroupAndSortTaskSheet
+import com.example.todotasks.ui.more_vert.group_and_sort.GroupAndSortType
+import com.example.todotasks.ui.more_vert.more_vert.PopupMenuMoreVert
+import com.example.todotasks.ui.more_vert.more_vert.PopupMoreVertCallbacks
 import com.example.todotasks.ui.subTask.subtask_list.adapter.SubTaskListAdapter
 import com.example.todotasks.ui.subTask.subtask_form.DialogSubTaskForm
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,6 +33,12 @@ import kotlinx.coroutines.launch
 class SubTaskActivity : AppCompatActivity() {
 
     private val viewModel: SubTaskViewModel by viewModels()
+
+    private val popupMoreVertCallbacks by lazy {
+        PopupMoreVertCallbacks(
+            groupAndOrder = ::openGroupAndFilterTaskSheet
+        )
+    }
 
     companion object {
         const val EXTRA_TASK_ID = "EXTRA_TASK_ID"
@@ -92,6 +102,10 @@ class SubTaskActivity : AppCompatActivity() {
 
         ivDeleteSubTask.setOnClickListener {
             DialogDeleteSubtaskCommit().show(supportFragmentManager, "")
+        }
+
+        ivMoreVert.setOnClickListener {
+            PopupMenuMoreVert(binding.root.context).show(ivMoreVert, popupMoreVertCallbacks)
         }
     }
 
@@ -249,6 +263,10 @@ class SubTaskActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
             adapter = rvAdapter
         }
+    }
+
+    private fun openGroupAndFilterTaskSheet() {
+        GroupAndSortTaskSheet.newInstance(GroupAndSortType.SUBTASK).show(supportFragmentManager, "")
     }
 
     override fun onBackPressed() {
