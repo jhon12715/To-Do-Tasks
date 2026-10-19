@@ -3,7 +3,9 @@ package com.example.todotasks.ui.task
 import com.example.todotasks.domain.model.GroupByTask
 import com.example.todotasks.domain.model.SortByTask
 import com.example.todotasks.domain.model.IsCompletedFilter
+import com.example.todotasks.domain.model.SortOrder
 import com.example.todotasks.domain.model.TaskPriority
+import com.example.todotasks.ui.core.sortByOrder
 import com.example.todotasks.ui.model.DateHeaderSorter
 import com.example.todotasks.ui.model.TaskUI
 import com.example.todotasks.ui.model.TypeTaskListItem
@@ -24,10 +26,10 @@ fun List<TaskUI>.filterByIsCompleted(filterIsCompleted: IsCompletedFilter): List
 
 fun List<TaskUI>.applyTaskGroupByAndSorterBy(
     groupByTask: GroupByTask,
-    sortByTask: SortByTask
+    sortByTask: SortByTask,
+    sortOrder: SortOrder
 ): List<TypeTaskListItem> {
     //GroupBy
-    println("entra con ${groupByTask} y ${sortByTask}")
     fun groupByDateHeader(date: LocalDate?): String {
         if (date == null) return DateHeaderSorter.SIN_FECHA.header
         val today = LocalDate.now()
@@ -62,7 +64,7 @@ fun List<TaskUI>.applyTaskGroupByAndSorterBy(
 
     //SorterBy
 
-    fun sortBydate(date: LocalDate?): Long {
+    fun sortByDate(date: LocalDate?): Long {
         val today = LocalDate.now()
         return when {
             date == null -> Long.MAX_VALUE
@@ -79,12 +81,28 @@ fun List<TaskUI>.applyTaskGroupByAndSorterBy(
 
     fun Map<String, List<TaskUI>>.getListSorted(): Map<String, List<TaskUI>> {
         return when (sortByTask) {
-            SortByTask.TITTLE -> this.mapValues { it.value.sortedBy { task -> task.tittle.lowercase() } }
-            SortByTask.PRIORITY -> this.mapValues { it.value.sortedBy { task -> task.priority } }
-            SortByTask.DATE -> this.mapValues {
-                it.value.sortedBy { task -> sortBydate(task.date) }
+            SortByTask.TITTLE -> this.mapValues {
+                it.value.sortByOrder(
+                    sortOrder,
+                    { task -> task.tittle.lowercase() },
+                    { task -> task.id })
+
             }
-        }//.mapValues { it.value.sortedBy { task -> task.id } }
+
+            SortByTask.PRIORITY -> this.mapValues {
+                it.value.sortByOrder(
+                    sortOrder,
+                    { task -> task.priority },
+                    { task -> task.id })
+            }
+
+            SortByTask.DATE -> this.mapValues {
+                it.value.sortByOrder(
+                    sortOrder,
+                    { task -> sortByDate(task.date) },
+                    { task -> task.id })
+            }
+        }
     }
 
     val groupedItem: Map<String, List<TaskUI>> = this.getListGrouped()
