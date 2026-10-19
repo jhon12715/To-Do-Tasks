@@ -4,8 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.todotasks.domain.model.Category
-import com.example.todotasks.domain.model.GroupByTask
-import com.example.todotasks.domain.model.SortByTask
+import com.example.todotasks.domain.model.GroupAndSortTask
 import com.example.todotasks.domain.repository.DataStoreRepository
 import com.example.todotasks.domain.repository.TaskRepository
 import com.example.todotasks.domain.usecase.DeleteCategoryUseCase
@@ -20,8 +19,8 @@ import com.example.todotasks.ui.model.TypeCategoryUI
 import com.example.todotasks.ui.model.TypeTaskListItem
 import com.example.todotasks.ui.task.applyTaskGroupByAndSorterBy
 import com.example.todotasks.ui.task.filterByIsCompleted
-import com.example.todotasks.domain.model.GroupAndSort
 import com.example.todotasks.domain.model.IsCompletedFilter
+import com.example.todotasks.domain.model.SortOrder
 import com.example.todotasks.ui.model.ScreenMode
 import com.example.todotasks.ui.task.TaskUiEvent
 import com.example.todotasks.ui.task.TaskUiState
@@ -84,7 +83,7 @@ class TaskListViewModel @Inject constructor(
     )
 
     //GroupAndOrderState
-    val groupAndSort: StateFlow<GroupAndSort?> =
+    val groupAndSort: StateFlow<GroupAndSortTask?> =
         dataStoreRepository.getTaskGroupAndSort()
             .stateIn(
                 scope = viewModelScope,
@@ -129,8 +128,6 @@ class TaskListViewModel @Inject constructor(
             )
 
             is TaskUiEvent.DeleteCategory -> deleteCategory(event.category)
-            is TaskUiEvent.UpdateGroupBy -> updateGroupBy(event.groupBy)
-            is TaskUiEvent.UpdateSortBy -> updateOrderBy(event.sortBy)
             is TaskUiEvent.UpdateScreenMode -> updateScreenMode(event.screenMode)
             is TaskUiEvent.AddTaskToDelete -> addTaskToDelete(event.taskId)
             is TaskUiEvent.RemoveTaskToDelete -> removeTaskToDelete(event.taskId)
@@ -182,25 +179,10 @@ class TaskListViewModel @Inject constructor(
                 .filterByIsCompleted(isCompletedFilter)
                 .applyTaskGroupByAndSorterBy(
                     groupAndSort.groupBy,
-                    groupAndSort.sortBy
+                    groupAndSort.sortBy,
+                    groupAndSort.sortOrder
                 )
         }
-    }
-
-    private fun updateGroupBy(newGroupBy: GroupByTask) {
-        val groupAndSort = groupAndSort.value
-        val newGroupAndSort = groupAndSort!!.copy(
-            groupBy = newGroupBy
-        )
-        updateGroupAndSortDataStore(newGroupAndSort)
-    }
-
-    private fun updateOrderBy(newSortBy: SortByTask) {
-        val groupAndSort = groupAndSort.value
-        val newGroupAndSort = groupAndSort!!.copy(
-            sortBy = newSortBy
-        )
-        updateGroupAndSortDataStore(newGroupAndSort)
     }
 
     private fun updateScreenMode(newScreenMode: ScreenMode) {
@@ -230,8 +212,9 @@ class TaskListViewModel @Inject constructor(
         }
     }
 
-    private fun updateGroupAndSortDataStore(newGroupAndSort: GroupAndSort) {
-        viewModelScope.launch { dataStoreRepository.setTaskGroupAndSort(newGroupAndSort) }
+    fun verifyCurrentCategoryIdExists(): Long? {
+        val currentCategoryId = taskUIState.value.selectedFilterCategoryId
+        return if(currentCategoryId < 1) null else currentCategoryId
     }
 
 }
