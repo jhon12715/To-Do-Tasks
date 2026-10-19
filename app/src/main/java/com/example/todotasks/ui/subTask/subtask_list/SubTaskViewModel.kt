@@ -2,9 +2,11 @@ package com.example.todotasks.ui.subTask.subtask_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todotasks.domain.model.GroupAndSortSubTask
 import com.example.todotasks.domain.model.IsCompletedFilter
 import com.example.todotasks.domain.model.ParentTaskInfo
 import com.example.todotasks.domain.model.SubTask
+import com.example.todotasks.domain.repository.DataStoreRepository
 import com.example.todotasks.domain.repository.TaskRepository
 import com.example.todotasks.domain.usecase.DeleteSubtaskUseCase
 import com.example.todotasks.domain.usecase.UpdateSubTaskCompletedUseCase
@@ -31,6 +33,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SubTaskViewModel @Inject constructor(
     private val repository: TaskRepository,
+    dataStoreRepository: DataStoreRepository,
     private val updateSubTaskCompletedUseCase: UpdateSubTaskCompletedUseCase,
     private val deleteSubtaskUseCase: DeleteSubtaskUseCase
 ) : ViewModel() {
@@ -40,6 +43,13 @@ class SubTaskViewModel @Inject constructor(
 
     private val _parentTaskInfo: MutableStateFlow<ParentTaskInfo?> =
         MutableStateFlow(null)
+
+    private val groupAndSort: StateFlow<GroupAndSortSubTask?> = dataStoreRepository.getSubTaskGroupAndSort()
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            null
+        )
 
     //SubTask
     private val subTaskList: StateFlow<List<SubTask>?> = _parentTaskInfo.filterNotNull()
@@ -80,12 +90,13 @@ class SubTaskViewModel @Inject constructor(
         combine(
             _subTaskIsCompletedFilter,
             subTaskUIList.filterNotNull(),
-            screenMode
-        ) { filter, subTaskList, screenMode ->
+            screenMode,
+            groupAndSort.filterNotNull()
+        ) { filter, subTaskList, screenMode, groupAndSort ->
             SubTaskUiState(
                 tittle = _parentTaskInfo.value?.taskName ?: "",
                 filterSelected = filter,
-                listSubtasks = subTaskList.applySubTaskFilterAndSort(filter),
+                listSubtasks = subTaskList.applySubTaskFilterAndSort(filter, groupAndSort.groupBy, groupAndSort.sortBy, groupAndSort.sortOrder),
                 subTasksCompleted = subTaskList.count { it.isCompleted },
                 subTaskTotal = subTaskList.size,
                 subTaskSelectedToDelete = subTaskList.count { it.isSelectedToDelete },
@@ -101,7 +112,7 @@ class SubTaskViewModel @Inject constructor(
         finishLoading()
     }
 
-    private fun finishLoading(){
+    private fun finishLoading() {
         viewModelScope.launch {
             subTaskUIList.filterNotNull()
                 .first()
