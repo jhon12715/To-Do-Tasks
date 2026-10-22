@@ -10,6 +10,7 @@ import com.example.todotasks.domain.model.TaskPriority
 import com.example.todotasks.ui.core.ResultEvent
 import com.example.todotasks.ui.model.TaskUI
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 interface TaskRepository {
 
@@ -22,6 +23,7 @@ interface TaskRepository {
     suspend fun deleteTasks(listId: List<Long>)
     suspend fun updateCompletedTask(id: Long, completed: Boolean)
     suspend fun taskExists(name: String, id: Long): Boolean
+    suspend fun getTaskOldDate(taskId: Long): LocalDate?
 
     //SubTaskDao
     fun getAllSubTasks(idTask: Long): Flow<List<SubTask>>
