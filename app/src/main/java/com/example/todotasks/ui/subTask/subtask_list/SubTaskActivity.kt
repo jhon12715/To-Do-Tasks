@@ -90,6 +90,10 @@ class SubTaskActivity : AppCompatActivity() {
             newSubtaskForm()
         }
 
+        ivBack.setOnClickListener {
+            onBackPressed()
+        }
+
         rgTaskFilter.setOnCheckedChangeListener { _, checkedId ->
             val filter = when (checkedId) {
                 R.id.rbAll -> IsCompletedFilter.ALL
