@@ -13,6 +13,7 @@ import com.example.todotasks.domain.model.TaskListItem
 import com.example.todotasks.domain.repository.TaskRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import javax.inject.Inject
 
 class TaskRepositoryImpl @Inject constructor(
@@ -51,7 +52,10 @@ class TaskRepositoryImpl @Inject constructor(
 
     override suspend fun taskExists(name: String, id: Long): Boolean = taskDao.taskExists(name, id)
 
-//SubTaskDao
+    override suspend fun getTaskOldDate(taskId: Long): LocalDate? = taskDao.getTaskOldDate(taskId)
+
+
+    //SubTaskDao
 
     override fun getAllSubTasks(idTask: Long): Flow<List<SubTask>> =
         subTaskDao.getAllSubTasks(idTask).map { list -> list.map { entity -> entity.toDomain() } }
