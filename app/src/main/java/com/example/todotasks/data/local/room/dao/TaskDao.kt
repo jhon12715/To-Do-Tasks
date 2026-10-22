@@ -8,6 +8,7 @@ import com.example.todotasks.data.projection.TaskWithStatsProjection
 import com.example.todotasks.domain.model.ParentTaskInfo
 import com.example.todotasks.domain.model.Task
 import kotlinx.coroutines.flow.Flow
+import java.time.LocalDate
 
 @Dao
 interface TaskDao {
@@ -35,5 +36,8 @@ interface TaskDao {
 
     @Query("SELECT EXISTS(SELECT * FROM task WHERE tittle = :name COLLATE NOCASE AND id != :id)")
     suspend fun taskExists(name: String, id: Long): Boolean
+
+    @Query("SELECT date FROM task WHERE id = :taskId")
+    suspend fun getTaskOldDate(taskId: Long): LocalDate?
 
 }
