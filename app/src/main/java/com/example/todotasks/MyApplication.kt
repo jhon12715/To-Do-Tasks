@@ -18,12 +18,17 @@ class MyApplication : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        notificationHelper.createChannel()
+        createChannel()
         alarmPermission()
+    }
+
+    private fun createChannel(){
+        notificationHelper.createChannel()
     }
 
     private fun alarmPermission() {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        //Verificamos si es API 31
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
             if (!alarmManager.canScheduleExactAlarms()) {
                 startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM))
