@@ -13,5 +13,5 @@ data class SubTaskFormState(
     val nameSubTask: String = "",
     val prioritySubTask: TaskPriority = TaskPriority.NORMAL,
     val isValid: Boolean = false,
-    val isInitialized: Boolean = false
+    val isReady: Boolean = false
 )

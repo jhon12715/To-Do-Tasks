@@ -2,12 +2,14 @@ package com.example.todotasks.ui.task.task_form
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todotasks.R
 import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.model.TaskPriority
+import com.example.todotasks.domain.model.result_event.AppResultEvent
 import com.example.todotasks.domain.usecase.GetAllCategoriesUseCase
 import com.example.todotasks.domain.usecase.TaskExistsUseCase
 import com.example.todotasks.domain.usecase.UpsertTaskUseCase
-import com.example.todotasks.ui.core.ResultEvent
+import com.example.todotasks.ui.common.string_resource.StringProvider
 import com.example.todotasks.ui.mapper.toFormUi
 import com.example.todotasks.ui.model.TaskUI
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,11 +33,12 @@ import javax.inject.Inject
 class TaskFormViewModel @Inject constructor(
     private val upsertTaskUseCase: UpsertTaskUseCase,
     private val taskExistsUseCase: TaskExistsUseCase,
-    private val getAllCategoriesUseCase: GetAllCategoriesUseCase
+    private val getAllCategoriesUseCase: GetAllCategoriesUseCase,
+    private val stringProvider: StringProvider
 ) : ViewModel() {
     //Result
-    private val _resultEvent: MutableSharedFlow<ResultEvent> = MutableSharedFlow(replay = 0)
-    val resultEvent: SharedFlow<ResultEvent> = _resultEvent
+    private val _resultEvent: MutableSharedFlow<AppResultEvent> = MutableSharedFlow(replay = 0)
+    val resultEvent: SharedFlow<AppResultEvent> = _resultEvent
 
     //Task Form
     private val _taskFormState: MutableStateFlow<TaskFormState> = MutableStateFlow(TaskFormState())
@@ -91,7 +94,9 @@ class TaskFormViewModel @Inject constructor(
 
     private fun openingForm(task: TaskUI) {
         viewModelScope.launch {
-            val categories = getAllCategoriesUseCase().map { it.toFormUi() }.first()
+            val categories = getAllCategoriesUseCase().map {
+                it.toFormUi(stringProvider.getStringResource(R.string.uncategorized))
+            }.first()
             originalTask = task
             _taskFormState.update {
                 println("item: $task")

@@ -1,15 +1,12 @@
 package com.example.todotasks.ui.subTask.subtask_form
 
-import android.R
+import android.R as AndroidR
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -18,16 +15,15 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import com.example.todotasks.databinding.DialogFormTaskBinding
+import com.example.todotasks.R
+import com.example.todotasks.databinding.DialogFormBinding
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.TaskPriority
-import com.example.todotasks.ui.core.ResultEvent
-import com.example.todotasks.ui.core.extensions.applyWindowApparence
-import com.example.todotasks.ui.core.extensions.cardbackgroundMoreWhite
-import com.example.todotasks.ui.core.extensions.getParcelableCompat
-import com.example.todotasks.ui.core.extensions.hideKeyboard
-import com.example.todotasks.ui.core.extensions.setSettingsEditTextOfForm
-import com.example.todotasks.ui.model.SubTaskUI
+import com.example.todotasks.ui.common.extensions.applyWindowApparence
+import com.example.todotasks.ui.common.extensions.cardbackgroundMoreWhite
+import com.example.todotasks.ui.common.extensions.hideKeyboard
+import com.example.todotasks.ui.common.extensions.setSettingsEditTextOfForm
+import com.example.todotasks.ui.common.string_resource.StringResource
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
@@ -35,10 +31,9 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class DialogSubTaskForm() :
-    DialogFragment() {
+class DialogSubTaskForm() : DialogFragment() {
 
-    private var _binding: DialogFormTaskBinding? = null
+    private var _binding: DialogFormBinding? = null
     private val binding get() = _binding!!
     private val viewModel: SubTaskFormViewModel by viewModels()
 
@@ -66,34 +61,29 @@ class DialogSubTaskForm() :
         } else {
             viewModel.onEvent(SubTaskFormEvent.OpeningEditForm(subTaskId))
         }
-
-        Log.i("OnCreate", "")
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        _binding = DialogFormTaskBinding.inflate(layoutInflater)
+        _binding = DialogFormBinding.inflate(layoutInflater)
         val builder = AlertDialog.Builder(requireContext())
-        Log.i("text", viewModel.subTaskFormState.value.toString())
         builder.setView(binding.root)
         setFlows()
         setListeners()
-        Log.i("Lifecycle", "onCreateDialog")
         return builder.create()
     }
 
     override fun onStart() {
         super.onStart()
         applyWindowApparence()
-        initSpinner()
     }
 
     private fun startUI() {
         binding.parent.cardbackgroundMoreWhite(0.9f)
         val subTask = viewModel.subTaskFormState.value
         if (subTask.subTaskId == 0L) {
-            binding.tvTittle.text = "Añadir Subtarea"
+            binding.tvTittle.text = getString(R.string.add_subtask_tittle)
         } else {
-            binding.tvTittle.text = "Editar Subtarea"
+            binding.tvTittle.text = getString(R.string.edit_subtask_text)
             binding.tiedTaskName.setText(subTask.nameSubTask)
         }
 
@@ -102,6 +92,7 @@ class DialogSubTaskForm() :
         binding.ivDate.visibility = View.GONE
         binding.tilCategory.visibility = View.GONE
         setSettingsComponents()
+        initSpinner()
     }
 
     private fun setSettingsComponents() {
@@ -117,19 +108,13 @@ class DialogSubTaskForm() :
             repeatOnLifecycle(Lifecycle.State.STARTED) {
 
                 launch {
-                    viewModel.resultEvent.collect { eventResult ->
+                    viewModel.resultEvent.collect { resultEvent ->
 
-                        showToast(eventResult.message)
+                        val resultEventRes =
+                            StringResource.getResultEventStringResource(resultEvent)
+                        showToast(getString(resultEventRes))
 
-                        when (eventResult) {
-                            is ResultEvent.Success -> {
-                                dismiss()
-                            }
-
-                            else -> {
-
-                            }
-                        }
+                        if (resultEvent.isSuccess) dismiss()
                     }
                 }
 
@@ -145,21 +130,21 @@ class DialogSubTaskForm() :
 
                             if (isValid) {
 
-                                binding.btnFinish.text = "Valido"
+                                binding.btnFinish.text = getString(R.string.btn_valid)
                                 binding.btnFinish.setBackgroundColor(
                                     ContextCompat.getColor(
                                         requireContext(),
-                                        com.example.todotasks.R.color.formValid
+                                        R.color.formValid
                                     )
                                 )
 
                             } else {
 
-                                binding.btnFinish.text = "No Valido"
+                                binding.btnFinish.text = getString(R.string.btn_no_valid)
                                 binding.btnFinish.setBackgroundColor(
                                     ContextCompat.getColor(
                                         requireContext(),
-                                        com.example.todotasks.R.color.formNotValid
+                                        R.color.formNotValid
                                     )
                                 )
                             }
@@ -168,10 +153,10 @@ class DialogSubTaskForm() :
                 }
 
                 launch {
-                    viewModel.subTaskFormState.map { it.isInitialized }
+                    viewModel.subTaskFormState.map { it.isReady }
                         .distinctUntilChanged()
-                        .collect { isInitialized ->
-                            if (isInitialized) {
+                        .collect { isReady ->
+                            if (isReady) {
                                 startUI()
                             }
                         }
@@ -217,20 +202,25 @@ class DialogSubTaskForm() :
     }
 
     private fun initSpinner() {
-        Log.i("Spinner", "")
         val priorities = TaskPriority.values()
+        val prioritiesRes =
+            priorities.map { priority -> getString(StringResource.getPriorityStringResource(priority)) }
 
         val arrayAdapter =
-            ArrayAdapter(requireContext(), R.layout.simple_spinner_dropdown_item, priorities)
+            ArrayAdapter(
+                requireContext(),
+                AndroidR.layout.simple_spinner_dropdown_item,
+                prioritiesRes
+            )
 
         binding.autoCompletePriorityTasktv.apply {
             setAdapter(arrayAdapter)
             setOnItemClickListener { _, _, position, _ ->
                 viewModel.onEvent(SubTaskFormEvent.UpdateSubTaskPriority(priorities[position]))
             }
-            val priorityName = viewModel.subTaskFormState.value.prioritySubTask.name
-            println("priorityy: $priorityName, subTask: ${viewModel.subTaskFormState.value}")
-            setText(priorityName, false)
+            val actualPriority =
+                getString(StringResource.getPriorityStringResource(viewModel.subTaskFormState.value.prioritySubTask))
+            setText(actualPriority, false)
 
         }
     }

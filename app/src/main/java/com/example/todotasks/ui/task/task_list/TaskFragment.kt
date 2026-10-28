@@ -55,8 +55,8 @@ class TaskFragment() : Fragment() {
             openSubTaskActivity = { id, name -> openSubTaskById(id, name) },
             updateCompletedTask = { id, completed -> updateCompletedTask(id, completed) },
             updateScreenMode = { screenMode -> updateScreenMode(screenMode) },
-            addTaskToDelete = { taskId -> addTaskToDelete(taskId) },
-            removeTaskToDelete = { taskId -> removeTaskToDelete(taskId) }
+            addTaskToDelete = { task -> addTaskToDelete(task) },
+            removeTaskToDelete = { task -> removeTaskToDelete(task) }
         )
     }
 
@@ -157,12 +157,12 @@ class TaskFragment() : Fragment() {
         viewModel.onEvent(TaskUiEvent.UpdateScreenMode(screenMode))
     }
 
-    private fun addTaskToDelete(taskId: Long) {
-        viewModel.onEvent(TaskUiEvent.AddTaskToDelete(taskId))
+    private fun addTaskToDelete(task: TaskUI) {
+        viewModel.onEvent(TaskUiEvent.AddTaskToDelete(task))
     }
 
-    private fun removeTaskToDelete(taskId: Long) {
-        viewModel.onEvent(TaskUiEvent.RemoveTaskToDelete(taskId))
+    private fun removeTaskToDelete(task: TaskUI) {
+        viewModel.onEvent(TaskUiEvent.RemoveTaskToDelete(task))
     }
 
     override fun onDestroyView() {

@@ -4,8 +4,10 @@ import com.example.todotasks.domain.model.GroupByTask
 import com.example.todotasks.domain.model.SortByTask
 import com.example.todotasks.domain.model.IsCompletedFilter
 import com.example.todotasks.domain.model.SortOrder
+import com.example.todotasks.domain.model.Task
 import com.example.todotasks.ui.model.CategoryUI
 import com.example.todotasks.ui.model.ScreenMode
+import com.example.todotasks.ui.model.TaskUI
 
 /**
  * Project: To Do Tasks
@@ -18,7 +20,7 @@ sealed class TaskUiEvent {
     data class UpdateCompletedTask(val taskId: Long, val isCompleted: Boolean) : TaskUiEvent()
     data class DeleteCategory(val  category: CategoryUI): TaskUiEvent()
     data class UpdateScreenMode(val screenMode: ScreenMode): TaskUiEvent()
-    data class AddTaskToDelete(val taskId: Long): TaskUiEvent()
-    data class RemoveTaskToDelete(val taskId: Long): TaskUiEvent()
+    data class AddTaskToDelete(val task: TaskUI): TaskUiEvent()
+    data class RemoveTaskToDelete(val task: TaskUI): TaskUiEvent()
     data object CommitTaskToDelete: TaskUiEvent()
 }

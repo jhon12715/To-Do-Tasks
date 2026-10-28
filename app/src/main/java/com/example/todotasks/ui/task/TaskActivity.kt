@@ -15,7 +15,8 @@ import androidx.viewpager2.widget.MarginPageTransformer
 import com.example.todotasks.R
 import com.example.todotasks.databinding.ActivityTaskBinding
 import com.example.todotasks.domain.model.IsCompletedFilter
-import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
+import com.example.todotasks.ui.common.extensions.backgroundMoreWhite
+import com.example.todotasks.ui.common.string_resource.StringResource
 import com.example.todotasks.ui.model.CategoryUI
 import com.example.todotasks.ui.model.ScreenMode
 import com.example.todotasks.ui.model.TaskUI
@@ -86,16 +87,6 @@ class TaskActivity : AppCompatActivity() {
 
         binding.ivMoreVert.setOnClickListener {
             PopupMenuMoreVert(binding.root.context).show(binding.ivMoreVert, popupMoreVertCallbacks)
-        }
-
-        binding.rgTaskFilter.setOnCheckedChangeListener { _, checkedId ->
-            val filter = when (checkedId) {
-                R.id.rbAll -> IsCompletedFilter.ALL
-                R.id.rbCompletedTasks -> IsCompletedFilter.COMPLETED
-                R.id.rbNotCompletedTasks -> IsCompletedFilter.NOT_COMPLETED
-                else -> IsCompletedFilter.ALL
-            }
-            viewModel.onEvent(TaskUiEvent.UpdateTaskIsCompletedFilter(filter))
         }
 
         binding.ivDeleteTask.setOnClickListener {
@@ -170,7 +161,8 @@ class TaskActivity : AppCompatActivity() {
                     viewModel.taskUIState.map { it.tasksSelectedToDeleteText }
                         .distinctUntilChanged()
                         .collect { tasksSelectedToDeleteText ->
-                            binding.tvSelectedToDelete.text = tasksSelectedToDeleteText
+                            val textResult = "${getString(R.string.delete)} $tasksSelectedToDeleteText"
+                            binding.tvSelectedToDelete.text = textResult
                         }
                 }
 
@@ -193,15 +185,17 @@ class TaskActivity : AppCompatActivity() {
                 }
 
                 launch {
-                    viewModel.resultEvent.collect { result ->
+                    viewModel.resultEvent.collect { resultEvent ->
 
-                        showToast(result.message)
+                        val messageRes = StringResource.getResultEventStringResource(resultEvent)
+
+                        showToast(getString(messageRes))
                     }
                 }
-
             }
 
         }
+
     }
 
     //PopupCategory
@@ -236,7 +230,6 @@ class TaskActivity : AppCompatActivity() {
     }
 
     private fun openNewDialogTaskForm() {
-
         val idVerify = viewModel.verifyCurrentCategoryIdExists()
         taskForm = DialogTaskForm.newInstance(TaskUI(categoryId = idVerify))
         taskForm.show(supportFragmentManager, "")

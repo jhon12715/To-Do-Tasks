@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
-import com.example.todotasks.ui.core.adapter.TaskHeaderViewHolder
+import com.example.todotasks.ui.common.adapter.TaskHeaderViewHolder
 import com.example.todotasks.ui.model.ScreenMode
 import com.example.todotasks.ui.model.TypeSubTaskListItem
 import com.example.todotasks.ui.subTask.subtask_list.SubtaskItemCallbacks
@@ -31,13 +31,13 @@ class SubTaskListAdapter(
         return when (viewType) {
             TYPE_HEADER -> {
                 val view = LayoutInflater.from(parent.context)
-                    .inflate(R.layout.item_task_header, parent, false)
+                    .inflate(R.layout.item_header, parent, false)
                 TaskHeaderViewHolder(view)
             }
 
             TYPE_ITEM -> {
                 val view =
-                    LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
+                    LayoutInflater.from(parent.context).inflate(R.layout.item, parent, false)
                 SubTaskViewHolder(view)
             }
 

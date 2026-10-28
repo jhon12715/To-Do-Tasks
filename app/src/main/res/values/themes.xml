@@ -20,7 +20,6 @@
     </style>
 
     <style name="TittleText">
-        <item name="android:textColor">@color/baseColor</item>
         <item name="android:textSize">32sp</item>
     </style>
 

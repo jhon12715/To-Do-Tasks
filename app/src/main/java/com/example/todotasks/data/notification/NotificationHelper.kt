@@ -4,7 +4,8 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
 import android.os.Build
-import com.example.todotasks.data.core.NotificationConfig.Companion.CHANNEL_TASK
+import com.example.todotasks.R
+import com.example.todotasks.data.notification.NotificationConfig.Companion.TASK_CHANNEL
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -16,8 +17,8 @@ class NotificationHelper @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
             val channel = NotificationChannel(
-                CHANNEL_TASK,
-                "Tareas",
+                TASK_CHANNEL,
+                context.getString(R.string.task_channel),
                 NotificationManager.IMPORTANCE_HIGH
             )
 

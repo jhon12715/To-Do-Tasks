@@ -1,12 +1,13 @@
-package com.example.todotasks.ui.core.dialog_base_commit_action
+package com.example.todotasks.ui.common.dialog_base_commit_action
 
 import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
-import com.example.todotasks.databinding.DialogDeleteTaskBinding
-import com.example.todotasks.ui.core.extensions.applyWindowApparence
-import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
+import com.example.todotasks.R
+import com.example.todotasks.databinding.DialogDeleteBinding
+import com.example.todotasks.ui.common.extensions.applyWindowApparence
+import com.example.todotasks.ui.common.extensions.backgroundMoreWhite
 
 /**
  * Project: To Do Tasks
@@ -15,10 +16,10 @@ import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
 
 open class DialogBaseCommitAction() : DialogFragment() {
 
-    protected lateinit var binding: DialogDeleteTaskBinding
+    protected lateinit var binding: DialogDeleteBinding
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        binding = DialogDeleteTaskBinding.inflate(layoutInflater)
+        binding = DialogDeleteBinding.inflate(layoutInflater)
         val builder = AlertDialog.Builder(requireContext())
         builder.setView(binding.root)
         startUI()
@@ -34,8 +35,8 @@ open class DialogBaseCommitAction() : DialogFragment() {
     open fun startUI() {
         binding.clParent.backgroundMoreWhite(0.9f)
 
-        binding.tvTittle.text = "Aviso"
-        binding.tvMessage.text = "¿Seguro que desea realizar la acción?"
+        binding.tvTittle.text = getString(R.string.dialog_commit_action_tittle)
+        binding.tvMessage.text = getString(R.string.dialog_commit_action_message)
 
     }
 

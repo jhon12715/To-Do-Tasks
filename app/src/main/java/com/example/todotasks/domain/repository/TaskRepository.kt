@@ -1,14 +1,10 @@
 package com.example.todotasks.domain.repository
 
-import android.app.TaskInfo
 import com.example.todotasks.domain.model.Category
 import com.example.todotasks.domain.model.ParentTaskInfo
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.model.TaskListItem
-import com.example.todotasks.domain.model.TaskPriority
-import com.example.todotasks.ui.core.ResultEvent
-import com.example.todotasks.ui.model.TaskUI
 import kotlinx.coroutines.flow.Flow
 import java.time.LocalDate
 

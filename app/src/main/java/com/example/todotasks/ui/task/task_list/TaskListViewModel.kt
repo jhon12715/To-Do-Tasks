@@ -1,8 +1,8 @@
 package com.example.todotasks.ui.task.task_list
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todotasks.R
 import com.example.todotasks.domain.model.Category
 import com.example.todotasks.domain.model.GroupAndSortTask
 import com.example.todotasks.domain.repository.DataStoreRepository
@@ -11,7 +11,6 @@ import com.example.todotasks.domain.usecase.DeleteCategoryUseCase
 import com.example.todotasks.domain.usecase.DeleteTaskUseCase
 import com.example.todotasks.domain.usecase.GetAllCategoriesUseCase
 import com.example.todotasks.domain.usecase.UpdateTaskCompletedUseCase
-import com.example.todotasks.ui.core.ResultEvent
 import com.example.todotasks.ui.mapper.toDomain
 import com.example.todotasks.ui.mapper.toUi
 import com.example.todotasks.ui.model.CategoryUI
@@ -20,8 +19,11 @@ import com.example.todotasks.ui.model.TypeTaskListItem
 import com.example.todotasks.ui.task.applyTaskGroupByAndSorterBy
 import com.example.todotasks.ui.task.filterByIsCompleted
 import com.example.todotasks.domain.model.IsCompletedFilter
-import com.example.todotasks.domain.model.SortOrder
+import com.example.todotasks.domain.model.Task
+import com.example.todotasks.domain.model.result_event.AppResultEvent
+import com.example.todotasks.ui.common.string_resource.StringProvider
 import com.example.todotasks.ui.model.ScreenMode
+import com.example.todotasks.ui.model.TaskUI
 import com.example.todotasks.ui.task.TaskUiEvent
 import com.example.todotasks.ui.task.TaskUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,16 +49,17 @@ import javax.inject.Inject
 @HiltViewModel
 class TaskListViewModel @Inject constructor(
     private val taskRepository: TaskRepository,
-    private val dataStoreRepository: DataStoreRepository,
+    dataStoreRepository: DataStoreRepository,
     getAllCategoriesUseCase: GetAllCategoriesUseCase,
     private val updateTaskCompletedUseCase: UpdateTaskCompletedUseCase,
     private val deleteTaskUseCase: DeleteTaskUseCase,
-    private val deleteCategoryUseCase: DeleteCategoryUseCase
+    private val deleteCategoryUseCase: DeleteCategoryUseCase,
+    private val stringProvider: StringProvider
 ) : ViewModel() {
 
     //Result
-    private val _resultEvent: MutableSharedFlow<ResultEvent> = MutableSharedFlow(replay = 0)
-    val resultEvent: SharedFlow<ResultEvent> = _resultEvent
+    private val _resultEvent: MutableSharedFlow<AppResultEvent> = MutableSharedFlow(replay = 0)
+    val resultEvent: SharedFlow<AppResultEvent> = _resultEvent
 
     //Filter
     private val _selectedFilterCategoryId = MutableStateFlow(-1L)
@@ -74,8 +77,7 @@ class TaskListViewModel @Inject constructor(
         categories.filterNotNull(),
         _selectedFilterCategoryId
     ) { categories, categoryId ->
-        categories
-            .toUi(categoryId)
+        categories.toUi(categoryId, stringProvider.getStringResource(R.string.category_all))
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
@@ -93,7 +95,7 @@ class TaskListViewModel @Inject constructor(
 
     private val _screenMode: MutableStateFlow<ScreenMode> = MutableStateFlow(ScreenMode.NORMAL)
     private val _totalTasks: Flow<Int> = taskRepository.getAllTasks().map { it.size }
-    private val _tasksSelectedToDelete: MutableStateFlow<List<Long>> = MutableStateFlow(emptyList())
+    private val _tasksSelectedToDelete: MutableStateFlow<List<Task>> = MutableStateFlow(emptyList())
 
     //UIState
 
@@ -110,7 +112,7 @@ class TaskListViewModel @Inject constructor(
                 selectedFilterCategoryId = categoryId,
                 screenMode = screenMode,
                 totalTasks = totalTasks,
-                tasksSelectedToDelete = tasksSelectedToDelete
+                tasksSelectedToDelete = tasksSelectedToDelete.map { task -> task.id }
             )
         }.stateIn(
             scope = viewModelScope,
@@ -129,8 +131,8 @@ class TaskListViewModel @Inject constructor(
 
             is TaskUiEvent.DeleteCategory -> deleteCategory(event.category)
             is TaskUiEvent.UpdateScreenMode -> updateScreenMode(event.screenMode)
-            is TaskUiEvent.AddTaskToDelete -> addTaskToDelete(event.taskId)
-            is TaskUiEvent.RemoveTaskToDelete -> removeTaskToDelete(event.taskId)
+            is TaskUiEvent.AddTaskToDelete -> addTaskToDelete(event.task)
+            is TaskUiEvent.RemoveTaskToDelete -> removeTaskToDelete(event.task)
             TaskUiEvent.CommitTaskToDelete -> commitTaskToDelete()
         }
     }
@@ -173,7 +175,7 @@ class TaskListViewModel @Inject constructor(
 
             tasks.map {
                 it.toUi().copy(
-                    isSelectedToDelete = tasksSelectedToDelete.contains(it.task.id)
+                    isSelectedToDelete = tasksSelectedToDelete.contains(it.task)
                 )
             }
                 .filterByIsCompleted(isCompletedFilter)
@@ -190,15 +192,15 @@ class TaskListViewModel @Inject constructor(
         if (newScreenMode != ScreenMode.DELETE) _tasksSelectedToDelete.update { emptyList() }
     }
 
-    private fun addTaskToDelete(taskId: Long) {
+    private fun addTaskToDelete(task: TaskUI) {
         _tasksSelectedToDelete.update {
-            it + taskId
+            it + task.toDomain()
         }
     }
 
-    private fun removeTaskToDelete(taskId: Long) {
+    private fun removeTaskToDelete(task: TaskUI) {
         _tasksSelectedToDelete.update { list ->
-            list.filter { item -> item != taskId }
+            list.filter { item -> item.id != task.id }
         }
     }
 

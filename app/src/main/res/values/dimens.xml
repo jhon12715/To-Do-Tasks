@@ -2,5 +2,6 @@
     <dimen name="fab_margin">16dp</dimen>
     <dimen name="page_margin">4dp</dimen>
     <dimen name="off_margin">8dp</dimen>
-    <dimen name="margin_iv_more_vert">16dp</dimen>
+    <dimen name="margin_lateral">16dp</dimen>
+    <dimen name="parent_padding">8dp</dimen>
 </resources>

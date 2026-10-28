@@ -5,7 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
-import com.example.todotasks.ui.core.adapter.TaskHeaderViewHolder
+import com.example.todotasks.ui.common.adapter.TaskHeaderViewHolder
 import com.example.todotasks.ui.model.ScreenMode
 import com.example.todotasks.ui.model.TypeTaskListItem
 
@@ -29,12 +29,12 @@ class TaskListAdapter(
         val inflater = LayoutInflater.from(parent.context)
         return when (viewType) {
             TYPE_HEADER_TASK -> {
-                val view = inflater.inflate(R.layout.item_task_header, parent, false)
+                val view = inflater.inflate(R.layout.item_header, parent, false)
                 TaskHeaderViewHolder(view)
             }
 
             TYPE_ITEM_TASK -> {
-                val view = inflater.inflate(R.layout.item_task, parent, false)
+                val view = inflater.inflate(R.layout.item, parent, false)
                 TaskViewHolder(view)
             }
 

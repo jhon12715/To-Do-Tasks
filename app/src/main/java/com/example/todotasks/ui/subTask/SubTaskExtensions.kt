@@ -6,7 +6,7 @@ import com.example.todotasks.domain.model.SortBySubTask
 import com.example.todotasks.domain.model.SortOrder
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.TaskPriority
-import com.example.todotasks.ui.core.sortByOrder
+import com.example.todotasks.ui.common.sortByOrder
 import com.example.todotasks.ui.model.SubTaskUI
 import com.example.todotasks.ui.model.TypeSubTaskListItem
 

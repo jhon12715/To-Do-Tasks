@@ -14,7 +14,7 @@
         android:textSize="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Añadir nueva categoría"
+        android:text="@string/add_new_category"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -22,7 +22,7 @@
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilCategoryName"
         android:layout_width="0dp"
-        android:hint="Categoría"
+        android:hint="@string/category"
 
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -48,7 +48,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginVertical="16dp"
-        android:text="Aceptar"
+        android:text="@string/btn_accept"
         android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

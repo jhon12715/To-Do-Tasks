@@ -11,6 +11,6 @@ data class TaskItemCallbacks (
     val openSubTaskActivity: (Long, String) -> Unit,
     val updateCompletedTask: (Long, Boolean) -> Unit,
     val updateScreenMode: (ScreenMode) -> Unit,
-    val addTaskToDelete: (Long) -> Unit,
-    val removeTaskToDelete: (Long) -> Unit
+    val addTaskToDelete: (TaskUI) -> Unit,
+    val removeTaskToDelete: (TaskUI) -> Unit
 )

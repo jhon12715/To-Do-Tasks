@@ -1,10 +1,12 @@
 package com.example.todotasks.domain.usecase
 
 import android.database.sqlite.SQLiteConstraintException
-import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.notification.TaskNotificationAlarmManager
 import com.example.todotasks.domain.repository.TaskRepository
-import com.example.todotasks.ui.core.ResultEvent
+import com.example.todotasks.domain.model.result_event.ResultEventTask
+import com.example.todotasks.domain.model.Task
+import com.example.todotasks.domain.model.result_event.AppResultEvent
+import com.example.todotasks.domain.model.result_event.ResultEventCommon
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -13,27 +15,25 @@ class UpsertTaskUseCase @Inject constructor(
     private val scheduler: TaskNotificationAlarmManager
 ) {
 
-    suspend operator fun invoke(task: Task): ResultEvent {
+    suspend operator fun invoke(task: Task): AppResultEvent {
 
-        if (isNotValidLenght(task.tittle)) return ResultEvent.Error("Te has pasado del límite de carácteres")
+        if (isNotValidLenght(task.tittle)) return ResultEventCommon.LengthNotValidError
 
         return if (task.tittle.trim().isNotEmpty()) {
             try {
-                val isEditing = task.id != 0L
-
+                val isEditing = task.id > 0L
                 val oldDate = getOldDate(isEditing, task.id)
 
                 val newTask = upsertTask(isEditing, task)
 
                 if (!dateIsTheSame(oldDate, newTask.date)) scheduler(newTask)
 
-                ResultEvent.Success(getSuccessMessage(isEditing))
+                getSuccessMessage(isEditing)
             } catch (e: SQLiteConstraintException) {
-
-                ResultEvent.Error("La tarea ya existe")
+                ResultEventTask.TaskAlreadyExistsError
             }
         } else {
-            ResultEvent.Error("El nombre no puede ir vacío")
+            ResultEventCommon.EmptyTextError
         }
     }
 
@@ -62,10 +62,10 @@ class UpsertTaskUseCase @Inject constructor(
         scheduler.schedule(task)
     }
 
-    private fun getSuccessMessage(isEditing: Boolean): String = if (isEditing) {
-        "Se ha editado la tarea correctamente"
+    private fun getSuccessMessage(isEditing: Boolean): ResultEventTask = if (isEditing) {
+        ResultEventTask.UpdateSuccess
     } else {
-        "Se ha creado la tarea correctamente"
+        ResultEventTask.CreateSuccess
     }
 
 

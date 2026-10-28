@@ -3,6 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clParent"
+    android:background="#0303A9F4"
+    android:padding="8dp"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -10,13 +12,13 @@
         android:id="@+id/iv_back"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_margin="@dimen/margin_iv_more_vert"
+        android:layout_margin="@dimen/margin_lateral"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_back"
-        android:background="?attr/selectableItemBackgroundBorderless"/>
+        app:srcCompat="@drawable/ic_back" />
 
     <TextView
         android:id="@+id/tvTaskName"
@@ -26,100 +28,42 @@
         android:layout_margin="8dp"
         android:ellipsize="end"
         android:paddingHorizontal="8dp"
-        android:text="TextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/iv_more_vert"
+        app:layout_constraintStart_toEndOf="@+id/iv_back"
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
         android:id="@+id/iv_more_vert"
         android:layout_width="24dp"
         android:layout_height="24dp"
-        android:layout_margin="@dimen/margin_iv_more_vert"
+        android:layout_margin="@dimen/margin_lateral"
+        android:background="?attr/selectableItemBackgroundBorderless"
         android:clickable="true"
         android:focusable="true"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_more_vert"
-        android:background="?attr/selectableItemBackgroundBorderless"/>
-
-    <TextView
-        android:id="@+id/tvCompleted"
-        style="@style/SubTittleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="Subtareas completadas: "
-        app:layout_constraintEnd_toStartOf="@+id/tvSubTasksCompleted"
-        app:layout_constraintTop_toBottomOf="@+id/tvTaskName" />
-
-    <TextView
-        android:id="@+id/tvSubTasksCompleted"
-        style="@style/SubTittleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="@+id/tvCompleted"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvCompleted" />
-
-    <RadioGroup
-        android:id="@+id/rgTaskFilter"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:orientation="horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvCompleted">
-
-        <RadioButton
-            android:id="@+id/rbAll"
-            style="@style/CustomRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:checked="true"
-            android:text="Todas" />
-
-        <RadioButton
-            android:id="@+id/rbNotCompletedTasks"
-            style="@style/CustomRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="No completadas" />
-
-        <RadioButton
-            android:id="@+id/rbCompletedTasks"
-            style="@style/CustomRadioButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Completadas" />
-    </RadioGroup>
+        app:srcCompat="@drawable/ic_more_vert" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvSubTasks"
         android:layout_width="match_parent"
-        app:layout_constraintHeight_max="400dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="8dp"
         android:layout_marginTop="16dp"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHeight_max="400dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rgTaskFilter" />
+        app:layout_constraintTop_toBottomOf="@+id/llSubtaskCompletedAndSubtaskToDelete" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabTask"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:backgroundTint="@color/baseColor"
+        android:layout_margin="@dimen/margin_lateral"
         android:clickable="true"
-        app:layout_constraintStart_toStartOf="@+id/rvSubTasks"
-        app:layout_constraintTop_toBottomOf="@+id/rvSubTasks"
+        android:focusable="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:srcCompat="@android:drawable/ic_input_add" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -145,34 +89,49 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <TextView
-        android:id="@+id/tvDelete"
-        style="@style/SubTittleText"
+    <LinearLayout
+        android:id="@+id/llSubtaskCompletedAndSubtaskToDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="Eliminar: "
-        app:layout_constraintEnd_toStartOf="@+id/tvDeleteCount"
-        app:layout_constraintTop_toBottomOf="@+id/tvTaskName" />
-
-    <TextView
-        android:id="@+id/tvDeleteCount"
-        style="@style/SubTittleText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="TextView"
-        app:layout_constraintBottom_toBottomOf="@+id/tvDelete"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp"
+        android:gravity="center_vertical"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/tvDelete" />
+        app:layout_constraintTop_toBottomOf="@+id/tvTaskName">
 
-    <ImageView
-        android:id="@+id/ivDeleteSubTask"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/tvDelete"
-        app:layout_constraintEnd_toStartOf="@+id/tvDelete"
-        app:layout_constraintTop_toTopOf="@+id/tvDelete"
-        app:srcCompat="@drawable/ic_delete" />
+        <TextView
+            android:id="@+id/tvCompleted"
+            style="@style/SubTittleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            android:text="@string/subtask_completed" />
+
+        <TextView
+            android:id="@+id/tvSubTasksCompleted"
+            style="@style/SubTittleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:id="@+id/ivDeleteSubTask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_delete" />
+
+        <TextView
+            android:id="@+id/tvDelete"
+            style="@style/SubTittleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="4dp"
+            android:text="@string/delete" />
+
+        <TextView
+            android:id="@+id/tvDeleteCount"
+            style="@style/SubTittleText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

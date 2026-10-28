@@ -4,7 +4,7 @@ import android.view.View
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.databinding.ItemCategoryBinding
-import com.example.todotasks.ui.core.extensions.cardbackgroundMoreWhite
+import com.example.todotasks.ui.common.extensions.cardbackgroundMoreWhite
 import com.example.todotasks.ui.model.CategoryUI
 import com.example.todotasks.ui.model.TypeCategoryUI
 

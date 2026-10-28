@@ -25,10 +25,29 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
-        android:text="Agrupar y Ordenar"
+        android:text="@string/group_and_sort"
         app:layout_constraintBottom_toBottomOf="@+id/ivGroupAndFilter"
         app:layout_constraintStart_toEndOf="@+id/ivGroupAndFilter"
         app:layout_constraintTop_toTopOf="@+id/ivGroupAndFilter" />
+
+        <TextView
+            android:id="@+id/tv_filter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tv_filter_all"
+            android:layout_marginStart="4dp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_filter"
+            app:layout_constraintStart_toEndOf="@+id/iv_filter"
+            app:layout_constraintTop_toTopOf="@+id/iv_filter" />
+
+        <ImageView
+            android:id="@+id/iv_filter"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="@+id/ivGroupAndFilter"
+            app:layout_constraintTop_toBottomOf="@+id/ivGroupAndFilter"
+            tools:srcCompat="@tools:sample/avatars" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

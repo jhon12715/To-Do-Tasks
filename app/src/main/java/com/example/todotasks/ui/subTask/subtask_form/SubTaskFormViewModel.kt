@@ -2,14 +2,14 @@ package com.example.todotasks.ui.subTask.subtask_form
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todotasks.domain.model.result_event.ResultEventSubtask
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.model.TaskPriority
+import com.example.todotasks.domain.model.result_event.AppResultEvent
 import com.example.todotasks.domain.repository.TaskRepository
 import com.example.todotasks.domain.usecase.SubTaskExistsUseCase
 import com.example.todotasks.domain.usecase.UpsertSubTaskUseCase
-import com.example.todotasks.ui.core.ResultEvent
 import com.example.todotasks.ui.model.SubTaskUI
-import com.example.todotasks.ui.subTask.toDomain
 import com.example.todotasks.ui.subTask.toUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -38,8 +38,8 @@ class SubTaskFormViewModel @Inject constructor(
         MutableStateFlow(SubTaskFormState())
     val subTaskFormState: StateFlow<SubTaskFormState> = _subTaskFormState.asStateFlow()
 
-    private val _resultEvent: MutableSharedFlow<ResultEvent> = MutableSharedFlow(replay = 0)
-    val resultEvent: SharedFlow<ResultEvent> = _resultEvent.asSharedFlow()
+    private val _resultEvent: MutableSharedFlow<AppResultEvent> = MutableSharedFlow(replay = 0)
+    val resultEvent: SharedFlow<AppResultEvent> = _resultEvent.asSharedFlow()
 
     private lateinit var originalSubTask: SubTaskUI
 
@@ -54,7 +54,7 @@ class SubTaskFormViewModel @Inject constructor(
     }
 
     private fun openingNewForm(taskId: Long) {
-        if (!_subTaskFormState.value.isInitialized) {
+        if (!_subTaskFormState.value.isReady) {
             viewModelScope.launch {
                 originalSubTask = SubTaskUI(idTask = taskId)
                 setInitialValueInSubTaskForm()
@@ -63,7 +63,7 @@ class SubTaskFormViewModel @Inject constructor(
     }
 
     private fun openingEditForm(subTaskId: Long) {
-        if (!_subTaskFormState.value.isInitialized) {
+        if (!_subTaskFormState.value.isReady) {
             viewModelScope.launch {
                 originalSubTask = repository.getSubtaskById(subTaskId).toUI()
                 setInitialValueInSubTaskForm()
@@ -79,7 +79,7 @@ class SubTaskFormViewModel @Inject constructor(
                 nameSubTask = originalSubTask.tittle,
                 prioritySubTask = originalSubTask.priority,
                 isValid = originalSubTask.id != 0L,
-                isInitialized = true
+                isReady = true
             )
         }
     }

@@ -1,7 +1,7 @@
 package com.example.todotasks.ui.subTask
 
 import androidx.fragment.app.activityViewModels
-import com.example.todotasks.ui.core.dialog_base_commit_action.DialogBaseCommitAction
+import com.example.todotasks.ui.common.dialog_base_commit_action.DialogBaseCommitAction
 import com.example.todotasks.ui.subTask.subtask_list.SubTaskUiEvent
 import com.example.todotasks.ui.subTask.subtask_list.SubTaskViewModel
 

@@ -1,18 +1,18 @@
 package com.example.todotasks.domain.usecase
 
 import com.example.todotasks.domain.repository.TaskRepository
-import com.example.todotasks.ui.core.ResultEvent
+import com.example.todotasks.domain.model.result_event.ResultEventSubtask
 import javax.inject.Inject
 
 class DeleteSubtaskUseCase @Inject constructor(private val repository: TaskRepository) {
 
-    suspend operator fun invoke(listSubTaskId: List<Long>): ResultEvent {
-        if (listSubTaskId.isEmpty()) return ResultEvent.Error("Debe seleccionar al menos una subtarea")
+    suspend operator fun invoke(listSubTaskId: List<Long>): ResultEventSubtask {
+        if (listSubTaskId.isEmpty()) return ResultEventSubtask.IsEmptyError
         repository.deleteSubTask(listSubTaskId)
         return if (listSubTaskId.size == 1){
-            ResultEvent.Success("La subtarea ha sido borrada correctamente")
+            ResultEventSubtask.DeleteOneSubtaskSuccess
         } else{
-            ResultEvent.Success("Las subtareas han sido borradas correctamente")
+            ResultEventSubtask.DeleteMultipleSubtaskSuccess
         }
     }
 }

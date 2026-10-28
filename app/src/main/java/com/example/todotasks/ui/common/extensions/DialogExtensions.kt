@@ -1,4 +1,4 @@
-package com.example.todotasks.ui.core.extensions
+package com.example.todotasks.ui.common.extensions
 
 import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment

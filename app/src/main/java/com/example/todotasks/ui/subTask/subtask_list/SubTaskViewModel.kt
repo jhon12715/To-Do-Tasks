@@ -5,12 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.todotasks.domain.model.GroupAndSortSubTask
 import com.example.todotasks.domain.model.IsCompletedFilter
 import com.example.todotasks.domain.model.ParentTaskInfo
+import com.example.todotasks.domain.model.result_event.ResultEventSubtask
 import com.example.todotasks.domain.model.SubTask
 import com.example.todotasks.domain.repository.DataStoreRepository
 import com.example.todotasks.domain.repository.TaskRepository
 import com.example.todotasks.domain.usecase.DeleteSubtaskUseCase
 import com.example.todotasks.domain.usecase.UpdateSubTaskCompletedUseCase
-import com.example.todotasks.ui.core.ResultEvent
 import com.example.todotasks.ui.model.ScreenMode
 import com.example.todotasks.ui.model.SubTaskUI
 import com.example.todotasks.ui.subTask.applySubTaskFilterAndSort
@@ -78,9 +78,9 @@ class SubTaskViewModel @Inject constructor(
 
 
     //Event Result
-    private val _subTaskEventResult: MutableSharedFlow<ResultEvent> =
+    private val _resultEventSubtask: MutableSharedFlow<ResultEventSubtask> =
         MutableSharedFlow(replay = 0)
-    val subTaskEventResult: SharedFlow<ResultEvent> = _subTaskEventResult
+    val resultEventSubtask: SharedFlow<ResultEventSubtask> = _resultEventSubtask
 
     private val screenMode: MutableStateFlow<ScreenMode> =
         MutableStateFlow(ScreenMode.LOADING)
@@ -170,7 +170,7 @@ class SubTaskViewModel @Inject constructor(
     private fun commitSubTaskDelete() {
         viewModelScope.launch {
             val subTasksToDelete = subTaskSelectedToDelete.value
-            _subTaskEventResult.emit(deleteSubtaskUseCase(subTasksToDelete))
+            _resultEventSubtask.emit(deleteSubtaskUseCase(subTasksToDelete))
             subTaskSelectedToDelete.update { emptyList() }
             screenMode.update { ScreenMode.NORMAL }
         }

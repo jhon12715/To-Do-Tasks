@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:clickable="true"
+    android:focusable="true"
     android:focusableInTouchMode="true"
     app:contentPadding="8dp">
 
@@ -29,7 +30,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"
             android:layout_marginTop="16dp"
-            android:hint="Nombre"
+            android:hint="@string/name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvTittle">
@@ -49,7 +50,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Prioridad"
+            android:hint="@string/priority"
             app:layout_constraintEnd_toEndOf="@+id/tilTaskName"
             app:layout_constraintStart_toStartOf="@+id/tilTaskName"
             app:layout_constraintTop_toBottomOf="@+id/tilTaskName">
@@ -72,7 +73,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:text="Fecha"
+            android:text="@string/date"
             app:layout_constraintStart_toStartOf="@+id/tilPriorityTask"
             app:layout_constraintTop_toBottomOf="@+id/tilPriorityTask" />
 
@@ -112,7 +113,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:hint="Categoría"
+            android:hint="@string/category"
             app:layout_constraintEnd_toEndOf="@+id/tilTaskName"
             app:layout_constraintStart_toStartOf="@+id/tilTaskName"
             app:layout_constraintTop_toBottomOf="@+id/ivDate">
@@ -133,7 +134,6 @@
 
         <Button
             android:id="@+id/btnFinish"
-
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="68dp"

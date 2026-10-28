@@ -2,10 +2,12 @@ package com.example.todotasks.ui.task.category_form
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.todotasks.R
 import com.example.todotasks.domain.model.Category
+import com.example.todotasks.domain.model.result_event.AppResultEvent
 import com.example.todotasks.domain.usecase.CategoryExistsUseCase
 import com.example.todotasks.domain.usecase.UpsertCategoryUseCase
-import com.example.todotasks.ui.core.ResultEvent
+import com.example.todotasks.ui.common.string_resource.StringProvider
 import com.example.todotasks.ui.model.CategoryUI
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,12 +26,13 @@ import javax.inject.Inject
 @HiltViewModel
 class CategoryFormViewModel @Inject constructor(
     private val categoryExistsUseCase: CategoryExistsUseCase,
-    private val upsertCategoryUseCase: UpsertCategoryUseCase
+    private val upsertCategoryUseCase: UpsertCategoryUseCase,
+    private val stringProvider: StringProvider
 ) : ViewModel() {
 
     //Result
-    private val _resultEvent: MutableSharedFlow<ResultEvent> = MutableSharedFlow(replay = 0)
-    val resultEvent: SharedFlow<ResultEvent> = _resultEvent
+    private val _resultEvent: MutableSharedFlow<AppResultEvent> = MutableSharedFlow(replay = 0)
+    val resultEvent: SharedFlow<AppResultEvent> = _resultEvent
 
     //CategoryForm
 
@@ -62,7 +65,11 @@ class CategoryFormViewModel @Inject constructor(
             _categoryFormState.update {
                 it.copy(
                     nameCategoryForm = name,
-                    isValid = !categoryExistsUseCase(name, categoryFormState.value.categoryIdForm)
+                    isValid = !categoryExistsUseCase(
+                        name,
+                        stringProvider.getStringResource(R.string.category_all),
+                        categoryFormState.value.categoryIdForm
+                    )
                 )
             }
         }

@@ -1,4 +1,4 @@
-package com.example.todotasks.ui.core
+package com.example.todotasks.ui.common
 
 import com.example.todotasks.domain.model.SortOrder
 

@@ -6,8 +6,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.RecyclerView
 import com.example.todotasks.R
-import com.example.todotasks.databinding.ItemTaskBinding
-import com.example.todotasks.ui.core.extensions.getAppFormatter
+import com.example.todotasks.databinding.ItemBinding
+import com.example.todotasks.ui.common.extensions.getAppFormatter
 import com.example.todotasks.ui.model.ScreenMode
 import com.example.todotasks.ui.model.TaskUI
 import java.time.LocalDate
@@ -15,7 +15,7 @@ import java.time.temporal.ChronoUnit
 
 class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-    private val binding = ItemTaskBinding.bind(view)
+    private val binding = ItemBinding.bind(view)
     private lateinit var item: TaskUI
     private lateinit var callbacks: TaskItemCallbacks
 
@@ -23,16 +23,27 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         itemTask: TaskUI,
         screenMode: ScreenMode,
         itemCallbacks: TaskItemCallbacks
-    ) = with(binding) {
+    ) {
 
         item = itemTask
         callbacks = itemCallbacks
 
         renderTittle(item.tittle)
+        renderComponentsByScreenMode(screenMode)
+        renderItemByByScreenMode(screenMode)
+    }
+
+    fun renderTittle(tittle: String) = with(binding) {
+        tvTaskName.text = tittle
+    }
+
+    private fun renderComponentsByScreenMode(screenMode: ScreenMode) = with(binding) {
         cbIsCompleted.isVisible = screenMode != ScreenMode.DELETE
         cbIsSelectedToDelete.isVisible = screenMode == ScreenMode.DELETE
         ivEditTask.isVisible = screenMode != ScreenMode.DELETE
+    }
 
+    private fun renderItemByByScreenMode(screenMode: ScreenMode) {
         when (screenMode) {
             ScreenMode.NORMAL -> renderModeNormal()
             ScreenMode.DELETE -> renderModeDelete()
@@ -40,11 +51,7 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         }
     }
 
-    fun renderTittle(tittle: String) = with(binding) {
-        tvTaskName.text = tittle
-    }
-
-    private fun renderModeNormal() = with(binding) {
+    private fun renderModeNormal() {
 
         renderDate(item.date)
         renderSubTasksCompleted(item.subTaskCompleted)
@@ -58,10 +65,10 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
     fun renderDate(date: LocalDate?) = with(binding) {
 
         if (date == null) {
-            binding.tvDate.visibility = View.GONE
+            tvDate.visibility = View.GONE
             return
         } else {
-            binding.tvDate.visibility = View.VISIBLE
+            tvDate.visibility = View.VISIBLE
             tvDate.text = getDateByDiferenceOfToday(date)
         }
     }
@@ -70,15 +77,18 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val today = LocalDate.now()
         val dayRest: Long = ChronoUnit.DAYS.between(today, date)
         val dateFormatted = date.format(getAppFormatter())
+        val context = binding.root.context
 
         return when {
-            dayRest < 0 -> "Vencida (${dateFormatted})"
-            dayRest == 0L -> "Hoy"
-            dayRest == 1L -> "Mañana"
-            dayRest <= 7L -> "Quedan $dayRest días (${dateFormatted})"
-            else -> {
-                dateFormatted
-            }
+            dayRest < 0 -> "${context.getString(R.string.time_remaining_expired)} (${dateFormatted})"
+            dayRest == 0L -> context.getString(R.string.time_remaining_today)
+            dayRest == 1L -> context.getString(R.string.time_remaining_tomorrow)
+            dayRest <= 7L -> "${context.getString(R.string.time_remaining)} " +
+                    "$dayRest ${
+                        context.getString(R.string.time_remaining_days)
+                    } (${dateFormatted})"
+
+            else -> dateFormatted
         }
     }
 
@@ -117,7 +127,7 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         cvTaskItem.setOnLongClickListener {
             callbacks.updateScreenMode(ScreenMode.DELETE)
-            callbacks.addTaskToDelete(item.id)
+            callbacks.addTaskToDelete(item)
             true
         }
     }
@@ -163,9 +173,9 @@ class TaskViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
         cbIsSelectedToDelete.setOnCheckedChangeListener { _, isChecked ->
             if (!isChecked) {
-                callbacks.removeTaskToDelete(item.id)
+                callbacks.removeTaskToDelete(item)
             } else {
-                callbacks.addTaskToDelete(item.id)
+                callbacks.addTaskToDelete(item)
             }
         }
     }

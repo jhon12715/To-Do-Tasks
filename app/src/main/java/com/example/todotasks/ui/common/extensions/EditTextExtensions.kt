@@ -1,7 +1,6 @@
-package com.example.todotasks.ui.core.extensions
+package com.example.todotasks.ui.common.extensions
 
 import android.text.InputFilter
-import android.widget.EditText
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 

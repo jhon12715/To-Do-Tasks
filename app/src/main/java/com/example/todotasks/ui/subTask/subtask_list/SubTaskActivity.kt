@@ -15,7 +15,8 @@ import com.example.todotasks.R
 import com.example.todotasks.databinding.ActivitySubtaskBinding
 import com.example.todotasks.domain.model.IsCompletedFilter
 import com.example.todotasks.ui.subTask.DialogDeleteSubtaskCommit
-import com.example.todotasks.ui.core.extensions.backgroundMoreWhite
+import com.example.todotasks.ui.common.extensions.backgroundMoreWhite
+import com.example.todotasks.ui.common.string_resource.StringResource
 import com.example.todotasks.ui.model.ScreenMode
 import com.example.todotasks.ui.more_vert.group_and_sort.GroupAndSortTaskSheet
 import com.example.todotasks.ui.more_vert.group_and_sort.GroupAndSortType
@@ -82,7 +83,7 @@ class SubTaskActivity : AppCompatActivity() {
 
     private fun initUI(taskName: String) = with(binding) {
         tvTaskName.text = taskName
-        clParent.backgroundMoreWhite(0.9f)
+        //clParent.backgroundMoreWhite(0.9f)
     }
 
     private fun setListeners() = with(binding) {
@@ -92,16 +93,6 @@ class SubTaskActivity : AppCompatActivity() {
 
         ivBack.setOnClickListener {
             onBackPressed()
-        }
-
-        rgTaskFilter.setOnCheckedChangeListener { _, checkedId ->
-            val filter = when (checkedId) {
-                R.id.rbAll -> IsCompletedFilter.ALL
-                R.id.rbCompletedTasks -> IsCompletedFilter.COMPLETED
-                R.id.rbNotCompletedTasks -> IsCompletedFilter.NOT_COMPLETED
-                else -> IsCompletedFilter.ALL
-            }
-            viewModel.onEvent(SubTaskUiEvent.UpdateFilterSubTaskCompleted(filter))
         }
 
         ivDeleteSubTask.setOnClickListener {
@@ -165,9 +156,10 @@ class SubTaskActivity : AppCompatActivity() {
             }
             launch {
                 repeatOnLifecycle(Lifecycle.State.STARTED) {
-                    viewModel.subTaskEventResult
-                        .collect { eventResult ->
-                            showToast(eventResult.message)
+                    viewModel.resultEventSubtask
+                        .collect { resultEvent ->
+                            val messageRes = StringResource.getResultEventStringResource(resultEvent)
+                            showToast(getString(messageRes))
                         }
                 }
             }
@@ -248,7 +240,7 @@ class SubTaskActivity : AppCompatActivity() {
         screenMode: ScreenMode,
         viewExistsScreenMode: ScreenMode
     ) {
-        view.visibility = if (screenMode == viewExistsScreenMode) View.VISIBLE else View.INVISIBLE
+        view.visibility = if (screenMode == viewExistsScreenMode) View.VISIBLE else View.GONE
     }
 
     private fun showToast(message: String) {

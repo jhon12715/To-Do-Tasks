@@ -6,6 +6,7 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
@@ -14,11 +15,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.example.todotasks.R
 import com.example.todotasks.databinding.CategoryTaskSheetBinding
 import com.example.todotasks.domain.model.Category
-import com.example.todotasks.domain.usecase.UpsertTaskUseCase
-import com.example.todotasks.ui.core.ResultEvent
-import com.example.todotasks.ui.core.extensions.getParcelableCompat
-import com.example.todotasks.ui.core.extensions.hideKeyboard
-import com.example.todotasks.ui.core.extensions.setSettingsEditTextOfForm
+import com.example.todotasks.ui.common.extensions.getParcelableCompat
+import com.example.todotasks.ui.common.extensions.hideKeyboard
+import com.example.todotasks.ui.common.extensions.setSettingsEditTextOfForm
+import com.example.todotasks.ui.common.string_resource.StringProvider
 import com.example.todotasks.ui.model.CategoryUI
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,6 +26,7 @@ import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CategoryTaskSheet : BottomSheetDialogFragment() {
@@ -34,6 +35,10 @@ class CategoryTaskSheet : BottomSheetDialogFragment() {
     private val binding get() = _binding!!
     private val viewModel: CategoryFormViewModel by viewModels()
     private var category: CategoryUI = CategoryUI()
+    private var toast: Toast? = null
+
+    @Inject
+    lateinit var stringProvider: StringProvider
 
     companion object {
 
@@ -65,10 +70,11 @@ class CategoryTaskSheet : BottomSheetDialogFragment() {
     private fun startUI() {
         setSettingsComponents()
         val categoryForm = viewModel.categoryFormState.value
+
         val tittle = if (categoryForm.categoryIdForm == 0L) {
-            "Añadir nueva categoría"
+            getString(R.string.add_new_category_form)
         } else {
-            "Editar categoría"
+            getString(R.string.edit_category_form)
         }
 
         binding.tvTittle.text = tittle
@@ -108,11 +114,11 @@ class CategoryTaskSheet : BottomSheetDialogFragment() {
     private fun setFlows() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.resultEvent.collect { result ->
-                    when (result) {
-                        is ResultEvent.Success -> dismiss()
-                        is ResultEvent.Error -> {}
-                    }
+                viewModel.resultEvent.collect { resultEvent ->
+
+                    showToast(stringProvider.getResultEventResource(resultEvent))
+
+                    if (resultEvent.isSuccess) dismiss()
 
                 }
             }
@@ -126,9 +132,9 @@ class CategoryTaskSheet : BottomSheetDialogFragment() {
                     .collect { isValid ->
                         var color = ContextCompat.getColor(requireContext(), R.color.formValid)
                         if (isValid) {
-                            binding.btnAccept.text = "Valido"
+                            binding.btnAccept.text = getString(R.string.btn_valid)
                         } else {
-                            binding.btnAccept.text = "No Valido"
+                            binding.btnAccept.text = getString(R.string.btn_no_valid)
                             color = ContextCompat.getColor(requireContext(), R.color.formNotValid)
                         }
 
@@ -138,6 +144,12 @@ class CategoryTaskSheet : BottomSheetDialogFragment() {
                     }
             }
         }
+    }
+
+    private fun showToast(message: String) {
+        toast?.cancel()
+        toast = Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT)
+        toast!!.show()
     }
 
     override fun onCreateView(

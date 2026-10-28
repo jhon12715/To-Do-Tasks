@@ -1,7 +1,87 @@
 <resources>
     <string name="app_name">To Do Tasks</string>
     <string name="tittle_activity_main">To Do Tasks</string>
+    <string name="filter_all">Todas</string>
+    <string name="filter_no_completed">No completadas</string>
+    <string name="filter_completed">Completadas</string>
+
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
     <string name="second_fragment_label">Second Fragment</string>
+    <string name="delete">Eliminar:</string>
+    <string name="subtask_completed">Subtareas completadas:</string>
+    <string name="add_new_category">Añadir nueva categoría</string>
+    <string name="category">Categoría</string>
+    <string name="btn_accept">Aceptar</string>
+    <string name="btn_cancel">Cancelar</string>
+    <string name="date">Fecha</string>
+    <string name="priority">Prioridad</string>
+    <string name="name">Nombre</string>
+    <string name="tv_group_by">Agrupar por:</string>
+    <string name="sort_by">Ordenar por:</string>
+    <string name="tittle">Título</string>
+    <string name="new_tittle">Nuevo</string>
+    <string name="edit_tittle">Editar</string>
+    <string name="edit_category">Editar Categoría</string>
+    <string name="delete_category">Eliminar Categoría</string>
+    <string name="group_and_sort">Agrupar y Ordenar</string>
+    <string name="dialog_commit_action_tittle">Aviso</string>
+    <string name="dialog_commit_action_message">¿Seguro que desea realizar la acción?</string>
+    <string name="category_all">Todas</string>
+    <string name="uncategorized">Sin categoría</string>
+
+    <string name="high_priority">Alta</string>
+    <string name="medium_priority">Media</string>
+    <string name="low_priority">Baja</string>
+
+    <string name="today_date">Hoy</string>
+    <string name="future_date">Futuras</string>
+    <string name="overdue_date">Vencidas</string>
+    <string name="without_date">Sin fecha</string>
+
+    <string name="time_remaining_expired">Vencida</string>
+    <string name="time_remaining_today">Hoy</string>
+    <string name="time_remaining_tomorrow">Vencidas</string>
+    <string name="time_remaining">Quedan</string>
+    <string name="time_remaining_days">días</string>
+
+    <string name="order_desc_tittle">Descendente</string>
+    <string name="order_asc_tittle">Ascendente</string>
+    <string name="order_desc_priority">Menor a mayor</string>
+    <string name="order_asc_priority">Mayor a menor</string>
+    <string name="order_desc_date">Antigua a reciente</string>
+    <string name="order_asc_date">Reciente a antigua</string>
+    <string name="btn_no_valid">No Valido</string>
+    <string name="btn_valid">Valido</string>
+    <string name="add_subtask_tittle">Añadir Subtarea</string>
+    <string name="edit_subtask_text">Editar Subtarea</string>
+
+    <string name="result_event_delete_category_success">La categoría se ha borrado correctamente</string>
+    <string name="result_event_is_empty_task_error">Debe seleccionar al menos una tarea</string>
+    <string name="result_event_delete_one_task_success">La tarea se ha borrado correctamente</string>
+    <string name="result_event_delete_multiple_task_success">Las tareas se han borrado correctamente</string>
+    <string name="result_event_task_update_success">Se ha editado la tarea correctamente</string>
+    <string name="result_event_task_create_success">Se ha creado la tarea correctamente</string>
+    <string name="result_event_task_already_exists_error">La tarea ya existe</string>
+    <string name="result_event_is_empty_subtask_error">Debe seleccionar al menos una subtarea</string>
+    <string name="result_event_delete_one_subtask_success">La subtarea ha sido borrada correctamente</string>
+    <string name="result_event_delete_multiple_subtask_success">Las subtareas han sido borradas correctamente</string>
+    <string name="result_event_subtask_update_success">Se ha editado la subtarea correctamente</string>
+    <string name="result_event_subtask_create_success">Se ha añadido la subtarea correctamente</string>
+    <string name="result_event_subtask_already_exists_error">La subtarea ya existe</string>
+    <string name="result_event_category_already_exists_error">La categoría ya existe</string>
+    <string name="result_event_category_update_success">Se ha editado la categoría correctamente</string>
+    <string name="result_event_category_create_success">Se ha añadido la categoría correctamente</string>
+    <string name="result_event_length_not_valid_error">Te has pasado del límite de carácteres</string>
+    <string name="result_event_empty_text_error">El nombre no puede ir vacío</string>
+    <string name="without_limit_date">Sin fecha límite</string>
+    <string name="add_new_category_form">Añadir nueva categoría</string>
+    <string name="edit_category_form">Editar categoría</string>
+    <string name="task_channel">Tareas</string>
+    <string name="task_reminder_7_days">Quedan 7 días</string>
+    <string name="task_reminder_2_days">Quedan 2 días</string>
+    <string name="task_reminder_1_day">Queda 1 día</string>
+    <string name="tv_filter_all">Mostrar todas</string>
+    <string name="tv_filter_no_completed">Mostrar no completadas</string>
+    <string name="tv_filter_completed">Mostrar completadas</string>
 </resources>

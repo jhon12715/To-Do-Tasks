@@ -1,8 +1,9 @@
 package com.example.todotasks.domain.usecase
 
+import com.example.todotasks.domain.model.Task
 import com.example.todotasks.domain.notification.TaskNotificationAlarmManager
 import com.example.todotasks.domain.repository.TaskRepository
-import com.example.todotasks.ui.core.ResultEvent
+import com.example.todotasks.domain.model.result_event.ResultEventTask
 import javax.inject.Inject
 
 class DeleteTaskUseCase @Inject constructor(
@@ -10,16 +11,20 @@ class DeleteTaskUseCase @Inject constructor(
     private val scheduler: TaskNotificationAlarmManager
 ) {
 
-    suspend operator fun invoke(listId: List<Long>): ResultEvent {
-        //val task = repository.getTask(id)
-        //println("id: $id task: $task")
-        //scheduler.cancel(task)
-        if (listId.isEmpty()) return ResultEvent.Error("Debe seleccionar al menos una subtarea")
-        repository.deleteTasks(listId)
-        return if (listId.size == 1) {
-            ResultEvent.Success("La tarea se ha borrado correctamente")
+    suspend operator fun invoke(taskList: List<Task>): ResultEventTask {
+        if (taskList.isEmpty()) return ResultEventTask.IsEmptyError
+        val idList = taskList.map { task -> task.id }
+
+        repository.deleteTasks(idList)
+
+        taskList.forEach {
+            task -> scheduler.cancel(task)
+
+        }
+        return if (idList.size == 1) {
+            ResultEventTask.DeleteOneTaskSuccess
         } else {
-            ResultEvent.Success("Las tareas se han borrado correctamente")
+            ResultEventTask.DeleteMultipleTaskSuccess
         }
     }
 }

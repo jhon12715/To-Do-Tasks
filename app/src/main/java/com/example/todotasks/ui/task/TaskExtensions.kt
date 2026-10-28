@@ -5,7 +5,7 @@ import com.example.todotasks.domain.model.SortByTask
 import com.example.todotasks.domain.model.IsCompletedFilter
 import com.example.todotasks.domain.model.SortOrder
 import com.example.todotasks.domain.model.TaskPriority
-import com.example.todotasks.ui.core.sortByOrder
+import com.example.todotasks.ui.common.sortByOrder
 import com.example.todotasks.ui.model.DateHeaderSorter
 import com.example.todotasks.ui.model.TaskUI
 import com.example.todotasks.ui.model.TypeTaskListItem
@@ -22,8 +22,6 @@ fun List<TaskUI>.filterByIsCompleted(filterIsCompleted: IsCompletedFilter): List
     }
 }
 
-//fun List<TaskUI>.applyGroupByAndOrderBy(filter: TaskFilter): List<TaskUI> {}
-
 fun List<TaskUI>.applyTaskGroupByAndSorterBy(
     groupByTask: GroupByTask,
     sortByTask: SortByTask,
@@ -31,13 +29,13 @@ fun List<TaskUI>.applyTaskGroupByAndSorterBy(
 ): List<TypeTaskListItem> {
     //GroupBy
     fun groupByDateHeader(date: LocalDate?): String {
-        if (date == null) return DateHeaderSorter.SIN_FECHA.header
+        if (date == null) return DateHeaderSorter.SIN_FECHA.name
         val today = LocalDate.now()
         val dateDiference = ChronoUnit.DAYS.between(today, date)
         return when {
-            dateDiference == 0L -> DateHeaderSorter.HOY.header
-            dateDiference > 0L -> DateHeaderSorter.FUTURAS.header
-            else -> DateHeaderSorter.VENCIDAS.header
+            dateDiference == 0L -> DateHeaderSorter.HOY.name
+            dateDiference > 0L -> DateHeaderSorter.FUTURAS.name
+            else -> DateHeaderSorter.VENCIDAS.name
         }
     }
 
@@ -45,7 +43,7 @@ fun List<TaskUI>.applyTaskGroupByAndSorterBy(
         TaskPriority.valueOf(priorityHeader).num
 
     fun sortedDateMapOrder(dateHeader: String): Int {
-        val dateSorter = DateHeaderSorter.entries.find { it.header == dateHeader }
+        val dateSorter = DateHeaderSorter.entries.find { it.name == dateHeader }
         return dateSorter!!.num
     }
 

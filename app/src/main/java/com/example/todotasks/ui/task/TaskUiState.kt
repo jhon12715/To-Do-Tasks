@@ -19,5 +19,5 @@ data class TaskUiState (
     val tasksSelectedToDelete: List<Long> = emptyList(),
     val screenMode: ScreenMode = ScreenMode.LOADING
 ){
-    val tasksSelectedToDeleteText get() = "Eliminar ${tasksSelectedToDelete.size}/$totalTasks"
+    val tasksSelectedToDeleteText get() = "${tasksSelectedToDelete.size}/$totalTasks"
 }

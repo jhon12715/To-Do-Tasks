@@ -204,17 +204,19 @@ class GroupAndSortTaskSheet : BottomSheetDialogFragment() {
 
     private fun setSortOrderText(sortOrder: SortOrder, sortBy: Any) =
         with(binding) {
-            tvSortOrder.text = when (sortBy) {
+            val sortOrderStringRes = when (sortBy) {
                 SortByTask.TITTLE,
-                SortBySubTask.TITTLE -> if (sortOrder == SortOrder.ASC) "Descendente" else "Ascendente"
+                SortBySubTask.TITTLE -> if (sortOrder == SortOrder.ASC) R.string.order_desc_tittle else R.string.order_asc_tittle
 
                 SortByTask.PRIORITY,
-                SortBySubTask.PRIORITY -> if (sortOrder == SortOrder.ASC) "Menor a mayor" else "Mayor a menor"
+                SortBySubTask.PRIORITY -> if (sortOrder == SortOrder.ASC) R.string.order_desc_priority else R.string.order_asc_priority
 
-                SortByTask.DATE -> if (sortOrder == SortOrder.ASC) "Antigua a reciente" else "Reciente a antigua"
+                SortByTask.DATE -> if (sortOrder == SortOrder.ASC) R.string.order_desc_date else R.string.order_asc_date
 
-                else -> ""
+                else -> 0
             }
+
+            tvSortOrder.text = getString(sortOrderStringRes)
         }
 
     override fun onCreateView(

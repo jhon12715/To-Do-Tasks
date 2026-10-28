@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/clParent"
+    android:padding="@dimen/parent_padding"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -27,48 +28,12 @@
             android:id="@+id/fabTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="16dp"
             android:backgroundTint="@color/baseColor"
             android:clickable="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@android:drawable/ic_input_add" />
-
-        <RadioGroup
-            android:id="@+id/rgTaskFilter"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="8dp"
-            android:checkedButton="@+id/rbAll"
-            android:orientation="horizontal"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rvCategories">
-
-            <RadioButton
-                android:id="@+id/rbAll"
-                style="@style/CustomRadioButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Todas" />
-
-            <RadioButton
-                android:id="@+id/rbNotCompletedTasks"
-                style="@style/CustomRadioButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="No completadas" />
-
-            <RadioButton
-                android:id="@+id/rbCompletedTasks"
-                style="@style/CustomRadioButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Completadas" />
-        </RadioGroup>
+            app:srcCompat="@android:drawable/ic_input_add"
+            android:focusable="true" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvCategories"
@@ -76,7 +41,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:layout_marginTop="16dp"
-            app:layout_constraintBottom_toTopOf="@+id/rgTaskFilter"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
@@ -86,13 +50,13 @@
             android:id="@+id/iv_more_vert"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_margin="@dimen/margin_iv_more_vert"
+            android:layout_margin="@dimen/margin_lateral"
             android:clickable="true"
             android:focusable="true"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_more_vert"
-            android:background="?attr/selectableItemBackgroundBorderless"/>
+            android:background="?attr/selectableItemBackgroundBorderless" />
 
         <ImageView
             android:id="@+id/ivDeleteTask"
@@ -111,7 +75,7 @@
             android:padding="8dp"
             android:text="TextView"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rgTaskFilter" />
+            app:layout_constraintTop_toBottomOf="@+id/rvCategories" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout

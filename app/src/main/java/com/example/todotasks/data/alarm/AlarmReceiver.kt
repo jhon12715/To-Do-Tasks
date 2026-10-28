@@ -7,7 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import androidx.core.app.NotificationCompat
-import com.example.todotasks.data.core.NotificationConfig.Companion.CHANNEL_TASK
+import com.example.todotasks.data.notification.NotificationConfig.Companion.TASK_CHANNEL
 import com.example.todotasks.ui.subTask.subtask_list.SubTaskActivity
 
 class AlarmReceiver : BroadcastReceiver() {
@@ -29,7 +29,7 @@ class AlarmReceiver : BroadcastReceiver() {
             val taskId = intent?.getLongExtra(TASK_ID, 0) ?: 0L
             val notificationTaskId = intent?.getIntExtra(NOTIFICATION_TASK_ALARM_ID, 0) ?: 0
 
-            val notification = NotificationCompat.Builder(context, CHANNEL_TASK)
+            val notification = NotificationCompat.Builder(context, TASK_CHANNEL)
                 .setContentTitle(taskName)
                 .setContentText(dayBeforeText)
                 .setSmallIcon(android.R.drawable.ic_dialog_info)

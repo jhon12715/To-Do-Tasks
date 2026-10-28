@@ -1,6 +1,5 @@
-package com.example.todotasks.ui.core.extensions
+package com.example.todotasks.ui.common.extensions
 
-import android.content.Context
 import android.graphics.Color
 import android.view.View
 import android.view.inputmethod.InputMethodManager
